@@ -1,0 +1,79 @@
+site_name: SDMX-DPM Interoperability
+site_description: Documentation for SDMX-DPM Interoperability Work Package
+
+# Documentation directory (relative to mkdocs.yml)
+docs_dir: docs
+
+# Theme configuration
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+
+
+# Plugins
+plugins:
+  - search
+
+
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Concept Note: concept-note.md
+  - Business Case:
+      - business-case/index.md
+  - Models Relationships:
+      - models-relationships/index.md
+  - Transformation Guidelines:
+      - transformation-guidelines/index.md
+  - Background Documentation:
+      - background-docs/index.md
+  - Meetings: meetings/index.md
