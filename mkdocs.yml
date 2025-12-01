@@ -69,7 +69,7 @@ nav:
   - Home: index.md
   - Concept Note: concept-note.md
   - Business Case:
-      - business-case/index.md
+      - business-case/business-case-draft.md
   - Models Relationships:
       - models-relationships/index.md
   - Transformation Guidelines:

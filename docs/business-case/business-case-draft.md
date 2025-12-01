@@ -10,14 +10,15 @@ By bridging the gap between these two dominant standards—SDMX in official stat
 
 ### 2.1. The Challenge: Divergent Standards
 Currently, the statistical and supervisory domains operate in parallel but separate ecosystems:
-*   **SDMX (Statistical Data and Metadata eXchange)**: The global standard for exchanging statistical data, widely used by central banks and international organizations.
-*   **DPM (Data Point Model)**: A data-centric modeling framework primarily used in the European financial supervision context (e.g., EBA, EIOPA, ECB) and often implemented via XBRL.
+
+- **SDMX (Statistical Data and Metadata eXchange)**: The global standard for exchanging statistical data, widely used by central banks and international organizations.
+- **DPM (Data Point Model)**: A data-centric modeling framework primarily used in the European financial supervision context (e.g., EBA, EIOPA, ECB) and often implemented via XBRL.
 
 While both frameworks share common concepts—such as dimensional structures, classifications, and reporting requirements—they have evolved independently. This divergence has led to:
-*   **Siloed Data**: Difficulty in integrating statistical and supervisory data, in the organisations that collect both type of data (e.g., EU Central Banks).
-*   **Duplication of Effort**: Reporting agents (e.g., banks) and institutions often maintain separate pipelines and metadata repositories for each standard.
-*   **Interoperability Barriers**: Technical challenges in mapping metadata and data structures between systems.
 
+- **Siloed Data**: Difficulty in integrating statistical and supervisory data, in the organisations that collect both type of data (e.g., EU Central Banks).
+- **Duplication of Effort**: Reporting agents (e.g., banks) and institutions often maintain separate pipelines and metadata repositories for each standard.
+- **Interoperability Barriers**: Technical challenges in mapping metadata and data structures between systems.
 
 
 ### 2.2. The Mandate
@@ -34,9 +35,11 @@ The core objective of this work package is to make SDMX-DPM interoperability a p
 * **Support Future Convergence**: Support a convergence path for next releases of both SDMX and DPM methodologies..
 
 > **Example Use Case 1: The Central Bank with single metadata repository**
+
 > Consider a central bank that currently maintains two separate metadata repositories for statistical and prudential data, and even separate metadata-driven reporting systems because of lack of common metadata. By adopting the SDMX-DPM interoperability framework, the bank can combine the two metadata repositories into a single one, and even combine the two reporting systems into a single one.
 
 > **Example Use Case 2: The Unified Reporting Pipeline**
+
 > Consider a commercial bank that currently maintains two separate reporting engines: one for statistical reports (SDMX) and another for prudential supervision (DPM/XBRL). By adopting the SDMX-DPM interoperability framework, the bank can map its internal data once to a unified model. From this single source, it can automatically generate valid reports for both domains, significantly reducing maintenance costs and the risk of data inconsistencies.
 
 ### 3.2. Stakeholder Benefits
@@ -51,6 +54,7 @@ The framework delivers targeted value across the ecosystem:
 
 ### 3.3. Deliverable Objectives
 The work package is committed to producing tangible assets:
+
 1.  **Business Case**: A formalized articulation of the value proposition (this document).
 2.  **Model Relationship Documentation**: Detailed technical mapping of SDMX 3.0 components to DPM 2.0 elements (and vice versa).
 3.  **Transformation Guidance**: Practical algorithms and examples for converting metadata and data between formats (including SDMX-CSV and XBRL-CSV).
@@ -71,16 +75,18 @@ To ensure the success of this initiative, the following risks have been identifi
 
 ### 5.1. Scope
 The work package will focus on:
-*   **Conceptual Alignment**: Mapping high-level concepts (Dimensions, Attributes, Measures vs. Key/Fact Variables).
-*   **Technical Mapping**: Defining precise transformation rules between **SDMX Information Model (v3.1)** and **DPM Metamodel (v2.0)**.
-*   **Data Formats**: Addressing interoperability at the data instance level, specifically between SDMX and XBRL-CSV.
-*   **Communication**: Translating technical findings into accessible content for a broad audience.
+
+- **Conceptual Alignment**: Mapping high-level concepts (Dimensions, Attributes, Measures vs. Key/Fact Variables).
+- **Technical Mapping**: Defining precise transformation rules between **SDMX Information Model (v3.1)** and **DPM Metamodel (v2.0)**.
+- **Data Formats**: Addressing interoperability at the data instance level, specifically between SDMX and XBRL-CSV.
+- **Communication**: Translating technical findings into accessible content for a broad audience.
 
 ### 5.2. Approach
 The project follows a collaborative, phased approach:
-*   **Consolidation**: Leveraging existing expert knowledge and the June 2025 presentation as a baseline.
-*   **Development**: Drafting technical documents and validating them within the TWG and with DPM experts.
-*   **Publication**: Disseminating findings via a dedicated GitHub-based website to ensure accessibility and community engagement.
+
+- **Consolidation**: Leveraging existing expert knowledge and the June 2025 presentation as a baseline.
+- **Development**: Drafting technical documents and validating them within the TWG and with DPM experts.
+- **Publication**: Disseminating findings via a dedicated interoperability website to ensure accessibility and community engagement.
 
 ## 6. Conclusion
 
