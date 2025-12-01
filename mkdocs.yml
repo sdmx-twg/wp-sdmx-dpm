@@ -74,6 +74,3 @@ nav:
       - models-relationships/index.md
   - Transformation Guidelines:
       - transformation-guidelines/index.md
-  - Background Documentation:
-      - background-docs/index.md
-  - Meetings: meetings/index.md
