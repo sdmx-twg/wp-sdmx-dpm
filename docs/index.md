@@ -14,5 +14,10 @@ The `docs/` folder contains the following sections:
 - [**business-case/**](./business-case/index.md) - Business case for SDMX-DPM interoperability
 - [**models-relationships/**](./models-relationships/index.md) - Documentation of alignments between SDMX and DPM models
 - [**transformation-guidelines/**](./transformation-guidelines/index.md) - Guidance on SDMX↔DPM transformations with examples
-- [**background-docs/**](./background-docs/index.md) - Supporting reference materials
-- [**meetings/**](./meetings/index.md) - Meeting notes and presentations
+
+
+## Internal documentation
+
+Documentation for group members can be found in the [official twg repository](https://github.com/sdmx-twg/twg/tree/sdmx-dpm-dev/workpackages/sdmx_dpm/docs):
+- [**background-docs/**](https://github.com/sdmx-twg/twg/tree/sdmx-dpm-dev/workpackages/sdmx_dpm/docs/background-docs/index.md) - Supporting reference materials
+- [**meetings/**](https://github.com/sdmx-twg/twg/tree/sdmx-dpm-dev/workpackages/sdmx_dpm/docs/meetings/index.md) - Meeting notes and presentations
