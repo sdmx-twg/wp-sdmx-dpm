@@ -34,12 +34,9 @@ theme:
     - content.code.copy
     - content.action.edit
 
-
 # Plugins
 plugins:
   - search
-
-
 
 markdown_extensions:
   - toc:
