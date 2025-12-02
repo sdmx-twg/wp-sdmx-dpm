@@ -2,3 +2,4 @@ site/
 .agent/
 .cursorrules
 .github/copilot-instructions.md
+.venv/
