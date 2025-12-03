@@ -13,7 +13,3 @@ It aims to:
 - [2. Vocabulary overview](02_vocabulary_overview.md)
 - [3. High-level mapping summary](03_high_level_mapping_summary.md)
 - [4. Detailed mapping rules](04_detailed_mapping_rules.md)
-- [5. Generating the DPM glossary from SDMX](05_generating_dpm_glossary_from_sdmx.md)
-- [6. Naming and identifier conventions](06_naming_and_identifier_conventions.md)
-- [7. Open issues and next steps](07_open_issues_and_next_steps.md)
-

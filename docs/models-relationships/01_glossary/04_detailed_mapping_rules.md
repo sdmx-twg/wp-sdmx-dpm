@@ -1,5 +1,12 @@
 # 4. Detailed mapping rules
 
+> [!NOTE]
+> - Add coding/naming issues here for each mapping
+> - Explain the constraints under which a mapping is simple (e.g., an organisation that uses only one Concept Scheme, vs many Concept Schemes), and proposed conventions if simple mapping is not possible.
+> - Shall we add here something about versioning and extensibility? Or as a separate chapter?
+
+
+
 This chapter provides the detailed rules for each of the high-level correspondences described in chapter 3.
 
 ## 4.1 Codelist ↔ Category
