@@ -8,24 +8,149 @@
 
 
 This chapter provides the detailed rules for each of the high-level correspondences described in chapter 3.
-
-## 4.1 Codelist ↔ Category
+## 4.1 ConceptSchema ↔ DPM Glossary
+In the Data Point Model (DPM), there is no construct equivalent to the SDMX `ConceptScheme`.  
+In SDMX, each `ConceptScheme` has its own identification space (defined by `agencyId`, `id`, and `version`).  
+If concepts from multiple `ConceptSchemes` are combined into a single DPM glossary, identifier collisions may occur (for example, two concepts with the same name, such as `COUNTRY`, but with different meanings). 
 
 ### 4.1.1 Basic mapping
 
+To resolve this issue, a namespace can be created for each `ConceptScheme` by adopting an approach based on **composite keys** in the DPM glossary:
+
+---
+
+### Glossary with Composite Keys
+In the DPM glossary, define each concept using a composite key in the following format:
+
+```
+{agencyID}.{ConceptSchemeId}.{ConceptId}
+```
+
+*Example:*
+```
+ECB.CL_COUNTRY.COUNTRY
+```
+
+This ensures uniqueness without renaming the concepts.
+
+---
+
+### *Example ConceptScheme*
+```xml
+<ConceptScheme id="CL_CONCEPTS" agencyID="ECB" version="1.0">
+    <Name xml:lang="en">Statistical Concepts</Name>
+    <Description xml:lang="en">Concepts used for macroeconomic indicators</Description>
+    <Concept id="FREQ">
+        <Name xml:lang="en">Frequency</Name>
+        <Description xml:lang="en">Reporting frequency</Description>
+        <Representation>
+            <CodelistRef id="CL_FREQ" agencyID="ECB" version="1.0"/>
+        </Representation>
+    </Concept>
+    <Concept id="REF_AREA">
+        <Name xml:lang="en">Reference Area</Name>
+        <Description xml:lang="en">Geographical coverage</Description>
+        <Representation>
+            <CodelistRef id="CL_AREA" agencyID="ECB" version="1.0"/>
+        </Representation>
+    </Concept>
+    <Codelist id="CL_FREQ" agencyID="ECB" version="1.0">
+        <Name xml:lang="en">Frequency</Name>
+        <Description xml:lang="en">Reporting frequency codes</Description>
+        <Code id="A">
+            <Name xml:lang="en">Annual</Name>
+        </Code>
+        <Code id="Q">
+            <Name xml:lang="en">Quarterly</Name>
+        </Code>
+        <Code id="M">
+            <Name xml:lang="en">Monthly</Name>
+        </Code>
+    </Codelist>
+</ConceptScheme>
+```
+
+---
+
+## 4.1.2 **Mapping Details: SDMX ConcepSchema → DPM Glossary**
+
+### **Concepts**
+| SDMX Concept | Composite Key in DPM Glossary | Description            |
+|--------------|--------------------------------|------------------------|
+| FREQ         | ECB.CL_CONCEPTS.FREQ          | Reporting frequency    |
+| REF_AREA     | ECB.CL_CONCEPTS.REF_AREA      | Geographical coverage  |
+
+### **Codelist for FREQ**
+| SDMX Code | Composite Key in DPM Glossary | Description |
+|-----------|--------------------------------|-------------|
+| A         | ECB.CL_FREQ.A                 | Annual      |
+| Q         | ECB.CL_FREQ.Q                 | Quarterly   |
+| M         | ECB.CL_FREQ.M                 | Monthly     |
+
+
+## 4.2 Codelist ↔ Category
+An SDMX CodeList is a structural component of the SDMX standard that defines a **set of coded values** for a dimension, attribute, or concept. SDMX CodeList can be mapped to an Enumerated Category in DPM.
+
+### 4.2.1 Basic mapping
 - For each **SDMX Codelist**:
-  - Create one **DPM Category**.
-  - Map:
-    - SDMX `agencyID` → DPM Category owner (organisation acronym).
-    - SDMX `id` → DPM Category code (possibly split into prefix/postfix in Simplified Approach implementations).
-    - Codelist name/description → Category name/description.
-  - Treat the Category as **enumerated** (`is_enumerated = true`) unless there is a strong reason to model it as non-enumerated.
+  - Create one **Enumerated DPM Category**.
 
-- **Empty Codelists** (no Codes):
-  - Conceptually similar to a DPM **Non-Enumerated Category**: the domain is defined, but the values are not enumerated.
-  - In practice, the ECB Simplified Approach focuses on enumerated categories; non-enumerated cases are typically handled via data types on Properties/Metrics.
+#### SDMX Codelist Key Features
+- **Identification**: `id`, `agencyID`, `version`
+- **Content**:
+  - One or more **Code** elements (e.g., ES, FR, DE)
+  - Each Code includes:
+    - `id` (unique identifier)
+    - `Name` (human-readable label)
+    - Optional: description, order, references
+- **Multilingual support**: Labels can be provided in multiple languages
+- **Reusable**: Can be referenced in multiple Data Structure Definitions (DSDs)
 
-### 4.1.2 Extended Codelists and Super Categories
+#### **Example ConceptScheme**
+```xml
+<Codelist id="CL_COUNTRY" agencyID="ECB" version="1.0">
+  <Name xml:lang="en">Country</Name>
+  <Description xml:lang="en">List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY)</Description>
+  <Code id="ES">
+    <Name xml:lang="en">Spain</Name>
+  </Code>
+  <Code id="FR">
+    <Name xml:lang="en">France</Name>
+  </Code>
+</Codelist>
+```
+
+### 4.2.2 Mapping details
+
+| Attribute | Value |
+|---|---|
+| CategoryID | (system-generated, e.g., 1001) |
+| Code | {agencyID}.{ConceptSchemeId}.{CodelistId}|
+| Name | Codelist.Name |
+| Description | Codelist.Description|
+| IsEnumerated | TRUE |
+| IsSuperCategory | FALSE |
+| IsActive | TRUE |
+| IsExternalRefData | FALSE |
+| RefDataSource | NULL |
+| RowGUID | (system-generated UUID) |
+
+## Example Mapping details
+
+| Attribute | Value |
+|---|---|
+| CategoryID | (system-generated, e.g., 1001) |
+| Code | ECB.CS_REPORTING.CL_COUNTRY |
+| Name | Country |
+| Description | List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY) |
+| IsEnumerated | TRUE |
+| IsSuperCategory | FALSE |
+| IsActive | TRUE |
+| IsExternalRefData | FALSE |
+| RefDataSource | NULL |
+| RowGUID | (system-generated UUID) |
+
+### 4.2.2 Extended Codelists and Super Categories
 
 - **Extended Codelist (subset-only)**:
   - If an Extended Codelist only restricts a base codelist to a subset of its codes (no new codes):
@@ -46,7 +171,7 @@ This chapter provides the detailed rules for each of the high-level corresponden
       - either extend the underlying Category with new Category Items (documenting that they originate from an Extended Codelist only), or
       - treat them as part of a separate Category/CategoryItem set and document the relationship (e.g. in the versioning/extensibility section).
 
-### 4.1.3 Geospatial Codelists
+### 4.2.3 Geospatial Codelists
 
 - **Geospatial Codelist → Category (enumerated)**:
   - Create a Category and Category Items in the same way as for a normal codelist.
@@ -55,9 +180,9 @@ This chapter provides the detailed rules for each of the high-level corresponden
     - external metadata, or
     - extended attributes in implementations.
 
-## 4.2 Code ↔ Category Item
+## 4.3 Code ↔ Category Item
 
-### 4.2.1 Simple codes
+### 4.3.1 Simple codes
 
 - For each **Code** in an SDMX Codelist (or Extended Codelist that does not introduce additional semantics):
   - Create a **Simple Category Item** in the corresponding Category.
@@ -70,7 +195,7 @@ This chapter provides the detailed rules for each of the high-level corresponden
     - `is_compound = false`,
     - `is_obsolete = false`.
 
-### 4.2.2 Compound Category Items
+### 4.3.2 Compound Category Items
 
 - **DPM Compound Category Item** encodes a composition of multiple items across categories (e.g. the “Treasury bill” example in the report).
 
@@ -86,9 +211,9 @@ This chapter provides the detailed rules for each of the high-level corresponden
     - even though SDMX does not encode that composition explicitly.
   - This is mainly a design choice on the DPM side; SDMX does not force it.
 
-## 4.3 Subsets and hierarchies
+## 4.4 Subsets and hierarchies
 
-### 4.3.1 Subsets (constraints and extended codelists)
+### 4.4.1 Subsets (constraints and extended codelists)
 
 Subsets of codelists (e.g. “codes allowed in a specific Dataflow”) can arise from:
 - Extended Codelists (subset-only), and/or
@@ -101,7 +226,7 @@ Mapping rules:
   - The items of the Subcategory correspond to the allowed Category Items for the context (Dataflow/DSD).
   - Use constraint metadata (e.g. include/exclude, cascade flags) to determine which items belong to the Subcategory.
 
-### 4.3.2 Hierarchies
+### 4.4.2 Hierarchies
 
 - **Hierarchy over a single codelist**:
   - When an SDMX Hierarchy only includes codes from one codelist:
@@ -116,9 +241,9 @@ Mapping rules:
       - separate hierarchies per Category, and/or
       - external documentation.
 
-## 4.4 Concept ↔ Property / Metric
+## 4.5 Concept ↔ Property / Metric
 
-### 4.4.1 DPM → SDMX
+### 4.5.1 DPM → SDMX
 
 - **Metric → Concept used as measure**:
   - For each DPM Metric:
@@ -134,7 +259,7 @@ Mapping rules:
       - non-enumerated (facet-based) otherwise,
     - use it as a dimension or attribute in DSDs.
 
-### 4.4.2 SDMX → DPM: decision rule
+### 4.5.2 SDMX → DPM: decision rule
 
 When generating DPM glossary entries from SDMX Concepts, use the following rule:
 
@@ -157,7 +282,7 @@ When generating DPM glossary entries from SDMX Concepts, use the following rule:
    - do not attempt to map Concept Schemes themselves;
    - use the Concept Scheme’s agency and ID to drive ownership and naming in the DPM glossary.
 
-### 4.4.3 Enumerated vs non-enumerated concepts
+### 4.5.3 Enumerated vs non-enumerated concepts
 
 - **Enumerated Concepts** (with codelist-based representations):
   - Map their codelists/extended codelists to Categories/Subcategories (as above).
