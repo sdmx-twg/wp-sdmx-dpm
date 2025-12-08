@@ -17,7 +17,7 @@ Currently, the statistical and supervisory domains operate in parallel but separ
 While both frameworks share common concepts—such as dimensional structures, classifications, and reporting requirements—they have evolved independently. This divergence has led to:
 
 - **Siloed Data**: Difficulty in integrating statistical and supervisory data, in the organisations that collect both type of data (e.g., EU Central Banks).
-- **Duplication of Effort**: Reporting agents (e.g., banks) and institutions often maintain separate pipelines and metadata repositories for each standard.
+- **Duplication of Effort**: Reporting agents (e.g., banks) and institutions often maintain separate pipelines and metadata repositories for each standard, with no shared solution to map metadata concepts across repositories and significant effort required to keep multiple metadata repositories aligned and managed.
 - **Interoperability Barriers**: Technical challenges in mapping metadata and data structures between systems.
 
 
@@ -47,7 +47,7 @@ The framework delivers targeted value across the ecosystem:
 
 | Stakeholder | Key Benefits |
 | :--- | :--- |
-| **Regulators & Supervisors** | Improved data consistency between statistical and prudential domains; enhanced data lineage; reduced data silos; cost reduction. |
+| **Regulators & Supervisors** | Guidance and tooling that promote better data consistency between statistical and prudential domains; enhanced transparency on data lineage; reduced data silos; potential cost reduction. |
 | **Reporting Agents (Banks/Insurers)** | Reduced compliance burden through unified data mapping; lower cost of change for new requirements. |
 | **Software Vendors** | Standardized implementation targets; opportunity to build "write once, report everywhere" solutions. |
 | **Standard Setters** | Greater adoption through interoperability; reduced friction in standards maintenance. |
@@ -57,15 +57,15 @@ The work package is committed to producing tangible assets:
 
 1.  **Business Case**: A formalized articulation of the value proposition (this document).
 2.  **Model Relationship Documentation**: Detailed technical mapping of SDMX 3.0 components to DPM 2.0 elements (and vice versa).
-3.  **Transformation Guidance**: Practical algorithms and examples for converting metadata and data between formats (including SDMX-CSV and XBRL-CSV).
-4.  **Public Knowledge Base**: A standards interoperability website to serve as a permanent reference for the community.
+3.  **Transformation Guidance**: Practical algorithms, examples and at least one sample conversion script that demonstrate how to convert metadata (as a prerequisite) and data between CSV-based formats (SDMX-CSV and XBRL-CSV).
+4.  **Public Knowledge Base**: A standards interoperability website to serve as a permanent reference for the community, including guidance on mapping patterns, best practices and how versioning is applied across the SDMX and DPM information models and the associated mapping artefacts.
 
 ## 4. Risks & Mitigation
 
 To ensure the success of this initiative, the following risks have been identified and addressed:
 
 *   **Complexity of Mappings**: Mapping distinct modeling paradigms (e.g., DPM's rendering artifacts vs. SDMX's structural metadata) can be complex.
-    *   *Mitigation*: The project adopts a phased approach, starting with core concepts before tackling edge cases.
+    *   *Mitigation*: The project adopts a phased approach, starting with core concepts before tackling edge cases, and will document explicit assumptions and recommended best practices (e.g., stability of concept data types) that enable robust mappings.
 *   **Version Drift**: Standards evolve (e.g., SDMX 3.1, DPM Refit).
     *   *Mitigation*: The work package explicitly targets **SDMX 3.1** and **DPM Refit (2.0)**, with a clear versioning policy for the mapping artifacts.
 *   **Adoption**: Technical outputs may not be widely adopted without clear guidance.
@@ -76,10 +76,10 @@ To ensure the success of this initiative, the following risks have been identifi
 ### 5.1. Scope
 The work package will focus on:
 
-- **Conceptual Alignment**: Mapping high-level concepts (Dimensions, Attributes, Measures vs. Key/Fact Variables).
+- **Conceptual Alignment**: Mapping of high-level concepts (SDMX Dimensions, Attributes and Measures to DPM Properties; SDMX code lists to DPM Categories and Category Items; SDMX code list hierarchies to DPM Supercategories and Subcategories).
 - **Technical Mapping**: Defining precise transformation rules between **SDMX Information Model (v3.1)** and **DPM Metamodel (v2.0)**.
 - **Data Formats**: Addressing interoperability at the data instance level, specifically between SDMX and XBRL-CSV.
-- **Communication**: Translating technical findings into accessible content for a broad audience.
+- **Communication**: Translating technical findings into accessible content for a broad audience, and presenting the work in relevant SDMX and DPM standard-setting bodies, workshops and conferences.
 
 ### 5.2. Approach
 The project follows a collaborative, phased approach:
