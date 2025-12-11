@@ -38,6 +38,7 @@ theme:
 plugins:
   - search
 
+
 markdown_extensions:
   - toc:
       permalink: true
@@ -47,7 +48,6 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -69,5 +69,18 @@ nav:
       - business-case/business-case-draft.md
   - Models Relationships:
       - models-relationships/index.md
+      - Glossary:
+          - models-relationships/01_glossary/index.md
+          - 1. Scope and Objectives: models-relationships/01_glossary/01_scope_and_objectives.md
+          - 2. Vocabulary Overview: models-relationships/01_glossary/02_vocabulary_overview.md
+          - 3. High-Level Mapping Summary: models-relationships/01_glossary/03_high_level_mapping_summary.md
+          - 4. Detailed Mapping Rules: models-relationships/01_glossary/04_detailed_mapping_rules.md
+          - 5. Generating DPM Glossary from SDMX: models-relationships/01_glossary/05_generating_dpm_glossary_from_sdmx.md
+          - 6. Naming and Identifier Conventions: models-relationships/01_glossary/06_naming_and_identifier_conventions.md
+          - 7. Open Issues and Next Steps: models-relationships/01_glossary/07_open_issues_and_next_steps.md
+      - Data Definition: models-relationships/02_data_definition/index.md
+      - Other Artifacts: models-relationships/03_other_artifacts/index.md
+      - Versioning and Extensibility: models-relationships/04_versioning_and_extensibility/index.md
+      - Gaps: models-relationships/05_gaps/index.md
   - Transformation Guidelines:
       - transformation-guidelines/index.md
