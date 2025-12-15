@@ -72,7 +72,7 @@ This ensures uniqueness without renaming the concepts.
 
 ---
 
-## 4.1.2 **Mapping Details: SDMX ConcepSchema → DPM Glossary**
+### **Example: SDMX ConcepSchema → DPM Glossary**
 
 ### **Concepts**
 | SDMX Concept | Composite Key in DPM Glossary | Description            |
@@ -106,7 +106,7 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 - **Multilingual support**: Labels can be provided in multiple languages
 - **Reusable**: Can be referenced in multiple Data Structure Definitions (DSDs)
 
-#### **Example ConceptScheme**
+#### **Example Codelist**
 ```xml
 <Codelist id="CL_COUNTRY" agencyID="ECB" version="1.0">
   <Name xml:lang="en">Country</Name>
@@ -182,10 +182,12 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 
 ## 4.3 Code ↔ Category Item
 
+An SDMX Code is a fundamental element within a Codelist in the SDMX Information Model.
+
 ### 4.3.1 Simple codes
 
 - For each **Code** in an SDMX Codelist (or Extended Codelist that does not introduce additional semantics):
-  - Create a **Simple Category Item** in the corresponding Category.
+  - Create a **Category Item** in the corresponding Category.
   - Map:
     - SDMX `agencyID` (if present at code level) or codelist `agencyID` → Category Item owner.
     - Code `id` → Category Item code.
@@ -194,6 +196,77 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
     - `is_default = false`,
     - `is_compound = false`,
     - `is_obsolete = false`.
+
+### SDMX Code <-> DPM Item Mapping Details
+
+| Attribute | Value |
+|---|---|
+| ItemID | (system-generated, e.g., 5001) |
+| Code | {agencyID}.{ConceptSchemeId}.{CodelistId}.{CodeId} |
+| Name | Code.Name |
+| Description | Code.Description |
+| IsActive | TRUE |
+| IsExternalRefData | FALSE |
+| RefDataSource | NULL |
+| RowGUID | (system-generated UUID) |
+
+### SDMX Code <-> DPM CategoryItem Mapping Details
+
+| Attribute | Value |
+|---|---|
+| CategoryItemID | (system-generated, e.g., 9001) |
+| CategoryID | Category.CategoryID |
+| ItemID | Item.ItemID |
+| IsActive | TRUE |
+| RowGUID | (system-generated UUID) |
+
+## SDMX Code <-> DPM Item Examples (from SDMX Codes in CL_COUNTRY)
+
+## Item: Spain (ES)
+| Attribute | Value |
+|---|---|
+| ItemID | (system-generated, e.g., 5001) |
+| Code | ECB.CS_REPORTING.CL_COUNTRY.ES |
+| Name | Spain |
+| Description | NULL |
+| IsActive | TRUE |
+| IsExternalRefData | FALSE |
+| RefDataSource | NULL |
+| RowGUID | (system-generated UUID) |
+
+## Item: France (FR)
+| Attribute | Value |
+|---|---|
+| ItemID | (system-generated, e.g., 5002) |
+| Code | ECB.CS_REPORTING.CL_COUNTRY.FR |
+| Name | France |
+| Description | NULL |
+| IsActive | TRUE |
+| IsExternalRefData | FALSE |
+| RefDataSource | NULL |
+| RowGUID | (system-generated UUID) |
+
+## SDMX Code <-> DPM CategoryItem Examples (link Category ↔ Items)
+
+> Links Category `ECB.CS_REPORTING.CL_COUNTRY` to each Item.
+
+## Link: Category ↔ Spain (ES)
+| Attribute | Value |
+|---|---|
+| CategoryItemID | (system-generated, e.g., 9001) |
+| CategoryID | Category.CategoryID (e.g., 1001) |
+| ItemID | Item.ItemID (e.g., 5001) |
+| IsActive | TRUE |
+| RowGUID | (system-generated UUID) |
+
+## Link: Category ↔ France (FR)
+| Attribute | Value |
+|---|---|
+| CategoryItemID | (system-generated, e.g., 9002) |
+| CategoryID | Category.CategoryID (e.g., 1001) |
+| ItemID | Item.ItemID (e.g., 5002) |
+| IsActive | TRUE |
+| RowGUID | (system-generated UUID) |
 
 ### 4.3.2 Compound Category Items
 
@@ -213,18 +286,103 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 
 ## 4.4 Subsets and hierarchies
 
-### 4.4.1 Subsets (constraints and extended codelists)
+### 4.4.1 Subsets (constraints and partial codelists)
 
-Subsets of codelists (e.g. “codes allowed in a specific Dataflow”) can arise from:
-- Extended Codelists (subset-only), and/or
-- SDMX **Content Constraints** (cube region constraints).
+Here’s how you define a subset of codes in SDMX, with examples:
 
-Mapping rules:
+- **Option 1**: Partial Codelist using isPartial
+If you want to publish a reduced version of a maintained Codelist:
+Key points:
+The Codelist keeps the same agencyID, id, and version as the full list.
+Add isPartial="true" in the Codelist header.
+Include only the codes you need.
 
-- **Subset derived from Extended Codelist or Constraints**:
-  - Create a **Subcategory** under the mapped Category.
-  - The items of the Subcategory correspond to the allowed Category Items for the context (Dataflow/DSD).
-  - Use constraint metadata (e.g. include/exclude, cascade flags) to determine which items belong to the Subcategory.
+- **Option 2**: Using a Constraint
+For dynamic subsets or validation rules, use ContentConstraint or AttachmentConstraint.
+Key points:
+Define a CubeRegion for data or MetadataTargetRegion for metadata.
+Use MemberSelection to include/exclude codes.
+Support for cascadeValues and wildcard %.
+
+#### 4.4.2 Mapping details
+Partial Codelist → DPM SubCategory
+
+The subset of codes is modeled as a SubCategory of that Category.
+SubCategory groups selected Items (codes) and can be versioned via SubCategoryVersion (linked to a Release).
+Versioning
+DPM supports historization: SubCategoryVersion refers to a Release, similar to SDMX versioning.
+This allows tracking changes over time (e.g., adding/removing codes).
+
+- Each SubCategory groups Items- Each SubCategory groups Items from the Category `{agencyID}.{ConceptSchemeId}.{CodelistId}`.
+- Use SubCategoryVersion for historization.
+
+
+#### DPM SubCategory Mapping Details
+
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryIDsystem-generated, e.g., 7001) |
+| Code                | EU_COUNTRIES |
+| Name                | European Union Countries |
+| Description         | Subset of EU member states within CL_COUNTRY |
+| Owner               | ECB |
+| IsActive            | TRUE |
+| RowGUID             | (system-generated UUID) |
+
+#### SubCategoryVersion
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryVID      | (system-generated, e.g., 7101) |
+| SubCategoryID       | 7001 |
+| StartReleaseID      | 3001 (e.g., Release "2025-Q1") |
+| EndReleaseID        | NULL |
+| RowGUID             | (system-generated UUID) |
+
+
+#### DPM SubCategory Examples (Partial Codelist Mapping)
+
+#### SubCategory: EU_COUNTRIES
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryID       | 7001 |
+| Code                | EU_COUNTRIES |
+| Name                | European Union Countries |
+| Description         | Subset of EU member states within CL_COUNTRY |
+| RowGUID             | (system-generated UUID) |
+
+#### SubCategoryVersion
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryVID      | 7101 |
+| SubCategoryID       | 7001 |
+| StartReleaseID      | 3001 |
+| EndReleaseID        | NULL |
+
+#### SubCategoryItems (Members of EU_COUNTRIES)
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryVID      | 7101 |
+| ItemID              | 5001 |
+| Label               | France |
+| ParentItemID        | NULL |
+| RowGUID             | (system-generated UUID) |
+
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryVID      | 7101 |
+| ItemID              | 5002 |
+| Label               | Germany |
+| ParentItemID        | NULL |
+| RowGUID             | (system-generated UUID) |
+
+| Attribute           | Value |
+|---------------------|-------|
+| SubCategoryVID      | 7101 |
+| ItemID              | 5003 |
+| Label               | Italy |
+| ParentItemID        | NULL |
+| RowGUID             | (system-generated UUID) |
+
 
 ### 4.4.2 Hierarchies
 
@@ -243,7 +401,94 @@ Mapping rules:
 
 ## 4.5 Concept ↔ Property / Metric
 
-### 4.5.1 DPM → SDMX
+### 4.5.2 DPM → SDMX
+### SDMX Concept → DPM Property Mapping
+
+This template maps **SDMX Concepts** (which can play the role of **dimension**, **attribute**, or **measure**) to **DPM Properties** (and shows how they are later used by Variables).
+
+---
+
+### Mapping details
+
+| Attribute        | Value / Guidance |
+|------------------|------------------|
+| **PropertyID**   | (system-generated, e.g., 7001) |
+| **Code**         | `{agencyID}.{ConceptSchemeId}.{ConceptId}` |
+| **Name**         | `Concept.Name` |
+| **Description**  | `Concept.Description` (multilingual as needed) |
+| **IsMetric**     | `TRUE` if the SDMX Concept is a **measure**; otherwise `FALSE` |
+| **DataType**     | Choose from DPM DataType set (e.g., `integer`, `decimal`, `string`, `date`, `boolean`, `enumeration`) |
+| **PeriodType**   | `stock` (instant) or `flow` (duration); *only for quantitative metrics where relevant* |
+| **IsComposite**  | `TRUE` if this Property represents a composite semantic (rare); otherwise `FALSE` |
+| **RowGUID**      | (system-generated UUID) |
+
+---
+
+### Example A — SDMX **Dimension** Concept → DPM Property (+ Key Variable)
+
+**SDMX**
+- Concept ID: `COUNTRY`
+- Role: **dimension**
+- Representation: CodeList of countries (e.g., ISO 3166)
+
+**DPM mapping**
+- **Property**
+  - `Code`: `EBA.CS_GEO.COUNTRY`
+  - `Name`: `Country`
+  - `Description`: `Reporting country`
+  - `IsMetric`: `FALSE`
+  - `DataType`: `enumeration`
+  - (Optionally) `IsComposite`: `FALSE`
+- **Category** (e.g., `Countries`), with **Items** like `IT`, `ES`, `FR`, …
+- **Key Variable** (used when table is open by country)
+  - References **Property** = `Country`
+  - If needed, restrict selectable values with a **SubCategory** (e.g., `EU_Members`)
+
+
+---
+
+### Example B — SDMX **Attribute** Concept → DPM Property (+ Attribute Variable)
+
+**SDMX**
+- Concept ID: `OBS_STATUS`
+- Role: **attribute** (e.g., A – provisional, F – forecast, E – estimated)
+- Representation: CodeList of status codes
+
+**DPM mapping**
+- **Property**
+  - `Code`: `EIOPA.CS_META.OBS_STATUS`
+  - `Name`: `Observation status`
+  - `Description`: `Quality/status flag of an observation`
+  - `IsMetric`: `FALSE`
+  - `DataType`: `enumeration`
+- **Category** (e.g., `ObservationStatus`), with **Items** like `A`, `E`, `F`, …
+- **Attribute Variable**
+  - References **Property** = `Observation status`
+  - Typically linked to **Fact Variables** that need the status annotation
+
+---
+
+### Example C — SDMX **Measure** Concept → DPM Property (+ Fact Variable)
+
+**SDMX**
+- Concept ID: `OBS_VALUE`
+- Role: **measure** (e.g., monetary amount)
+- Representation: numeric
+
+**DPM mapping**
+- **Property**
+  - `Code`: `EBA.CS_MEASURE.OBS_VALUE`
+  - `Name`: `Observed value`
+  - `Description`: `Primary measure/observation value`
+  - `IsMetric`: `TRUE`
+  - `DataType`: `decimal` (or `integer` as appropriate)
+  - `PeriodType`: `stock` (instant) **or** `flow` (duration), depending on the phenomenon
+- **Fact Variable**
+  - References **Property** = `Observed value`
+  - May carry **Context** (e.g., Unit of measure, Currency) through additional Properties/Variables
+
+
+### 4.5.2 DPM → SDMX
 
 - **Metric → Concept used as measure**:
   - For each DPM Metric:
@@ -259,36 +504,4 @@ Mapping rules:
       - non-enumerated (facet-based) otherwise,
     - use it as a dimension or attribute in DSDs.
 
-### 4.5.2 SDMX → DPM: decision rule
-
-When generating DPM glossary entries from SDMX Concepts, use the following rule:
-
-1. **Collect all uses of each Concept** across DSDs/Dataflows:
-   - track whether the concept is used as:
-     - Time dimension,
-     - other Dimension,
-     - Attribute,
-     - Measure.
-
-2. **If the Concept is used as a Measure** (or only as a measure dimension in multi-measure datasets):
-   - map it to a **Metric** (`property_is_metric = true`),
-   - attach the appropriate numeric data type.
-
-3. **Otherwise**, map it to a **Property** (`property_is_metric = false`):
-   - if the concept has an enumerated representation (codelist/extended codelist), link the Property to the corresponding Category/Subcategory;
-   - if the concept has a primitive representation (integer, decimal, date, string, etc.), configure the Property with that data type.
-
-4. **Concept Scheme handling**:
-   - do not attempt to map Concept Schemes themselves;
-   - use the Concept Scheme’s agency and ID to drive ownership and naming in the DPM glossary.
-
-### 4.5.3 Enumerated vs non-enumerated concepts
-
-- **Enumerated Concepts** (with codelist-based representations):
-  - Map their codelists/extended codelists to Categories/Subcategories (as above).
-  - Configure the Property/Metric to reference those Categories/Subcategories.
-
-- **Non-enumerated Concepts**:
-  - Map directly to Properties/Metrics with an appropriate non-enumerated data type (derived from SDMX facets).
-  - Do not create Categories unless there is a specific reason to treat the values as a category.
 
