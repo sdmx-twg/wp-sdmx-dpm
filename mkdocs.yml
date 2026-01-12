@@ -69,6 +69,10 @@ nav:
       - business-case/business-case-draft.md
   - Models Relationships:
       - models-relationships/index.md
+      - Basics:
+          - models-relationships/00_basics/index.md
+          - Base Comparison: models-relationships/00_basics/base_comparison.md
+          - Glossary and Abbreviations: models-relationships/00_basics/glossary_and_abbreviations.md
       - Glossary:
           - models-relationships/01_glossary/index.md
           - 1. Scope and Objectives: models-relationships/01_glossary/01_scope_and_objectives.md
