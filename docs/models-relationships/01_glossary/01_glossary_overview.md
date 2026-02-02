@@ -1,10 +1,10 @@
-# 2. Vocabulary overview
+# 2. Glossary overview
 
 This chapter introduces the “glossary” parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define and organise concepts, categories and value domains, i.e. the vocabulary that is later reused by structures (DSDs, tables, variables, etc.) but is itself independent from any particular data exchange syntax or physical implementation.
 
-## 2.1 SDMX vocabulary artefacts
+## 2.1 SDMX Glossary artefacts
 
-The SDMX glossary is built around maintained lists (“schemes”) and their items. Each scheme is owned by an agency and versioned. Below are the artefacts that matter for understanding how SDMX names and constrains glossary content. (Mapping artefacts, organisation schemes, and constraints are intentionally out of scope here.) The goal is to show how SDMX structures the vocabulary that later feeds structures like DSDs, without getting into data exchange syntax.
+The SDMX glossary is built around maintained lists (“schemes”) and their items. Each scheme is owned by an agency and versioned. Below are the artefacts that matter for understanding how SDMX names and constrains glossary content. (Mapping artefacts, organisation schemes, and constraints are intentionally out of scope here.) The goal is to show how SDMX structures the glossary that later feeds structures like DSDs, without getting into data exchange syntax.
 
 ### Item schemes and items
 
