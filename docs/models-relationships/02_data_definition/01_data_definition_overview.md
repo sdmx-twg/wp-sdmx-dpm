@@ -1,8 +1,8 @@
-# 2. Data Definition overview
+# 1. Data Definition overview
 
 This chapter introduces the "data definition" parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define data structures, components, variables and tables, i.e. how collected data points are organised, identified and constrained. These artefacts reuse the glossary (concepts, categories, codelists, properties) but add structural semantics: what constitutes a key, what is being measured, and how observations relate to each other.
 
-## 2.1 SDMX Data Definition artefacts
+## 1.1 SDMX Data Definition artefacts
 
 The SDMX data definition layer is built around **Data Structure Definitions (DSDs)** and their usage via **Dataflows**. A DSD specifies the components (dimensions, measures, attributes) that describe a statistical domain; a Dataflow applies a DSD to a particular data exchange context. Below are the artefacts that matter for understanding how SDMX structures data, without getting into exchange formats or REST APIs.
 
@@ -177,7 +177,7 @@ classDiagram
     Series "1" --> "*" AttributeValue : attachedAttribute
 ```
 
-## 2.2 DPM Data Definition artefacts
+## 1.2 DPM Data Definition artefacts
 
 The DPM data definition layer is built around **Tables** (rendering), **Variables** (data model), and how they connect to the **Glossary** (Properties, Categories). Tables define the visual/logical presentation of data collection forms; Variables define the underlying data points that can be collected. Together they specify what data is requested, how it is identified, and how it appears in reporting templates.
 

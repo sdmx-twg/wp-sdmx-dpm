@@ -1,8 +1,8 @@
-# 3. Extensibility patterns
+# 2. Extensibility patterns
 
 This chapter documents how SDMX and DPM support extensibility—adding new content, extending value domains, and evolving structures—while maintaining interoperability and compatibility.
 
-## 3.1 Value domain extension
+## 2.1 Value domain extension
 
 ### SDMX: Extended Codelists
 
@@ -56,7 +56,7 @@ DPM uses different mechanisms:
 
 **DPM → SDMX**: SubCategories map to restrictive Extended Codelists. SuperCategories map to additive Extended Codelists.
 
-## 3.2 Structural extension
+## 2.2 Structural extension
 
 ### SDMX: Adding components
 
@@ -86,7 +86,7 @@ Tables can gain new cells by creating a new TableVersion.
 | Rename component | Major version | New Variable (deprecate old via Deactivation) | Breaking |
 | Remove component | Major version | Deactivation | Breaking |
 
-## 3.3 Forward and backward compatibility
+## 2.3 Forward and backward compatibility
 
 ### Definitions
 
@@ -126,7 +126,7 @@ DPM's release-based model provides a different compatibility story:
 2. **DPM consumers** work with specific Releases; each Release is a consistent snapshot.
 3. **Transformation tools** must track which version/release is being converted to ensure consistency.
 
-## 3.4 Extension patterns for interoperability
+## 2.4 Extension patterns for interoperability
 
 ### Pattern 1: Parallel extension
 
@@ -172,7 +172,7 @@ To phase out content without breaking existing data:
 2. Item remains for historical reference.
 3. New SubCategories exclude the Item.
 
-## 3.5 Identifier alignment
+## 2.5 Identifier alignment
 
 ### The challenge
 
@@ -205,7 +205,7 @@ Convention: Lowercase prefix + domain name
 - XBRL: PascalCase with Dimension/Member suffix
 ```
 
-## 3.6 Change management recommendations
+## 2.6 Change management recommendations
 
 1. **Coordinate releases**: Align SDMX version publications with DPM Releases when structures are shared.
 

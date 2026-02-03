@@ -1,8 +1,8 @@
-# 2. Gaps overview
+# 1. Gaps overview
 
 This chapter provides a systematic analysis of semantic gaps, representation mismatches, and potential information loss when transforming between SDMX and DPM. Understanding these gaps is essential for designing robust bidirectional mappings and for documenting where manual intervention or conventions are required.
 
-## 2.1 Types of gaps
+## 1.1 Types of gaps
 
 Gaps between SDMX and DPM fall into three categories:
 
@@ -12,7 +12,7 @@ Gaps between SDMX and DPM fall into three categories:
 | **Representation gaps** | Concepts that exist in both models but are structured differently | Requires transformation logic; may lose precision |
 | **Implicit vs explicit gaps** | Information that is explicit in one model but implicit (or derived) in the other | Requires inference or defaults during transformation |
 
-## 2.2 Gap inventory by layer
+## 1.2 Gap inventory by layer
 
 ### Glossary layer gaps
 
@@ -47,11 +47,11 @@ Gaps between SDMX and DPM fall into three categories:
 | Release milestone | Versioning only | Release (with applicationDate) | DPM has explicit temporal publication; SDMX uses version validity |
 | Soft delete | Version validity (validFrom/validTo) | Deactivation artefact | Different mechanisms for lifecycle management |
 
-## 2.3 Critical semantic gaps
+## 1.3 Critical semantic gaps
 
 The following gaps have significant impact on bidirectional transformation and require careful handling.
 
-### 2.3.1 Compound Items (DPM → SDMX)
+### 1.3.1 Compound Items (DPM → SDMX)
 
 **Problem**: DPM CompoundItems encode multiple Property–Item pairs in a single Item. SDMX has no equivalent.
 
@@ -65,7 +65,7 @@ The following gaps have significant impact on bidirectional transformation and r
 2. **Structured code**: Encode the composition in the Code id/name; lose machine-readability.
 3. **Annotation**: Store the composition in Annotations; lose standard processing.
 
-### 2.3.2 Cross-codelist Hierarchies (SDMX → DPM)
+### 1.3.2 Cross-codelist Hierarchies (SDMX → DPM)
 
 **Problem**: SDMX Hierarchies can span multiple Codelists and support multiple parents. DPM SubCategories are limited to a single Category.
 
@@ -76,7 +76,7 @@ The following gaps have significant impact on bidirectional transformation and r
 2. **Multiple SubCategories**: Create separate SubCategories for each source Codelist.
 3. **Lossy conversion**: Accept that some hierarchical relationships cannot be represented.
 
-### 2.3.3 Attribute attachment levels (SDMX → DPM)
+### 1.3.3 Attribute attachment levels (SDMX → DPM)
 
 **Problem**: SDMX explicitly models 5 attachment levels (Dataflow, Dimension, Group, Observation, Measure). DPM AttributeVariables reference a subject Variable but do not specify level.
 
@@ -87,7 +87,7 @@ The following gaps have significant impact on bidirectional transformation and r
 2. **Flatten to observation**: Attach all attributes at observation level; duplicate values where needed.
 3. **Metadata**: Store the original attachment level in a description or extension field.
 
-### 2.3.4 Rendering layer (DPM → SDMX)
+### 1.3.4 Rendering layer (DPM → SDMX)
 
 **Problem**: DPM Tables, Headers, and Cells have no SDMX equivalent. SDMX intentionally excludes presentation.
 
@@ -96,11 +96,11 @@ The following gaps have significant impact on bidirectional transformation and r
 2. **Annotations**: Store rendering hints in SDMX Annotations; non-standard and limited.
 3. **Accept loss**: Acknowledge that rendering information is lost in SDMX representation.
 
-## 2.4 Representation precision gaps
+## 1.4 Representation precision gaps
 
 These gaps involve information that exists in both models but may lose precision during transformation.
 
-### 2.4.1 Data type mapping
+### 1.4.1 Data type mapping
 
 SDMX and DPM have overlapping but not identical data type systems.
 
@@ -118,19 +118,19 @@ SDMX and DPM have overlapping but not identical data type systems.
 | – | `Monetary` | DPM-specific; maps to Decimal with unit |
 | – | `Percentage` | DPM-specific; maps to Decimal with semantics |
 
-### 2.4.2 Facet constraints
+### 1.4.2 Facet constraints
 
 SDMX Facets provide fine-grained constraints (minLength, maxLength, pattern, minValue, maxValue, decimals, etc.). DPM has DataTypes but less granular facet controls.
 
 **Impact**: Constraints may be loosened or lost when converting SDMX → DPM.
 
-### 2.4.3 Multilingual text
+### 1.4.3 Multilingual text
 
 Both models support multilingual text (SDMX: `InternationalString` pattern; DPM: `InternationalString` type). However, the set of supported languages and fallback behaviour may differ between implementations.
 
-## 2.5 Implicit vs explicit gaps
+## 1.5 Implicit vs explicit gaps
 
-### 2.5.1 Default values and wildcards
+### 1.5.1 Default values and wildcards
 
 **SDMX**: Wildcards in constraints (e.g. `*` for "all values") and cascadeValues for hierarchies.
 
@@ -138,7 +138,7 @@ Both models support multilingual text (SDMX: `InternationalString` pattern; DPM:
 
 **Gap**: The semantics of "unspecified" or "all" differ; explicit mapping rules are needed.
 
-### 2.5.2 Observation vs series orientation
+### 1.5.2 Observation vs series orientation
 
 **SDMX**: Data can be series-oriented (SeriesKey + Observations) or flat (all dimensions at observation level).
 
@@ -146,7 +146,7 @@ Both models support multilingual text (SDMX: `InternationalString` pattern; DPM:
 
 **Gap**: Converting between orientations may require restructuring data.
 
-### 2.5.3 Measure cardinality
+### 1.5.3 Measure cardinality
 
 **SDMX**: DSDs can have single or multiple Measures with explicit minOccurs/maxOccurs.
 

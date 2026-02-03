@@ -1,8 +1,8 @@
-# 3. High-level mapping summary
+# 2. High-level mapping summary
 
-This chapter gives a compact view of how the SDMX and DPM organisational and supporting artefacts relate to each other. It complements the detailed descriptions in sections 2.1 and 2.2.
+This chapter gives a compact view of how the SDMX and DPM organisational and supporting artefacts relate to each other. It complements the detailed descriptions in sections 1.1 and 1.2.
 
-## 3.1 Tabular mapping
+## 2.1 Tabular mapping
 
 The table below summarises the main correspondences. It is intentionally high level; edge cases and implementation details are covered in the detailed mapping rules.
 
@@ -23,7 +23,7 @@ The table below summarises the main correspondences. It is intentionally high le
 | – | Release | DPM publication milestone with temporal semantics; SDMX uses versioning but lacks explicit releases. |
 | – | Deactivation | DPM soft-delete mechanism; SDMX uses version validity periods (`validFrom`, `validTo`). |
 
-## 3.2 Graphical mapping overview
+## 2.2 Graphical mapping overview
 
 The diagram below shows the main organisational and supporting artefacts on each side and their high-level correspondences.
 
@@ -58,9 +58,9 @@ flowchart LR
 
 The lines indicate "primary" correspondences; they do not exclude alternative modelling choices.
 
-## 3.3 Artefacts without a direct counterpart
+## 2.3 Artefacts without a direct counterpart
 
-### 3.3.1 SDMX-only
+### 2.3.1 SDMX-only
 
 - **AgencyScheme**
   SDMX groups Agencies into maintainable schemes. DPM Organisations are standalone entities without a scheme container.
@@ -77,7 +77,7 @@ The lines indicate "primary" correspondences; they do not exclude alternative mo
 - **Annotation (generic)**
   SDMX Annotations provide a flexible key-value extension mechanism on any artefact. DPM uses structured description fields and InternationalString but lacks a generic annotation pattern.
 
-### 3.3.2 DPM-only
+### 2.3.2 DPM-only
 
 - **TableGroup / TableAssociation**
   DPM provides explicit artefacts for grouping Tables within a Module, supporting hierarchical navigation and multiple groupings per Table. SDMX does not have table-level grouping (Dataflows are organised via Categories or ReportingTaxonomies, not grouped directly).

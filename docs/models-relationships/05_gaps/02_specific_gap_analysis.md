@@ -1,10 +1,10 @@
-# 3. Specific gap analysis
+# 2. Specific gap analysis
 
 This chapter provides detailed analysis of specific gap areas that require careful attention when transforming between SDMX and DPM.
 
-## 3.1 Defaults and implicit dimensions
+## 2.1 Defaults and implicit dimensions
 
-### 3.1.1 The problem
+### 2.1.1 The problem
 
 Both SDMX and DPM support the notion of "default" or "implicit" values, but with different mechanisms and semantics.
 
@@ -19,7 +19,7 @@ Both SDMX and DPM support the notion of "default" or "implicit" values, but with
 - **Closed cells**: In closed tables, cell intersections imply fixed Property–Item pairs.
 - **FilingIndicator defaults**: FilingIndicatorVariables may have default "not reported" semantics.
 
-### 3.1.2 Gap analysis
+### 2.1.2 Gap analysis
 
 | Scenario | SDMX | DPM | Gap |
 |----------|------|-----|-----|
@@ -28,16 +28,16 @@ Both SDMX and DPM support the notion of "default" or "implicit" values, but with
 | Hierarchical inclusion | cascadeValues on MemberValue | SubCategory membership | Different mechanisms; may not align exactly |
 | Fixed constant value | FixedValueMap in StructureMap | Cell with category type | StructureMap context vs rendering context |
 
-### 3.1.3 Recommendations
+### 2.1.3 Recommendations
 
 1. **Document anchor dimensions**: When converting SDMX → DPM, explicitly document which dimensions were anchored and their fixed values.
 2. **Use defaultItem sparingly**: DPM defaultItem should only be used when the default is semantically meaningful, not just for convenience.
 3. **Expand wildcards**: When converting SDMX constraints with wildcards to DPM, expand to explicit SubCategory membership where feasible.
 4. **Preserve in metadata**: Store original SDMX constraint semantics in DPM descriptions for round-trip fidelity.
 
-## 3.2 Multi-measure vs single OBS_VALUE
+## 2.2 Multi-measure vs single OBS_VALUE
 
-### 3.2.1 The problem
+### 2.2.1 The problem
 
 SDMX supports two measure patterns:
 1. **Single generic measure**: One `OBS_VALUE` Measure with a `MEASURE` dimension that identifies what is being measured.
@@ -45,7 +45,7 @@ SDMX supports two measure patterns:
 
 DPM uses **FactVariables**, where each FactVariable represents one measurable quantity. There is no "measure dimension" pattern; each measure is a separate Variable.
 
-### 3.2.2 Gap analysis
+### 2.2.2 Gap analysis
 
 | SDMX pattern | DPM mapping | Issues |
 |--------------|-------------|--------|
@@ -54,7 +54,7 @@ DPM uses **FactVariables**, where each FactVariable represents one measurable qu
 | Measure cardinality (minOccurs/maxOccurs) | No equivalent | DPM does not model "optional" vs "mandatory" measures |
 | MeasureRelationship for attributes | AttributeVariable.subject | Must create separate AttributeVariables per FactVariable |
 
-### 3.2.3 Example
+### 2.2.3 Example
 
 **SDMX DSD with MEASURE dimension**:
 ```
@@ -72,16 +72,16 @@ FactVariable: BALANCE (dimensions: REF_AREA, TIME_PERIOD)
 
 The MEASURE dimension is "absorbed" into the Variable identity. The relationship between the three measures (they form a coherent group) is lost unless captured in Module organisation or naming conventions.
 
-### 3.2.4 Recommendations
+### 2.2.4 Recommendations
 
 1. **Prefer explicit measures**: When designing SDMX DSDs intended for DPM conversion, use explicit Measures rather than a MEASURE dimension.
 2. **Document measure groups**: When converting MEASURE-dimension patterns, document the original grouping in Module structure or TableGroups.
 3. **Naming convention**: Use consistent prefixes or suffixes to indicate related FactVariables (e.g. `TRADE_IMPORTS`, `TRADE_EXPORTS`, `TRADE_BALANCE`).
 4. **Round-trip metadata**: Store original SDMX measure pattern in descriptions for bidirectional conversion.
 
-## 3.3 Stock vs flow and temporal semantics
+## 2.3 Stock vs flow and temporal semantics
 
-### 3.3.1 The problem
+### 2.3.1 The problem
 
 Statistical data has fundamental temporal characteristics:
 - **Stock**: Value at a point in time (e.g. balance sheet position on 31 Dec).
@@ -90,26 +90,26 @@ Statistical data has fundamental temporal characteristics:
 
 SDMX and DPM handle these differently, and XBRL (often used for DPM serialisation) has its own temporal model.
 
-### 3.3.2 SDMX temporal model
+### 2.3.2 SDMX temporal model
 
 - **TimeDimension**: Dedicated component with time-specific FacetValueTypes.
 - **FacetValueTypes**: `observationalTimePeriod`, `reportingTimePeriod`, `basicTimePeriod`, `gregorianTimePeriod`, etc.
 - **FREQ dimension**: Commonly used to indicate frequency (A, Q, M, D, etc.).
 - **Stock/flow**: Not explicitly modelled; typically indicated by Concept semantics or Annotations.
 
-### 3.3.3 DPM temporal model
+### 2.3.3 DPM temporal model
 
 - **Time Property**: A regular Property referencing a time-related Category.
 - **Period types**: Implementation-defined; may distinguish instant vs duration.
 - **Stock/flow**: May be indicated by Property semantics or FactVariable dataType.
 
-### 3.3.4 XBRL temporal model
+### 2.3.4 XBRL temporal model
 
 - **Instant**: Point in time (e.g. `2024-12-31`).
 - **Duration**: Period with start and end (e.g. `2024-01-01` to `2024-12-31`).
 - **periodType**: Concepts are declared as `instant` or `duration` in the taxonomy.
 
-### 3.3.5 Gap analysis
+### 2.3.5 Gap analysis
 
 | Aspect | SDMX | DPM | XBRL | Gaps |
 |--------|------|-----|------|------|
@@ -119,7 +119,7 @@ SDMX and DPM handle these differently, and XBRL (often used for DPM serialisatio
 | Point-in-time | observationalTimePeriod values | Date values | instant element | Similar but format differs |
 | Period | reportingTimePeriod values | Date range or convention | duration element | Representation differs |
 
-### 3.3.6 Alignment challenges
+### 2.3.6 Alignment challenges
 
 1. **SDMX → DPM**: TimeDimension FacetValueTypes must map to appropriate DPM time Properties. The rich SDMX time semantics (reporting vs observational) may be simplified.
 
@@ -127,14 +127,14 @@ SDMX and DPM handle these differently, and XBRL (often used for DPM serialisatio
 
 3. **Frequency handling**: SDMX FREQ is a dimension; DPM may model frequency as a Property or derive it from the time period format; XBRL does not have a frequency concept.
 
-### 3.3.7 Recommendations
+### 2.3.7 Recommendations
 
 1. **Explicit stock/flow marker**: Add a Property or annotation indicating stock vs flow when designing DPM structures intended for XBRL serialisation.
 2. **Frequency alignment**: Establish conventions for how SDMX FREQ values map to DPM time Categories and XBRL period formats.
 3. **Time period normalisation**: Define canonical time period formats that work across all three models.
 4. **Documentation**: Clearly document temporal semantics in Property/Concept descriptions to enable correct inference.
 
-## 3.4 Summary of mitigation strategies
+## 2.4 Summary of mitigation strategies
 
 | Gap area | Primary mitigation | Secondary mitigation |
 |----------|-------------------|---------------------|

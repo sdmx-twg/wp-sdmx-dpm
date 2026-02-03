@@ -1,8 +1,8 @@
-# 3. High-level mapping summary
+# 2. High-level mapping summary
 
 This chapter gives a compact view of how the SDMX and DPM data definition artefacts relate to each other. It complements the detailed descriptions in sections 2.1 and 2.2 and the rule-based mappings in the next chapter.
 
-## 3.1 Tabular mapping
+## 2.1 Tabular mapping
 
 The table below summarises the main correspondences at data definition level. It is intentionally high level; edge cases and technical details are covered later.
 
@@ -24,7 +24,7 @@ The table below summarises the main correspondences at data definition level. It
 | – | FilingIndicatorVariable | DPM-specific artefact indicating whether a table should be reported; no direct SDMX equivalent. |
 | – | Framework / Release | DPM packaging and temporal publication; SDMX uses ProvisionAgreements and versioning but lacks explicit release milestones. |
 
-## 3.2 Graphical mapping overview
+## 2.2 Graphical mapping overview
 
 The diagram below shows the main data definition artefacts on each side and their high-level correspondences.
 
@@ -64,11 +64,11 @@ flowchart LR
 
 The lines indicate "primary" correspondences used throughout this document; they do not exclude alternative modelling choices in specific implementations.
 
-## 3.3 Artefacts without a direct counterpart
+## 2.3 Artefacts without a direct counterpart
 
 Not all data definition artefacts have a clean one-to-one mapping. This section highlights the main "asymmetric" cases so that readers are aware of where modelling choices or simplifications are needed.
 
-### 3.3.1 SDMX-only (at data definition level)
+### 2.3.1 SDMX-only (at data definition level)
 
 - **TimeDimension**
   SDMX has a dedicated component type for time with specific FacetValueTypes (`observationalTimePeriod`, `reportingTimePeriod`, etc.). DPM uses a regular Dimension referencing a time-related Property; the time semantics are implicit in the Property definition rather than enforced by a special component type.
@@ -82,7 +82,7 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 - **DataConstraint with DataKeySet**
   SDMX DataKeySet enumerates explicit key combinations (specific series). DPM constraints operate at the value-domain level (SubCategories) rather than at the key-combination level; enumerating specific variable instances requires different mechanisms.
 
-### 3.3.2 DPM-only (at data definition level)
+### 2.3.2 DPM-only (at data definition level)
 
 - **Table / TableVersion / Header / Cell**
   DPM has a complete rendering layer defining how data collection forms are visually structured. SDMX intentionally excludes presentation concerns from the information model; table layouts are left to implementations or external specifications.

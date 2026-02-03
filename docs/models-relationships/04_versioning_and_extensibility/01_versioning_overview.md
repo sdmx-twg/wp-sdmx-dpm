@@ -1,8 +1,8 @@
-# 2. Versioning overview
+# 1. Versioning overview
 
 This chapter explains how versioning works in SDMX and DPM. While SDMX has a straightforward, uniform versioning model, DPM's approach is more nuanced: true versioning applies only to certain artefacts (Modules, Tables, SubCategories), while glossary items use a release-based change log that must be interpreted in context.
 
-## 2.1 SDMX Versioning model
+## 1.1 SDMX Versioning model
 
 SDMX has a clean, hierarchical versioning model built into the artefact hierarchy.
 
@@ -65,7 +65,7 @@ When one artefact references another (e.g. a DSD referencing a Codelist), the re
 
 This allows structures to either lock dependencies or follow updates automatically.
 
-## 2.2 DPM Versioning model
+## 1.2 DPM Versioning model
 
 DPM's versioning model is more complex because it distinguishes between:
 1. **Structural versioning**: Explicit versions on Modules, Tables, Headers, and Operations.
@@ -215,7 +215,7 @@ When mapping between SDMX and DPM:
 
 3. **Module context is essential**: When converting DPM to SDMX, the ModuleVersion determines which glossary content to include. Without a Module context, you cannot determine which Items are "in scope".
 
-## 2.3 Releases and temporal alignment
+## 1.3 Releases and temporal alignment
 
 ### SDMX: Version validity
 

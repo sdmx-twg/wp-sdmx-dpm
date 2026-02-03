@@ -1,8 +1,8 @@
-# 2. Other Artefacts overview
+# 1. Other Artefacts overview
 
 This chapter introduces the "other artefacts" of the two metamodels: SDMX and DPM. It covers organisational structures, classification and grouping mechanisms, provisioning, rendering, and lifecycle management. These artefacts support the glossary and data definition layers by providing context, ownership, navigation, and temporal management.
 
-## 2.1 SDMX Organisational and Supporting artefacts
+## 1.1 SDMX Organisational and Supporting artefacts
 
 SDMX provides a rich set of artefacts for organising structural metadata, defining ownership, classifying content, and managing data provisioning. These artefacts sit alongside the glossary (Codelists, Concepts) and data definition (DSDs, Dataflows) layers.
 
@@ -170,7 +170,7 @@ classDiagram
     AnnotableArtefact "1" --> "*" Annotation
 ```
 
-## 2.2 DPM Organisational and Supporting artefacts
+## 1.2 DPM Organisational and Supporting artefacts
 
 DPM provides artefacts for organising reporting requirements, managing ownership, grouping tables, controlling lifecycle, and defining visual presentation. These complement the glossary (Categories, Properties) and data definition (Variables, Tables) layers.
 
