@@ -1,12 +1,14 @@
-# Other Artifacts
+# Other Artefacts
 
-Relate higher-level organisational and rendering artifacts across SDMX and DPM.
+This section documents the mapping of organisational, rendering, and supporting artefacts between SDMX 3.* and DPM Refit (2.0).
 
-## Scope
-- Map SDMX Reporting Taxonomies to DPM Report Modules (groupings of flows/tables).
-- Note DPM rendering-specific artifacts (table headers, cells, rows, columns) that lack direct SDMX equivalents.
-- Capture supporting constructs (e.g., organisational groupings, presentation artefacts) needed for consistent navigation between models.
+It aims to:
+- Map SDMX organisational structures (Agencies, Providers, CategorySchemes) to DPM equivalents (Organisations, Frameworks).
+- Document DPM rendering artefacts (Headers, Cells) that lack direct SDMX counterparts.
+- Explain lifecycle and grouping mechanisms in both models.
 
-## Open items
-- Decide how much of the rendering layer to surface in the public documentation vs keep as implementation detail.
-- Identify examples that show modular grouping across both standards.
+## Chapters
+
+- [1. Other Artefacts overview](01_other_artifacts_overview.md)
+- [2. High-level mapping summary](02_high_level_mapping_summary.md)
+- [3. Detailed mapping rules](03_detailed_mapping_rules.md)

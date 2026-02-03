@@ -1,13 +1,14 @@
 # Data Definition
 
-Describe how SDMX dataflows and structures correspond to DPM report tables and variables.
+This section documents the data definition mapping between SDMX 3.* and DPM Refit (2.0). It covers how SDMX dataflows and structures correspond to DPM report tables and variables.
 
-## Scope
-- Convention: one SDMX Dataflow plus one DSD corresponds to one DPM Report Table.
-- Map SDMX components (Dimension, Measure, Attribute) to DPM Key Variables, Fact Variables, and Attribute Variables.
-- Explain how DPM variables correspond to SDMX time series identifiers (Cartesian product of allowed values).
-- Document common table patterns (SDMX-like table, closed table, open “set axis” table) and their interoperability implications.
+It aims to:
+- Explain how SDMX DSDs, Dataflows, and components correspond to DPM Tables and Variables.
+- Provide practical rules and conventions to map between the two models.
+- Document common table patterns and their interoperability implications.
 
-## Open items
-- Provide worked examples for each table pattern.
-- Clarify how constraints/validation artifacts align between SDMX and DPM for these structures.
+## Chapters
+
+- [1. Data Definition overview](01_data_definition_overview.md)
+- [2. High-level mapping summary](02_high_level_mapping_summary.md)
+- [3. Detailed mapping rules](03_detailed_mapping_rules.md)

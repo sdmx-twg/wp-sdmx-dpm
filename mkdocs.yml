@@ -29,6 +29,7 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.indexes
     - search.highlight
     - search.share
     - content.code.copy
@@ -75,16 +76,24 @@ nav:
           - Glossary and Abbreviations: models-relationships/00_basics/glossary_and_abbreviations.md
       - Glossary:
           - models-relationships/01_glossary/index.md
-          - 1. Scope and Objectives: models-relationships/01_glossary/01_scope_and_objectives.md
-          - 2. Vocabulary Overview: models-relationships/01_glossary/02_vocabulary_overview.md
-          - 3. High-Level Mapping Summary: models-relationships/01_glossary/03_high_level_mapping_summary.md
-          - 4. Detailed Mapping Rules: models-relationships/01_glossary/04_detailed_mapping_rules.md
-          - 5. Generating DPM Glossary from SDMX: models-relationships/01_glossary/05_generating_dpm_glossary_from_sdmx.md
-          - 6. Naming and Identifier Conventions: models-relationships/01_glossary/06_naming_and_identifier_conventions.md
-          - 7. Open Issues and Next Steps: models-relationships/01_glossary/07_open_issues_and_next_steps.md
-      - Data Definition: models-relationships/02_data_definition/index.md
-      - Other Artifacts: models-relationships/03_other_artifacts/index.md
-      - Versioning and Extensibility: models-relationships/04_versioning_and_extensibility/index.md
-      - Gaps: models-relationships/05_gaps/index.md
+          - 1. Glossary Overview: models-relationships/01_glossary/01_glossary_overview.md
+          - 2. High-Level Mapping Summary: models-relationships/01_glossary/02_high_level_mapping_summary.md
+          - 3. Detailed Mapping Rules: models-relationships/01_glossary/03_detailed_mapping_rules.md
+      - Data Definition:
+          - models-relationships/02_data_definition/index.md
+          - 1. Data Definition Overview: models-relationships/02_data_definition/01_data_definition_overview.md
+          - 2. High-Level Mapping Summary: models-relationships/02_data_definition/02_high_level_mapping_summary.md
+      - Other Artefacts:
+          - models-relationships/03_other_artifacts/index.md
+          - 1. Other Artefacts Overview: models-relationships/03_other_artifacts/01_other_artifacts_overview.md
+          - 2. High-Level Mapping Summary: models-relationships/03_other_artifacts/02_high_level_mapping_summary.md
+      - Versioning and Extensibility:
+          - models-relationships/04_versioning_and_extensibility/index.md
+          - 1. Versioning Overview: models-relationships/04_versioning_and_extensibility/01_versioning_overview.md
+          - 2. Extensibility Patterns: models-relationships/04_versioning_and_extensibility/02_extensibility_patterns.md
+      - Gaps:
+          - models-relationships/05_gaps/index.md
+          - 1. Gaps Overview: models-relationships/05_gaps/01_gaps_overview.md
+          - 2. Specific Gap Analysis: models-relationships/05_gaps/02_specific_gap_analysis.md
   - Transformation Guidelines:
       - transformation-guidelines/index.md
