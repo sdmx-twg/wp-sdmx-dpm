@@ -1,8 +1,5 @@
 # Model Relationships
-
-Entry point for the SDMX 3.0 ↔ DPM Refit (2.0) relationships. Source of truth for agreements: `../twg/workpackages/sdmx_dpm/docs/meetings/` (latest minutes 1 Dec 2025).
-
-## How to navigate
+- [Basics](00_basics/index.md)
 - [Glossary](01_glossary/index.md): Concepts/Codelists ↔ Properties/Categories, naming conventions.
 - [Data Definition](02_data_definition/index.md): Dataflows/DSDs ↔ Report Tables and variables; common table patterns.
 - [Other Artifacts](03_other_artifacts/index.md): Reporting taxonomies ↔ Report Modules; rendering artefacts and related constructs.

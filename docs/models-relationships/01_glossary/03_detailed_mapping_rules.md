@@ -135,7 +135,7 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 | RefDataSource | NULL |
 | RowGUID | (system-generated UUID) |
 
-## Example Mapping details
+#### Example Mapping details
 
 | Attribute | Value |
 |---|---|
@@ -150,7 +150,7 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 | RefDataSource | NULL |
 | RowGUID | (system-generated UUID) |
 
-### 3.2.2 Extended Codelists and Super Categories
+### 3.2.3 Extended Codelists and Super Categories
 
 - **Extended Codelist (subset-only)**:
   - If an Extended Codelist only restricts a base codelist to a subset of its codes (no new codes):
@@ -171,7 +171,7 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
       - either extend the underlying Category with new Category Items (documenting that they originate from an Extended Codelist only), or
       - treat them as part of a separate Category/CategoryItem set and document the relationship (e.g. in the versioning/extensibility section).
 
-### 3.2.3 Geospatial Codelists
+### 3.2.4 Geospatial Codelists
 
 - **Geospatial Codelist → Category (enumerated)**:
   - Create a Category and Category Items in the same way as for a normal codelist.
