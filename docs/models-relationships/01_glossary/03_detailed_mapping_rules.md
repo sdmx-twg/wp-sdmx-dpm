@@ -1,6 +1,7 @@
 # 3. Detailed mapping rules
 
-> [!NOTE]
+> **NOTE:**
+
 > - Add coding/naming issues here for each mapping
 > - Explain the constraints under which a mapping is simple (e.g., an organisation that uses only one Concept Scheme, vs many Concept Schemes), and proposed conventions if simple mapping is not possible.
 > - Shall we add here something about versioning and extensibility? Or as a separate chapter?
@@ -39,12 +40,7 @@ The equivalent artefact in the DPM is the Category.
 | 140        | BT   | Boolean total | Dimensions having only two values... | \-1          | \-1      | 0                 |               | {3DEB1863-B1F0-4741-95A0-44ED72734CDD} | 1              |
 
 
-
-
 ### 3.1.1 Mapping cardinality
-
-- From SDMX to DPM: One Codelist is always mapped to one Category.
-- From DPM to SDMX: One Category may be mapped to one CodeList or no CodeList. Concretely, non-enumerated categories are not mapped to any CodeList.
 
 ```mermaid
 classDiagram
@@ -52,14 +48,15 @@ classDiagram
     SDMX_CODELIST "0..1" -- "1" DPM_CATEGORY
 ```
 
-DPM Categories that are not enumerated should not be mapped, and they shall not exist in SDMX. When mapping the properties, this shall be reflected in the mapping rules.
+
+- From SDMX to DPM: One Codelist is always mapped to one Category.
+- From DPM to SDMX: One Category may be mapped to one CodeList or no CodeList. Concretely, non-enumerated categories are not mapped to any CodeList.This shall be considered when mapping the properties that are associated to non-enumerated Categories.
 
 
 ### 3.1.2 Attributes equivalence
 
-
 #### 3.1.2.1 SDMX Codelist attributes
-- maintainable artefact attributes
+- maintainable artefact attributes (see [Identification mapping rules](../00_basics/02_detailed_mapping_rules.md#22-identification-dpm-ids-vs-sdmx-urns))
     - `id`
     - `agencyID`
     - `version`
@@ -77,20 +74,16 @@ DPM Categories that are not enumerated should not be mapped, and they shall not 
 
 #### 3.1.2.3 Mapping details
 
-| Attribute | Value |
-|---|---|
-| CategoryID | (system-generated, e.g., 1001) |
-| Code | {agencyID}.{ConceptSchemeId}.{CodelistId}|
-| Name | Codelist.Name |
-| Description | Codelist.Description|
-| IsEnumerated | TRUE |
-| IsSuperCategory | FALSE |
-| IsActive | TRUE |
-| IsExternalRefData | FALSE |
-| RefDataSource | NULL |
-| RowGUID | (system-generated UUID) |
+| SDMX                      | DPM                       |
+|---------------------------|---------------------------|
+| id                        | Code                      |
+|     -not applicable-      | IsEnumerated = TRUE       |
+|     -not applicable-      | IsActive = TRUE           |
+| isExternalReference       | IsExternalRefData         |
+|     -not applicable-      | RefDataSource = NULL      |
 
-#### 3.1.2.4 Example Mapping details
+
+#### 3.1.3 Example Mapping SDMX ==> DPM
 
 | Attribute | Value |
 |---|---|
@@ -105,7 +98,9 @@ DPM Categories that are not enumerated should not be mapped, and they shall not 
 | RefDataSource | NULL |
 | RowGUID | (system-generated UUID) |
 
-### 3.2.3 Extended Codelists and Super Categories
+#### 3.1.4 Example Mapping DPM ==> SDMX
+
+### 3.2 Extended Codelists and Super Categories
 
 - **Extended Codelist (subset-only)**:
   - If an Extended Codelist only restricts a base codelist to a subset of its codes (no new codes):
