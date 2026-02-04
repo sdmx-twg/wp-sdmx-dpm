@@ -32,12 +32,12 @@ The equivalent artefact in the DPM is the Category.
 
 **Example Category**
 
-| CategoryID | Code | Name          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                | CreatedRelease |
-| ---------- | ---- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ | -------- | ----------------- | ------------- | -------------------------------------- | -------------- |
-| 110        | BA   | Base items    | Defines the basic conceptual meaning... | \-1          | \-1      | 0                 |               | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1              |
-| 120        | MC   | Main category | Specifies the natu... | \-1          | \-1      | 0                 |               | {6006CB2B-1EA7-494D-A09D-C33C30EB1856} | 1              |
-| 130        | AP   | Approach      | Approach used for the calculation of capital requirements... | \-1          | \-1      | 0                 |               | {D2F44CAE-72B1-4E06-BECA-81F2187324E0} | 1              |
-| 140        | BT   | Boolean total | Dimensions having only two values... | \-1          | \-1      | 0                 |               | {3DEB1863-B1F0-4741-95A0-44ED72734CDD} | 1              |
+| CategoryID | Code | Name | Description | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID | CreatedRelease |
+| ---------- | ---- | ---- | ----------- | ------------ | -------- | ----------------- | ------------- | ------- | -------------- |
+| 110        | BA   | Base items    | Defines the basic conceptual meaning... | -1| -1  | 0    |      | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1     |
+| 120        | MC   | Main category | Specifies the natu... | -1  | -1   | 0    |     | {6006CB2B-1EA7-494D-A09D-C33C30EB1856} | 1      |
+| 130        | AP   | Approach      | Approach used for the calculation of capital requirements... | -1| -1| 0  |  | {D2F44CAE-72B1-4E06-BECA-81F2187324E0} | 1  |
+| 140        | BT   | Boolean total | Dimensions having only two values... | -1  | -1 | 0  |   | {3DEB1863-B1F0-4741-95A0-44ED72734CDD} | 1              |
 
 
 ### 3.1.1 Mapping cardinality
@@ -83,24 +83,46 @@ classDiagram
 |     -not applicable-      | RefDataSource = NULL      |
 
 
-#### 3.1.3 Example Mapping SDMX ==> DPM
+### 3.1.3 Example Mapping SDMX ==> DPM
 
-| Attribute | Value |
-|---|---|
-| CategoryID | (system-generated, e.g., 1001) |
-| Code | ECB.CS_REPORTING.CL_COUNTRY |
-| Name | Country |
-| Description | List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY) |
-| IsEnumerated | TRUE |
-| IsSuperCategory | FALSE |
-| IsActive | TRUE |
-| IsExternalRefData | FALSE |
-| RefDataSource | NULL |
-| RowGUID | (system-generated UUID) |
+```xml
+<Codelist id="CL_COUNTRY" agencyID="ECB" version="1.0">
+  <Name xml:lang="en">Country</Name>
+  <Description xml:lang="en">List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY)</Description>
+  <Code id="ES">
+    <Name xml:lang="en">Spain</Name>
+  </Code>
+  <Code id="FR">
+    <Name xml:lang="en">France</Name>
+  </Code>
+</Codelist>
+```
 
-#### 3.1.4 Example Mapping DPM ==> SDMX
+| CategoryID | Code | Name | Description | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID | CreatedRelease |
+| ---------- | ---- | ---- | ----------- | ------------ | -------- | ----------------- | ------------- | ------- | -------------- |
+| 111000001 | CL_COUNTRY | Country | List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY) | -1 | -1 | 0 | | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1 |
 
-### 3.2 Extended Codelists and Super Categories
+
+
+
+### 3.1.4 Example Mapping DPM ==> SDMX
+
+| CategoryID | Code | Name | Description | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID | CreatedRelease |
+| ---------- | ---- | ---- | ----------- | ------------ | -------- | ----------------- | ------------- | ------- | -------------- |
+| 110        | BA   | Base items    | Defines the basic conceptual meaning... | -1   | -1   | 0    |   | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1  |
+
+
+
+```xml
+<Codelist id="BA" agencyID="ECB" version="1.0">
+  <Name xml:lang="en">Base items  </Name>
+  <Description xml:lang="en">Defines the basic conceptual meaning...</Description>
+</Codelist>
+```
+
+
+
+## 3.2 Extended Codelists and Super Categories
 
 - **Extended Codelist (subset-only)**:
   - If an Extended Codelist only restricts a base codelist to a subset of its codes (no new codes):
