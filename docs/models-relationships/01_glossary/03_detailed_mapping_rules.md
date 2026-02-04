@@ -8,105 +8,12 @@
 
 This chapter provides the detailed rules for each of the high-level correspondences described in chapter 3.
 
-## 3.1 ConceptSchema ↔ DPM Glossary
-In the Data Point Model (DPM), there is no construct equivalent to the SDMX `ConceptScheme`.  
-In SDMX, each `ConceptScheme` has its own identification space (defined by `agencyId`, `id`, and `version`).  
-If concepts from multiple `ConceptSchemes` are combined into a single DPM glossary, identifier collisions may occur (for example, two concepts with the same name, such as `COUNTRY`, but with different meanings). 
+## 3.1 Codelist ↔ Category
+An SDMX CodeList is a structural component of the SDMX standard that defines a **set of coded values** that can be used as a representation for concepts or components.
 
-### 3.1.1 Basic mapping
+A CodeList is a collection of Codes. Therefore, the SDMX representation of the CodeLists includes always its Codes.
 
-To resolve this issue, a namespace can be created for each `ConceptScheme` by adopting an approach based on **composite keys** in the DPM glossary:
-
----
-
-### Glossary with Composite Keys
-In the DPM glossary, define each concept using a composite key in the following format:
-
-```
-{agencyID}.{ConceptSchemeId}.{ConceptId}
-```
-
-*Example:*
-```
-ECB.CL_COUNTRY.COUNTRY
-```
-
-This ensures uniqueness without renaming the concepts.
-
----
-
-### *Example ConceptScheme*
-```xml
-<ConceptScheme id="CL_CONCEPTS" agencyID="ECB" version="1.0">
-    <Name xml:lang="en">Statistical Concepts</Name>
-    <Description xml:lang="en">Concepts used for macroeconomic indicators</Description>
-    <Concept id="FREQ">
-        <Name xml:lang="en">Frequency</Name>
-        <Description xml:lang="en">Reporting frequency</Description>
-        <Representation>
-            <CodelistRef id="CL_FREQ" agencyID="ECB" version="1.0"/>
-        </Representation>
-    </Concept>
-    <Concept id="REF_AREA">
-        <Name xml:lang="en">Reference Area</Name>
-        <Description xml:lang="en">Geographical coverage</Description>
-        <Representation>
-            <CodelistRef id="CL_AREA" agencyID="ECB" version="1.0"/>
-        </Representation>
-    </Concept>
-    <Codelist id="CL_FREQ" agencyID="ECB" version="1.0">
-        <Name xml:lang="en">Frequency</Name>
-        <Description xml:lang="en">Reporting frequency codes</Description>
-        <Code id="A">
-            <Name xml:lang="en">Annual</Name>
-        </Code>
-        <Code id="Q">
-            <Name xml:lang="en">Quarterly</Name>
-        </Code>
-        <Code id="M">
-            <Name xml:lang="en">Monthly</Name>
-        </Code>
-    </Codelist>
-</ConceptScheme>
-```
-
----
-
-### **Example: SDMX ConcepSchema → DPM Glossary**
-
-### **Concepts**
-| SDMX Concept | Composite Key in DPM Glossary | Description            |
-|--------------|--------------------------------|------------------------|
-| FREQ         | ECB.CL_CONCEPTS.FREQ          | Reporting frequency    |
-| REF_AREA     | ECB.CL_CONCEPTS.REF_AREA      | Geographical coverage  |
-
-### **Codelist for FREQ**
-| SDMX Code | Composite Key in DPM Glossary | Description |
-|-----------|--------------------------------|-------------|
-| A         | ECB.CL_FREQ.A                 | Annual      |
-| Q         | ECB.CL_FREQ.Q                 | Quarterly   |
-| M         | ECB.CL_FREQ.M                 | Monthly     |
-
-
-## 3.2 Codelist ↔ Category
-An SDMX CodeList is a structural component of the SDMX standard that defines a **set of coded values** for a dimension, attribute, or concept. SDMX CodeList can be mapped to an Enumerated Category in DPM.
-
-### 3.2.1 Basic mapping
-- For each **SDMX Codelist**:
-  - Create one **Enumerated DPM Category**.
-
-#### SDMX Codelist Key Features
-- **Identification**: `id`, `agencyID`, `version`
-- **Content**:
-  - One or more **Code** elements (e.g., ES, FR, DE)
-  - Each Code includes:
-    - `id` (unique identifier)
-    - `Name` (human-readable label)
-    - Optional: description, order, references
-- **Multilingual support**: Labels can be provided in multiple languages
-- **Reusable**: Can be referenced in multiple Data Structure Definitions (DSDs)
-
-#### **Example Codelist**
+**Example Codelist**
 ```xml
 <Codelist id="CL_COUNTRY" agencyID="ECB" version="1.0">
   <Name xml:lang="en">Country</Name>
@@ -120,7 +27,55 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 </Codelist>
 ```
 
-### 3.2.2 Mapping details
+The equivalent artefact in the DPM is the Category.
+
+**Example Category**
+
+| CategoryID | Code | Name          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                | CreatedRelease |
+| ---------- | ---- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ | -------- | ----------------- | ------------- | -------------------------------------- | -------------- |
+| 110        | BA   | Base items    | Defines the basic conceptual meaning... | \-1          | \-1      | 0                 |               | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1              |
+| 120        | MC   | Main category | Specifies the natu... | \-1          | \-1      | 0                 |               | {6006CB2B-1EA7-494D-A09D-C33C30EB1856} | 1              |
+| 130        | AP   | Approach      | Approach used for the calculation of capital requirements... | \-1          | \-1      | 0                 |               | {D2F44CAE-72B1-4E06-BECA-81F2187324E0} | 1              |
+| 140        | BT   | Boolean total | Dimensions having only two values... | \-1          | \-1      | 0                 |               | {3DEB1863-B1F0-4741-95A0-44ED72734CDD} | 1              |
+
+
+
+
+### 3.1.1 Mapping cardinality
+
+- From SDMX to DPM: One Codelist is always mapped to one Category.
+- From DPM to SDMX: One Category may be mapped to one CodeList or no CodeList. Concretely, non-enumerated categories are not mapped to any CodeList.
+
+```mermaid
+classDiagram
+    direction LR
+    SDMX_CODELIST "0..1" -- "1" DPM_CATEGORY
+```
+
+DPM Categories that are not enumerated should not be mapped, and they shall not exist in SDMX. When mapping the properties, this shall be reflected in the mapping rules.
+
+
+### 3.1.2 Attributes equivalence
+
+
+#### 3.1.2.1 SDMX Codelist attributes
+- maintainable artefact attributes
+    - `id`
+    - `agencyID`
+    - `version`
+- `is_external_reference`
+
+#### 3.1.2.2 DPM Category attributes
+- Concept attributes
+    - `Owner`    
+- `IsSuperCategory`
+- `IsActive`
+- `IsExternalRefData`
+- `RefDataSource`
+- `RowGUID`
+
+
+#### 3.1.2.3 Mapping details
 
 | Attribute | Value |
 |---|---|
@@ -135,7 +90,7 @@ An SDMX CodeList is a structural component of the SDMX standard that defines a *
 | RefDataSource | NULL |
 | RowGUID | (system-generated UUID) |
 
-#### Example Mapping details
+#### 3.1.2.4 Example Mapping details
 
 | Attribute | Value |
 |---|---|
@@ -284,9 +239,9 @@ An SDMX Code is a fundamental element within a Codelist in the SDMX Information 
     - even though SDMX does not encode that composition explicitly.
   - This is mainly a design choice on the DPM side; SDMX does not force it.
 
-## 3.4 Subsets and hierarchies
+## 3.2 Subsets and hierarchies
 
-### 3.4.1 Subsets (constraints and partial codelists)
+### 3.2.1 Subsets (constraints and partial codelists)
 
 Here’s how you define a subset of codes in SDMX, with examples:
 
@@ -304,7 +259,7 @@ Define a CubeRegion for data or MetadataTargetRegion for metadata.
 Use MemberSelection to include/exclude codes.
 Support for cascadeValues and wildcard %.
 
-#### 3.4.2 Mapping details
+#### 3.2.2 Mapping details
 Partial Codelist → DPM SubCategory
 
 The subset of codes is modeled as a SubCategory of that Category.
@@ -384,7 +339,7 @@ This allows tracking changes over time (e.g., adding/removing codes).
 | RowGUID             | (system-generated UUID) |
 
 
-### 3.4.2 Hierarchies
+### 3.2.2 Hierarchies
 
 - **Hierarchy over a single codelist**:
   - When an SDMX Hierarchy only includes codes from one codelist:
@@ -399,9 +354,91 @@ This allows tracking changes over time (e.g., adding/removing codes).
       - separate hierarchies per Category, and/or
       - external documentation.
 
-## 3.5 Concept ↔ Property / Metric
 
-### 3.5.2 DPM → SDMX
+## 3.1 ConceptSchema ↔ DPM Glossary
+In the Data Point Model (DPM), there is no construct equivalent to the SDMX `ConceptScheme`.  
+In SDMX, each `ConceptScheme` has its own identification space (defined by `agencyId`, `id`, and `version`).  
+If concepts from multiple `ConceptSchemes` are combined into a single DPM glossary, identifier collisions may occur (for example, two concepts with the same name, such as `COUNTRY`, but with different meanings). 
+
+### 3.1.1 Basic mapping
+
+To resolve this issue, a namespace can be created for each `ConceptScheme` by adopting an approach based on **composite keys** in the DPM glossary:
+
+---
+
+### Glossary with Composite Keys
+In the DPM glossary, define each concept using a composite key in the following format:
+
+```
+{agencyID}.{ConceptSchemeId}.{ConceptId}
+```
+
+*Example:*
+```
+ECB.CL_COUNTRY.COUNTRY
+```
+
+This ensures uniqueness without renaming the concepts.
+
+---
+
+### *Example ConceptScheme*
+```xml
+<ConceptScheme id="CL_CONCEPTS" agencyID="ECB" version="1.0">
+    <Name xml:lang="en">Statistical Concepts</Name>
+    <Description xml:lang="en">Concepts used for macroeconomic indicators</Description>
+    <Concept id="FREQ">
+        <Name xml:lang="en">Frequency</Name>
+        <Description xml:lang="en">Reporting frequency</Description>
+        <Representation>
+            <CodelistRef id="CL_FREQ" agencyID="ECB" version="1.0"/>
+        </Representation>
+    </Concept>
+    <Concept id="REF_AREA">
+        <Name xml:lang="en">Reference Area</Name>
+        <Description xml:lang="en">Geographical coverage</Description>
+        <Representation>
+            <CodelistRef id="CL_AREA" agencyID="ECB" version="1.0"/>
+        </Representation>
+    </Concept>
+    <Codelist id="CL_FREQ" agencyID="ECB" version="1.0">
+        <Name xml:lang="en">Frequency</Name>
+        <Description xml:lang="en">Reporting frequency codes</Description>
+        <Code id="A">
+            <Name xml:lang="en">Annual</Name>
+        </Code>
+        <Code id="Q">
+            <Name xml:lang="en">Quarterly</Name>
+        </Code>
+        <Code id="M">
+            <Name xml:lang="en">Monthly</Name>
+        </Code>
+    </Codelist>
+</ConceptScheme>
+```
+
+---
+
+### **Example: SDMX ConcepSchema → DPM Glossary**
+
+### **Concepts**
+| SDMX Concept | Composite Key in DPM Glossary | Description            |
+|--------------|--------------------------------|------------------------|
+| FREQ         | ECB.CL_CONCEPTS.FREQ          | Reporting frequency    |
+| REF_AREA     | ECB.CL_CONCEPTS.REF_AREA      | Geographical coverage  |
+
+### **Codelist for FREQ**
+| SDMX Code | Composite Key in DPM Glossary | Description |
+|-----------|--------------------------------|-------------|
+| A         | ECB.CL_FREQ.A                 | Annual      |
+| Q         | ECB.CL_FREQ.Q                 | Quarterly   |
+| M         | ECB.CL_FREQ.M                 | Monthly     |
+
+
+
+## 3.3 Concept ↔ Property / Metric
+
+### 3.3.2 DPM → SDMX
 ### SDMX Concept → DPM Property Mapping
 
 This template maps **SDMX Concepts** (which can play the role of **dimension**, **attribute**, or **measure**) to **DPM Properties** (and shows how they are later used by Variables).

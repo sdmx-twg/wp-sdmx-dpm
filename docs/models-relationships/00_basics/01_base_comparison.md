@@ -6,12 +6,71 @@ This chapter provides a foundational comparison between SDMX (Statistical Data a
 
 ### 1.1 DPM Concepts
 
-In the Data Point Model (DPM), **Concepts** are defined as identifiable objects within a model—such as a Category, Item, or Variable—that are assigned a Code and Name by a modeller. These entities serve as the primary units of metadata and are characterized by:
+In the Data Point Model (DPM), **Concepts** are defined as identifiable objects within a model, such as a Category, Item, or Variable. These entities serve as the primary units of metadata and are characterized by:
 
 - **Concrete modelling units**: Each Concept represents a tangible element (e.g. a specific category, a business term, or a variable) that modellers work with directly.
 - **Ownership**: Concepts can be identified with an Owner (the maintaining organization).
 - **Documentation**: Concepts are linked to supportive documentation such as legal references.
 - **Translatable attributes**: Concepts contain attributes that can be translated into multiple languages, with translations tracked by organization.
+
+```mermaid
+classDiagram
+  class Concept {
+    +ConceptGUID
+  }
+  
+  class Category {
+    <<Concept>>
+  }
+  
+  class Item {
+    <<Concept>>
+  }
+  
+  class classN {
+    <<Concept>>
+  }
+  
+  Concept <|-- Category : is a
+  Concept <|-- Item : is a
+  Concept <|-- classN : is a
+  
+```
+
+Concepts may be owned by an organisation (depending on the type of concept), and they may also have translations and/or legal references.
+
+
+```mermaid
+classDiagram
+  class Concept {
+    +ConceptGUID
+    +Code
+    +Name
+  }
+  
+  class Organisation {
+    +OrganisationID
+    +Name
+  }
+  
+  class Translation {
+    +TranslationID
+    +Language
+    +TranslatedText
+    +TranslatorID
+  }
+  
+  class Reference {
+    +ReferenceID
+    +LegalReference
+    +Description
+  }
+  
+  Concept "0..n" --> "0..1" Organisation : is owned by
+  Concept "1" --> "0..n" Translation : has translations
+  Concept "1" --> "0..n" Reference : has legal references
+```
+
 
 ### 1.2 SDMX abstract classes
 
@@ -21,6 +80,71 @@ Conversely, SDMX utilizes a hierarchy of abstract classes to serve as architectu
 - **NameableArtefact**: Adds name and description capabilities (extends IdentifiableArtefact).
 - **MaintainableArtefact**: Introduces versioning, agency ownership, and lifecycle management (extends NameableArtefact).
 - **ItemScheme / Item**: Pattern for maintained lists and their entries.
+
+```mermaid
+classDiagram
+  class IdentifiableArtefact {
+    <<abstract>>
+    +id: string
+  }
+  
+  class NameableArtefact {
+    <<abstract>>
+    +name: InternationalString
+    +description: InternationalString
+  }
+  
+  class VersionableArtefact {
+    <<abstract>>
+    +version: string
+    +validFrom: DateTime
+    +validTo: DateTime
+  }
+  
+  class MaintainableArtefact {
+    <<abstract>>
+    +agencyID: string
+    +isFinal: boolean
+    +isExternalReference: boolean
+  }
+  
+  class ItemScheme {
+    <<abstract>>
+    +isPartial: boolean
+  }
+  
+  class Item {
+    <<abstract>>
+  }
+  
+  class Codelist {
+  }
+  
+  class Code {
+  }
+  
+  class ConceptScheme {
+  }
+  
+  class Concept {
+  }
+  
+  class DataStructureDefinition {
+  }
+  
+  IdentifiableArtefact <|-- NameableArtefact
+  NameableArtefact <|-- VersionableArtefact
+  VersionableArtefact <|-- MaintainableArtefact
+  MaintainableArtefact <|-- ItemScheme
+  MaintainableArtefact <|-- DataStructureDefinition
+  NameableArtefact <|-- Item
+  ItemScheme <|-- Codelist
+  ItemScheme <|-- ConceptScheme
+  Item <|-- Code
+  Item <|-- Concept
+  ItemScheme "1" --> "0..n" Item : contains
+```
+
 
 Concrete structural artefacts such as Codelists or Data Structure Definitions (DSDs) inherit these properties through the class hierarchy. This approach separates architectural concerns (identity, maintenance, naming) from domain-specific semantics (statistical concepts, data structures).
 
@@ -57,6 +181,8 @@ The SDMX Information Model is a **UML-based conceptual design** that remains syn
 | Implementation | Physical database schemas | Syntax-neutral serializations |
 | Focus | Shared repository structure | Distributed data exchange |
 | Abstraction level | Physical/logical | Conceptual |
+
+It should be noted that SDMX provides specifica syntaxes (XML, JSON and, for data, CSV) that server as actual implementations of the conceptual model. But SDMX is agnostic regarding databases.
 
 ## 3. Metadata access models
 

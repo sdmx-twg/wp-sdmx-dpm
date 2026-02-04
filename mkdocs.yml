@@ -65,6 +65,7 @@ markdown_extensions:
 # Navigation structure
 nav:
   - Home: index.md
+  - Glossary & Abbreviations: models-relationships/glossary_and_abbreviations.md
   - Concept Note: concept-note.md
   - Business Case:
       - business-case/business-case-draft.md
@@ -72,8 +73,8 @@ nav:
       - models-relationships/index.md
       - Basics:
           - models-relationships/00_basics/index.md
-          - Base Comparison: models-relationships/00_basics/base_comparison.md
-          - Glossary and Abbreviations: models-relationships/00_basics/glossary_and_abbreviations.md
+          - 1. Base Comparison: models-relationships/00_basics/01_base_comparison.md
+          - 2. Detailed Mapping Rules: models-relationships/00_basics/02_detailed_mapping_rules.md
       - Glossary:
           - models-relationships/01_glossary/index.md
           - 1. Glossary Overview: models-relationships/01_glossary/01_glossary_overview.md
