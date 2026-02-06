@@ -103,14 +103,11 @@ classDiagram
 | 111000001 | CL_COUNTRY | Country | List of countries for ECB reporting (from SDMX CodeList CL_COUNTRY) | -1 | -1 | 0 | | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1 |
 
 
-
-
 ### 3.1.4 Example Mapping DPM ==> SDMX
 
 | CategoryID | Code | Name | Description | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID | CreatedRelease |
 | ---------- | ---- | ---- | ----------- | ------------ | -------- | ----------------- | ------------- | ------- | -------------- |
 | 110        | BA   | Base items    | Defines the basic conceptual meaning... | -1   | -1   | 0    |   | {0E40D86D-889C-498E-AE66-46398E615CEE} | 1  |
-
 
 
 ```xml
@@ -119,10 +116,18 @@ classDiagram
   <Description xml:lang="en">Defines the basic conceptual meaning...</Description>
 </Codelist>
 ```
+### 3.1.5 SDMX Geospatial Codelists
+A Geospatial Codelist is a codelist whose codes represent geographic or spatial entities.
+In SDMX, it is simply a codelist where every code corresponds to a location or a geographically‑defined object.
+
+In the DPM metamodel, a geospatial codelist typically maps to a Category (e.g., COUNTRY, REGION)
+  - Note that geospatial aspects (geometry, CRS, etc.) have no direct slot in DPM; they must be handled via:
+    - naming conventions,
+    - external metadata, or
+    - extended attributes in implementations.
 
 
-
-## 3.2 Extended Codelists and Super Categories
+## 3.2 Extended Codelist ↔ Super Category
 
 An **SDMX Codelist** may extend other Codelists via the CodelistExtension class.
 The extension indicates the order of precedence of the extended Codelists for conflict resolution of Codes.
@@ -236,7 +241,7 @@ classDiagram
 | exclusiveCodeSelectionList| -not applicable-          |
 | idCode                    | -not applicable-          |
 
-### 3.12.3 Example Mapping SDMX ==> DPM
+### 3.2.3 Example Mapping SDMX ==> DPM
 
 ```xml
 <!-- Extended Codelist Example -->
@@ -298,7 +303,7 @@ classDiagram
 | 1008   | 20010              | 4    |       |           |                        |                       | {C3AAC52B-9054-4C03-8A31-BD41A055338F}     |
 | 1009   | 20010           | 5     |       |               |                        |                        | {B4CA88A9-A1C9-494E-A42C-80BCE3F0BF32}     |
 
-### 3.1.4 Example Mapping DPM ==> SDMX
+### 3.2.4 Example Mapping DPM ==> SDMX
 
 *Table Category*
 
@@ -335,104 +340,89 @@ classDiagram
 
 </Codelist>
 ```
-### 3.2.4 Geospatial Codelists
-
-- **Geospatial Codelist → Category (enumerated)**:
-  - Create a Category and Category Items in the same way as for a normal codelist.
-  - Note that geospatial aspects (geometry, CRS, etc.) have no direct slot in DPM; they must be handled via:
-    - naming conventions,
-    - external metadata, or
-    - extended attributes in implementations.
 
 ## 3.3 Code ↔ Category Item
 
-An SDMX Code is a fundamental element within a Codelist in the SDMX Information Model.
+An **SDMX Code** is the atomic element of a Codelist. Codes may participate in hierarchical structures as defined by the SDMX Item Scheme pattern. They inherit their identification and naming attributes from the SDMX artefact hierarchy (IdentifiableArtefact → NameableArtefact) .
 
-### 3.3.1 Simple codes
+The equivalent artefact in the DPM is the **Category Item**.  
+A DPM Item represents one enumerated value of a Category. Items may take part in parent–child relationships.
 
-- For each **Code** in an SDMX Codelist (or Extended Codelist that does not introduce additional semantics):
-  - Create a **Category Item** in the corresponding Category.
-  - Map:
-    - SDMX `agencyID` (if present at code level) or codelist `agencyID` → Category Item owner.
-    - Code `id` → Category Item code.
-    - Code name and description → Category Item name and description.
-  - Default flags (as in ECB Simplified Approach):
-    - `is_default = false`,
-    - `is_compound = false`,
-    - `is_obsolete = false`.
+**Example Code**
 
-### SDMX Code <-> DPM Item Mapping Details
+```xml
+<Code id="ES">
+  <Name xml:lang="en">Spain</Name>
+</Code>
+```
 
-| Attribute | Value |
-|---|---|
-| ItemID | (system-generated, e.g., 5001) |
-| Code | {agencyID}.{ConceptSchemeId}.{CodelistId}.{CodeId} |
-| Name | Code.Name |
-| Description | Code.Description |
-| IsActive | TRUE |
-| IsExternalRefData | FALSE |
-| RefDataSource | NULL |
-| RowGUID | (system-generated UUID) |
+**Example Item**
 
-### SDMX Code <-> DPM CategoryItem Mapping Details
+| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
+|--------|------------|------|--------|-------------------------|--------------------------------------------|
+| 5001   | 210        | ES   | Spain  | Member state of the EU | {AABBCCDD-1111-2222-3333-444455556666}     |
 
-| Attribute | Value |
-|---|---|
-| CategoryItemID | (system-generated, e.g., 9001) |
-| CategoryID | Category.CategoryID |
-| ItemID | Item.ItemID |
-| IsActive | TRUE |
-| RowGUID | (system-generated UUID) |
+### 3.3.1 Mapping cardinality
+```mermaid
+classDiagram
+    direction LR
+    SDMX_CODE "1" -- "1" DPM_ITEM
+```
+From SDMX to DPM: One SDMX Code is always mapped to one DPM Item belonging to the mapped Category.
+From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category is mapped to a Codelist. 
 
-## SDMX Code <-> DPM Item Examples (from SDMX Codes in CL_COUNTRY)
+### 3.3.2 Attributes equivalence
 
-## Item: Spain (ES)
-| Attribute | Value |
-|---|---|
-| ItemID | (system-generated, e.g., 5001) |
-| Code | ECB.CS_REPORTING.CL_COUNTRY.ES |
-| Name | Spain |
-| Description | NULL |
-| IsActive | TRUE |
-| IsExternalRefData | FALSE |
-| RefDataSource | NULL |
-| RowGUID | (system-generated UUID) |
+#### 3.3.2.1 Code attributes
+-
+    - `id`
+    - `name`
+    - `description`
+    - `hierarchy`
 
-## Item: France (FR)
-| Attribute | Value |
-|---|---|
-| ItemID | (system-generated, e.g., 5002) |
-| Code | ECB.CS_REPORTING.CL_COUNTRY.FR |
-| Name | France |
-| Description | NULL |
-| IsActive | TRUE |
-| IsExternalRefData | FALSE |
-| RefDataSource | NULL |
-| RowGUID | (system-generated UUID) |
+#### 3.3.2.2 Item attributes
+-
+    - `Code`
+    - `Name`
+    - `Description`
+    - `CategoryID`
+    - `RowGUID`
+    - `ParentItemID`  
 
-## SDMX Code <-> DPM CategoryItem Examples (link Category ↔ Items)
+#### 3.3.2.3 Mapping details
 
-> Links Category `ECB.CS_REPORTING.CL_COUNTRY` to each Item.
+| SDMX        | DPM          |
+|-------------|--------------|
+| id          | Code         |
+| name        | Name         |
+| description | Description  |
+| -not applicable-          | CategoryID   |
+| -not applicable-         | RowGUID      |
+| hierarchy   | ParentItemID |
 
-## Link: Category ↔ Spain (ES)
-| Attribute | Value |
-|---|---|
-| CategoryItemID | (system-generated, e.g., 9001) |
-| CategoryID | Category.CategoryID (e.g., 1001) |
-| ItemID | Item.ItemID (e.g., 5001) |
-| IsActive | TRUE |
-| RowGUID | (system-generated UUID) |
+### 3.3.3 Example Mapping SDMX ==> DPM
+```xml
+<Code id="ES">
+  <Name xml:lang="en">Spain</Name>
+</Code>
+```
 
-## Link: Category ↔ France (FR)
-| Attribute | Value |
-|---|---|
-| CategoryItemID | (system-generated, e.g., 9002) |
-| CategoryID | Category.CategoryID (e.g., 1001) |
-| ItemID | Item.ItemID (e.g., 5002) |
-| IsActive | TRUE |
-| RowGUID | (system-generated UUID) |
+| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
+|--------|------------|------|--------|-------------------------|--------------------------------------------|
+| 5001   | 210        | ES   | Spain  | Member state of the EU | {AABBCCDD-1111-2222-3333-444455556666}     |
 
-### 3.3.2 Compound Category Items
+### 3.3.4 Example Mapping DPM ==> SDMX
+
+| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
+|--------|------------|------|--------|-------------------------|--------------------------------------------|
+| 5001   | 210        | ES   | Spain  | Member state of the 
+
+```xml
+<Code id="ES">
+  <Name xml:lang="en">Spain</Name>
+</Code>
+```
+### 3.3.5 Compound Item
 
 - **DPM Compound Category Item** encodes a composition of multiple items across categories (e.g. the “Treasury bill” example in the report).
 
@@ -485,7 +475,7 @@ This allows tracking changes over time (e.g., adding/removing codes).
 
 | Attribute           | Value |
 |---------------------|-------|
-| SubCategoryIDsystem-generated, e.g., 7001) |
+| SubCategoryIDsystem-generated, e.g., 7001 |
 | Code                | EU_COUNTRIES |
 | Name                | European Union Countries |
 | Description         | Subset of EU member states within CL_COUNTRY |
