@@ -124,25 +124,217 @@ classDiagram
 
 ## 3.2 Extended Codelists and Super Categories
 
-- **Extended Codelist (subset-only)**:
-  - If an Extended Codelist only restricts a base codelist to a subset of its codes (no new codes):
-    - Map the base codelist to a Category.
-    - Create a **Subcategory** representing the subset, linked to that Category.
+An **SDMX Codelist** may extend other Codelists via the CodelistExtension class.
+The extension indicates the order of precedence of the extended Codelists for conflict resolution of Codes.
+InclusiveCodeSelection and ExclusiveCodeSelection allow including or excluding subsets of Codes from the extended Codelists.
+A MemberValue may specify a Code, including its children through the cascadeValues property, or include wildcard characters (‘%’) to select a set of Codes.
 
-- **DPM Super Category**:
-  - Super Categories correspond generally to **Extended Codelists** in SDMX:
-    - every Super Category can be expressed as an Extended Codelist (grouping codes from a base codelist); but
-    - not every Extended Codelist maps back to a Super Category (some are better seen as Subcategories).
+An SDMX Extended Codelist is a codelist that derives from one or more existing codelists, selectively including or excluding codes, optionally using wildcards, and resolving conflicts with prefixes and sequence order. 
 
-- **Extended Codelist with additional codes**:
-  - SDMX allows Extended Codelists to introduce **extra codes** not present in the base codelist.
-  - DPM Subcategories can only contain items from a single Category; they cannot directly introduce entirely new items that are not in the Category.
-  - Recommended approach:
-    - Map the subset of base codes to a **Subcategory**.
-    - For additional codes:
-      - either extend the underlying Category with new Category Items (documenting that they originate from an Extended Codelist only), or
-      - treat them as part of a separate Category/CategoryItem set and document the relationship (e.g. in the versioning/extensibility section).
+**Example Extended Codelist**
 
+The example illustrates how an Extended Codelist is created by combining and filtering codes from multiple existing codelists.
+
+Starting from two base codelists:
+- **CL_COUNTRY** (BE, FR, DE, IT, ES, PT)
+- **CL_EXT_REGIONS** (EU, EU_W, EU_S)
+
+A new codelist, **CL_EU_REPORTING**, is defined using CodelistExtension, with the following logic:
+1. Inherit and filter codes: The extended codelist inherits all codes from CL_COUNTRY, but excludes ES and PT using ExclusiveCodeSelection.
+2. Add selected codes from another codelist: From CL_EXT_REGIONS, only the codes matching the pattern EU_% are included (EU, EU_W, EU_S), using InclusiveCodeSelection and wildcard matching. A prefix REG_ is added to these codes to avoid conflicts (e.g., REG_EU, REG_EU_W).
+3. Add new local codes: The extended codelist defines an additional local code, EU_CORE – Core EU reporting zone.
+
+The resulting extended codelist includes:
+•	BE, FR, DE, IT (ES and PT excluded)
+•	REG_EU, REG_EU_W, REG_EU_S
+•	EU_CORE (new)
+
+```xml
+<!-- Extended Codelist Example -->
+<Codelist id="CL_EU_REPORTING" agencyID="ECB" version="1.0">
+
+    <!-- 1. Extend CL_COUNTRY, excluding ES and PT -->
+    <CodelistExtension codelistRef="CL_COUNTRY" sequence="1">
+        <ExclusiveCodeSelection>
+            <MemberValue value="ES"/>
+            <MemberValue value="PT"/>
+        </ExclusiveCodeSelection>
+    </CodelistExtension>
+
+    <!-- 2. Extend CL_EXT_REGIONS, include only codes matching EU_% -->
+    <CodelistExtension codelistRef="CL_EXT_REGIONS" sequence="2" prefix="REG_">
+        <InclusiveCodeSelection>
+            <MemberValue value="EU_%"/>
+        </InclusiveCodeSelection>
+    </CodelistExtension>
+
+    <!-- 3. Add a locally-defined code -->
+    <Code id="EU_CORE">
+        <Name xml:lang="en">Core EU reporting zone</Name>
+    </Code>
+
+</Codelist>
+```
+The equivalent artefact in the DPM is the SuperCategory.
+
+A **DPM Super Category** is a Category marked with IsSuperCategory = TRUE, representing the union of multiple Categories listed through SuperCategoryComposition. 
+
+**Example Super Category**
+
+*Table Category*
+
+| CategoryID | Code   | Name                     | Description                                                       | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                 | CreatedRelease |
+| ---------- | ------ | ------------------------ | ----------------------------------------------------------------- | ------------ | -------- | ----------------- | ------------- | ---------------------------------------- | -------------- |
+| 200        | GEO_SC | Geography SuperCategory  | Union of multiple geography-related categories.                   | -1           | -1       | 0                 |               | {A1B2C3D4-1111-2222-3333-444455556666}   | 1              |
+| 210        | COUNTRY| Country Codes            | List of national codes.                                           | -1           | -1       | 0                 |               | {BBBBBBBB-AAAA-4444-9999-111111111111}   | 1              |
+| 220        | REGION | Regions                  | List of administrative regions.                                   | -1           | -1       | 0                 |               | {CCCCCCCC-BBBB-5555-8888-222222222222}   | 1              |
+| 230        | ECON   | Economic Areas           | Economic/geopolitical groupings.                                  | -1           | -1       | 0                 |               | {DDDDDDDD-CCCC-6666-7777-333333333333}   | 1              |
+
+*Table SuperCategoryComposition*
+
+| SuperCategoryID | CategoryID | StartReleaseID | EndReleaseID | RowGUID                                   |
+| ---------------- |------------|----------------|--------------|-------------------------------------------- |
+| 200              | 210        | 1              | NULL         | {E1000000-0000-0000-0000-000000000001}      |
+| 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
+| 200              | 230        | 1              | NULL         | {E3000000-0000-0000-0000-000000000003}      |
+
+### 3.2.1 Mapping cardinality
+
+```mermaid
+classDiagram
+    direction LR
+    SDMX_EXTENDEDCODELIST "0..1" -- "1" DPM_SUPERCATEGORY
+```
+
+- From SDMX to DPM: An Extended Codelist can be mapped to a SuperCategory when it is simply the composition of multiple Codelists(mapped as Category); it may also be mapped to a SubCategory if it results from filtering the items of a single Category, or to a newly created Category when it represents the union of SubCategory and additional codes.
+- From DPM to SDMX: One SuperCategory can be expressed as an Extended Codelist (grouping codes from a base codelist) 
+
+### 3.2.2 Attributes equivalence
+
+#### 3.2.2.1 SDMX Extended Codelist attributes
+- maintainable artefact attributes (see [Identification mapping rules](../00_basics/02_detailed_mapping_rules.md#22-identification-dpm-ids-vs-sdmx-urns))
+  Codelist attributes plus:
+    - `idcodelistRef`
+    - `sequence`
+    - `prefix`
+    - `inclusiveCodeSelectionList`
+    - `exclusiveCodeSelectionList`
+    - `idCode`
+
+#### 3.2.2.2 SuperCategory attributes
+  Category attributes plus:
+    - `categoryId`
+
+#### 3.2.2.3 Mapping details
+
+| SDMX                      | DPM                       |
+|---------------------------|---------------------------|
+| idcodelistRef             | categoryId                |
+| sequence                  | -not applicable-          |
+| prefix                    | -not applicable-          |
+| inclusiveCodeSelectionList| -not applicable-          |
+| exclusiveCodeSelectionList| -not applicable-          |
+| idCode                    | -not applicable-          |
+
+### 3.12.3 Example Mapping SDMX ==> DPM
+
+```xml
+<!-- Extended Codelist Example -->
+<Codelist id="CL_EU_REPORTING" agencyID="ECB" version="1.0">
+
+    <!-- 1. Extend CL_COUNTRY, excluding ES and PT -->
+    <CodelistExtension codelistRef="CL_COUNTRY" sequence="1">
+        <ExclusiveCodeSelection>
+            <MemberValue value="ES"/>
+            <MemberValue value="PT"/>
+        </ExclusiveCodeSelection>
+    </CodelistExtension>
+
+    <!-- 2. Extend CL_EXT_REGIONS, include only codes matching EU_% -->
+    <CodelistExtension codelistRef="CL_EXT_REGIONS" sequence="2" prefix="REG_">
+        <InclusiveCodeSelection>
+            <MemberValue value="EU_%"/>
+        </InclusiveCodeSelection>
+    </CodelistExtension>
+
+    <!-- 3. Add a locally-defined code -->
+    <Code id="EU_CORE">
+        <Name xml:lang="en">Core EU reporting zone</Name>
+    </Code>
+
+</Codelist>
+```
+
+*Definition of Categories*
+
+| CategoryID | Code   | Name                     | Description                                                       | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                 | CreatedRelease |
+| ---------- | ------ | ------------------------ | ----------------------------------------------------------------- | ------------ | -------- | ----------------- | ------------- | ---------------------------------------- | -------------- |
+| 200        | CL_EU_UNION | SuperCategory  | Union of multiple geography-related categories.                   | -1           | -1       | 0                 |               | {A1B2C3D4-1111-2222-3333-444455556666}   | 1              |
+| 210        | CL_COUNTRY| Country Codes            | List of national codes.                                           | -1           | -1       | 0                 |               | {BBBBBBBB-AAAA-4444-9999-111111111111}   | 1              |
+| 220        | CL_EXT_REGIONS | Regions                  | List of administrative regions.                                   | -1           | -1       | 0                 |               | {CCCCCCCC-BBBB-5555-8888-222222222222}   | 1              |
+| 230        | EU_CORE   | EU_CORE Codes           | List of codes.                                  | -1           | -1       | 0                 |               | {DDDDDDDD-CCCC-6666-7777-333333333333}   | 1              |
+
+*Definition of SuperCategory*
+
+| SuperCategoryID | CategoryID | StartReleaseID | EndReleaseID | RowGUID                                   |
+| ---------------- |------------|----------------|--------------|-------------------------------------------- |
+| 200              | 210        | 1              | NULL         | {E1000000-0000-0000-0000-000000000001}      |
+| 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
+| 200              | 230        | 1              | NULL         | {E3000000-0000-0000-0000-000000000003}      |
+
+*Definition of SubCategory*
+
+| SubCategoryID | CategoryID | Code | Name                                         | Description                                                             | RowGUID                                   |
+|---------------|------------|------|----------------------------------------------|-------------------------------------------------------------------------|--------------------------------------------|
+| 20010         | 200        | CL_EU_REPORTING  | Reporting Countries     | Reporting Countries  | {5F6F7F44-FB94-4EC1-95F3-711DD9FA8F1B}     |
+
+*Definition of SubCategory Composition*
+
+| ItemID | SubCategoryVID | Order | Label | ParentItemID | ComparisonOperatorID | ArithmeticOperatorID | RowGUID                                   |
+|--------|-----------------|-------|-------|---------------|------------------------|------------------------|--------------------------------------------|
+| 1000   | 20010             | 1    |       |           |                        |                       | {76FD1DFC-DA28-4AB2-ABE5-EA5B1191450A}     |
+| 1006   | 20010              | 2    |       |           |                        |                       | {C4DC92DB-ED65-4FDB-8B1C-D70644D4C15E}     |
+| 1007   | 20010              | 3    |       |           |                        |                       | {C1099C3F-1FBC-4F79-9DB0-891CFC664FAD}     |
+| 1008   | 20010              | 4    |       |           |                        |                       | {C3AAC52B-9054-4C03-8A31-BD41A055338F}     |
+| 1009   | 20010           | 5     |       |               |                        |                        | {B4CA88A9-A1C9-494E-A42C-80BCE3F0BF32}     |
+
+### 3.1.4 Example Mapping DPM ==> SDMX
+
+*Table Category*
+
+| CategoryID | Code   | Name                     | Description                                                       | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                 | CreatedRelease |
+| ---------- | ------ | ------------------------ | ----------------------------------------------------------------- | ------------ | -------- | ----------------- | ------------- | ---------------------------------------- | -------------- |
+| 200        | GEO_SC | Geography SuperCategory  | Union of multiple geography-related categories.                   | -1           | -1       | 0                 |               | {A1B2C3D4-1111-2222-3333-444455556666}   | 1              |
+| 210        | COUNTRY| Country Codes            | List of national codes.                                           | -1           | -1       | 0                 |               | {BBBBBBBB-AAAA-4444-9999-111111111111}   | 1              |
+| 220        | REGION | Regions                  | List of administrative regions.                                   | -1           | -1       | 0                 |               | {CCCCCCCC-BBBB-5555-8888-222222222222}   | 1              |
+| 230        | ECON   | Economic Areas           | Economic/geopolitical groupings.                                  | -1           | -1       | 0                 |               | {DDDDDDDD-CCCC-6666-7777-333333333333}   | 1              |
+
+*Table SuperCategoryComposition*
+
+| SuperCategoryID | CategoryID | StartReleaseID | EndReleaseID | RowGUID                                   |
+| ---------------- |------------|----------------|--------------|-------------------------------------------- |
+| 200              | 210        | 1              | NULL         | {E1000000-0000-0000-0000-000000000001}      |
+| 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
+| 200              | 230        | 1              | NULL         | {E3000000-0000-0000-0000-000000000003}      |
+
+```xml
+<!-- Extended Codelist Example -->
+<Codelist id="GEO_SC" agencyID="ECB" version="1.0">
+
+    <!-- 1. Extend COUNTRY -->
+    <CodelistExtension codelistRef="COUNTRY" sequence="1">
+    </CodelistExtension>
+
+    <!-- 2. Extend REGION -->
+    <CodelistExtension codelistRef="REGION" sequence="2" prefix="REG_">
+    </CodelistExtension>
+
+    <!-- 3. Extend ECON -->
+   <CodelistExtension codelistRef="ECON" sequence="3" prefix="ECON_">
+   </CodelistExtension>
+
+</Codelist>
+```
 ### 3.2.4 Geospatial Codelists
 
 - **Geospatial Codelist → Category (enumerated)**:
