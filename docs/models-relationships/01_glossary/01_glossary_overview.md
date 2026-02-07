@@ -182,8 +182,8 @@ classDiagram
     - A SubCategory “EU Member States” over the `COUNTRY` Category, listing only EU countries for a particular regulation.
     - A hierarchical SubCategory over `NUTS_REGION` where a NUTS-0 country item is parent of NUTS-1/NUTS-2/NUTS-3 region items.
 
-- **SubCategoryItem**  
-  Link between a SubCategory and the Items it contains. It supports:
+- **SubCategoryItem**
+  Link between a SubCategory and the Items it contains. Each SubCategoryItem carries a `code`, a global `order` (sequential across all branches and levels, not per-level), and an optional `label` for regulation-specific wording. It supports:
   - hierarchical ordering via parent–child relationships between SubCategoryItems, and
   - local labels for Items when used within a particular SubCategory (e.g. regulation-specific wording in dropdowns).
 
@@ -193,6 +193,8 @@ classDiagram
       +code
     }
     class SubCategoryItem {
+      +code
+      +order
       +label
       +parentItemId
     }
