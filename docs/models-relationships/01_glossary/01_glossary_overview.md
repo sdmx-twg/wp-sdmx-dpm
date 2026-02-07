@@ -104,8 +104,9 @@ classDiagram
 - **Category**  
   Item that labels a grouping; can be nested to build a taxonomy.
 
-- **Hierarchy**  
-  Maintained artefact defining parent–child relationships among codes, possibly across multiple codelists and with multiple parents (richer than the single-parent trees inside a codelist). **HierarchicalCode** nodes reference codes rather than duplicating them. **HierarchyAssociation** applies a hierarchy within a context (e.g. a dataflow) so different contexts can reuse or tailor the same structure.
+- **Hierarchy**
+  Maintained artefact defining parent–child relationships among codes, possibly across multiple codelists and with multiple parents (richer than the single-parent trees inside a codelist). **HierarchicalCode** nodes reference codes from external codelists rather than duplicating them, so that the same codes can be reused across different hierarchical structures. **HierarchyAssociation** applies a hierarchy within a context (e.g. a dataflow) so different contexts can reuse or tailor the same structure.
+  Hierarchies are a key mechanism for **managing and organising codelists**: they enable multiple roots, multiple parents per code, and codes drawn from several codelists — supporting use cases such as aggregation, OLAP-style navigation, and statistical classification schemes that go beyond the single-parent tree a codelist can express on its own.
   - *Example*: a “Geographical hierarchy” where a parent node `EU` groups all EU country codes (`ES`, `FR`, …) and where NUTS codes (e.g. `ES300`) are children of their corresponding country. The hierarchy can reference codes from both `CL_AREA_ISO` and `CL_AREA_NUTS`.
 
 ```mermaid
