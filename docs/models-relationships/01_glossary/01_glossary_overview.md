@@ -1,6 +1,16 @@
 # 1. Glossary overview
 
-This chapter introduces the “glossary” parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define and organise concepts, categories and value domains, i.e. the vocabulary that is later reused by structures (DSDs, tables, variables, etc.) but is itself independent from any particular data exchange syntax or physical implementation.
+This chapter introduces the "glossary" parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define and organise concepts, categories and value domains, i.e. the vocabulary that is later reused by structures (DSDs, tables, variables, etc.) but is itself independent from any particular data exchange syntax or physical implementation.
+
+## Key characteristics of a glossary
+
+A well-designed glossary in a data-modelling context typically exhibits the following characteristics:
+
+- **Standardized definitions**: provides precise and standardized definitions of terms used in the data model to avoid ambiguity and misinterpretation.
+- **Domain-specific language**: tailored to the specific domain or industry (e.g. finance, insurance, banking supervision), ensuring relevance to the context of the data model.
+- **Relationships between terms**: includes relationships between terms, such as hierarchical or associative links, to help clarify how concepts interact or are connected.
+- **Supports data modelling**: acts as a foundation for building data points, attributes, entities, and relationships in the model by clearly defining what each represents.
+- **Improves collaboration**: facilitates communication among stakeholders by ensuring everyone uses the same terminology and understands the data points in the same way.
 
 ## 1.1 SDMX Glossary artefacts
 
