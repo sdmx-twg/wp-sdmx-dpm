@@ -222,7 +222,7 @@ classDiagram
     - Metric `FAIR_VAL` (Fair value) with a decimal data type, representing monetary amounts (e.g. in EUR).
 
 - **DataType**  
-  Predefined list of value types that can be used by Properties (e.g. integer, decimal, boolean, date, text, Enumeration). For Properties linked to enumerated Categories, the `DataType` is typically set to `Enumeration`, meaning that the allowed values are governed by the Items (and SubCategories) of those Categories. For Properties not backed by an enumerated Category, the `DataType` directly constrains the shape of admissible values (e.g. numeric ranges, dates).
+  Predefined list of value types that can be used by Properties (e.g. integer, decimal, boolean, date, text, Enumeration). For Properties linked to enumerated Categories, the `DataType` is typically set to `Enumeration`, meaning that the allowed values are governed by the Items (and SubCategories) of those Categories. For Properties not backed by an enumerated Category, the `DataType` identifies the expected value type (e.g. integer, decimal, date). Note that DPM DataTypes are simple type identifiers — unlike SDMX Facets, they do not support range or pattern constraints.
 
 ```mermaid
 classDiagram
