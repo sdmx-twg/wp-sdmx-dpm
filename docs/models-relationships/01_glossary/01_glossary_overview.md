@@ -19,7 +19,8 @@ The SDMX glossary is built around maintained lists (“schemes”) and their ite
 ### Item schemes and items
 
 - **ItemScheme / Item**  
-  Pattern for any maintained list (scheme) and its entries (items). ItemSchemes are maintainable and can be partial (i.e. disseminate only a subset of items). Items are nameable, can carry descriptions and annotations, and can be organised hierarchically if the concrete scheme supports it.
+  Pattern for any maintained list (scheme) and its entries (items). ItemSchemes are maintainable. Items are nameable, can carry descriptions and annotations, and can be organised hierarchically if the concrete scheme supports it.
+  An ItemScheme can be marked as **partial** (`isPartial = true`) to indicate that it carries only a subset of the items in the full scheme. This is strictly a **dissemination mechanism**: a partial scheme shares the same identity (agencyId, id, version) as the full scheme, cannot contain items absent from it, and cannot alter the content of any item. It is not a way to create or maintain independent subsets — subsetting for structural purposes is achieved via the Constraint mechanism.
 
 ```mermaid
 classDiagram
@@ -38,7 +39,7 @@ classDiagram
 ### Value domains (enumerated)
 
 - **Codelist**  
-  Enumerated value domain for coded concepts (e.g. `FREQ`). Contains **Code** items. Can be partial and supports single-parent code hierarchies (lightweight trees directly inside the codelist).
+  Enumerated value domain for coded concepts (e.g. `FREQ`). Contains **Code** items. Can be partial (for dissemination only; see ItemScheme above) and supports single-parent code hierarchies (lightweight trees directly inside the codelist).
   - *Example*: a codelist `CL_AREA_ISO` containing ISO country codes (`ES`, `FR`, `DE`, …) and another codelist `CL_AREA_NUTS` containing EU NUTS region codes (`ES300`, `ES302`, …). Both can be used to represent geographical areas in different levels of detail.
 
 - **Extended Codelist**  
