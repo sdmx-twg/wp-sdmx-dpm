@@ -144,8 +144,11 @@ A DPM glossary refers to a structured collection or list of terms, definitions, 
     - Enumerated Categories: `COUNTRY` containing ISO country Items (`ES`, `FR`, `DE`, …) and `NUTS_REGION` containing EU NUTS Items (`ES300`, `ES302`, …).
     - Non-enumerated Categories: an “Instrument identifier” Category where values are ISINs or LEIs that are not individually listed as Items.
 
-- **Item**  
-  Individual value in an enumerated Category. Items have a code, name and description, and are linked to Categories in a release-aware way (via `ItemCategory`). A Category can designate one Item as its default, which is implicitly assumed whenever a Property of that Category is used without stating an explicit Item.
+- **Item**
+  Individual enumerated value. An Item carries a name and description but does not itself hold a code — the code is assigned through the **ItemCategory** association (see below). Items can be compound (see Compound Item) and must be assigned an Owner.
+
+- **ItemCategory**
+  Release-aware association that links an Item to a Category. It carries the `code` (unique within the Category), an `isDefaultItem` flag, and an optional `signature` for compact referencing in operations. Because ItemCategory is versioned by Release (StartRelease / EndRelease), an Item can change Category over time (e.g. following bug fixes or model revisions). A Category can designate one Item as its default (`isDefaultItem = true`), which is implicitly assumed whenever a Property of that Category is used without stating an explicit Item.
 
 ```mermaid
 classDiagram
@@ -155,9 +158,18 @@ classDiagram
       +isSuperCategory
     }
     class Item {
-      +code
+      +name
+      +description
     }
-    Category "1" --> "*" Item : enumerates
+    class ItemCategory {
+      +code
+      +isDefaultItem
+      +signature
+      +startRelease
+      +endRelease
+    }
+    Category "1" --> "*" ItemCategory
+    ItemCategory "*" --> "1" Item
 ```
 
 ### Subsets and hierarchies
