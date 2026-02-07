@@ -206,10 +206,12 @@ classDiagram
 
 ### Semantic properties and metrics
 
-- **Property**  
-  Semantic characteristic used to define information requirements and variables. A Property always refers to one or more Categories and provides a “perspective” under which Items of those Categories are used (e.g. “Issuer residence”, “Instrument type”). Properties can be:
+- **Property**
+  Semantic characteristic used to define information requirements and variables. A Property always refers to one or more Categories (via the release-aware **PropertyCategory** association) and provides a "perspective" under which Items of those Categories are used (e.g. "Issuer residence", "Instrument type"). Properties can be:
   - **Qualitative** (`IsMetric = FALSE`): descriptive characteristics that classify or qualify observations.
-  - **Quantitative** (`IsMetric = TRUE`): characteristics that identify “what is measured”. These refer to a `DataType` and indicate whether values are reported at a point in time or over a period.  
+  - **Quantitative** (`IsMetric = TRUE`): characteristics that identify "what is measured". These refer to a `DataType` and indicate whether values are reported at a point in time or over a period.
+
+  The Property entity itself does not carry a `code` attribute. In physical implementations (EBA, EIOPA), each Property has a counterpart **Item** with `IsProperty = TRUE` that belongs to a dedicated Category (typically coded `_PR` — "Properties"). The Property receives its code, name, description, and owner from that Item through the **ItemCategory** association — just like any other Item.
   In the DPM glossary, Properties are the counterparts of SDMX Concepts and play the role of dimensions, attributes or measures when used in variables.
   - *Examples*:
     - Qualitative Properties `RESIDENCE` and `BIRTH_LOC` referring to a `GEO_AREA` Super Category, so that both countries and regions can be used as values.
@@ -227,14 +229,18 @@ classDiagram
 ```mermaid
 classDiagram
     class Property {
-      +code
       +isMetric
     }
     class DataType {
       +code
     }
-    Category "1" --> "*" Property : applicableTo
+    class Item {
+      +isProperty
+    }
+    Category "1" --> "*" Property : PropertyCategory
     Property "1" --> "1" DataType : valueType
+    Property "1" ..> "1" Item : counterpart (IsProperty=TRUE)
+    Item "*" --> "1" Category : ItemCategory (_PR)
 ```
 
 ### Composite and cross-category value domains
