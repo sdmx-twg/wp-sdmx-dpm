@@ -180,7 +180,7 @@ classDiagram
   - specify which options appear in dropdowns for tables or variables.
   - *Examples*:
     - A SubCategory “EU Member States” over the `COUNTRY` Category, listing only EU countries for a particular regulation.
-    - A hierarchical SubCategory over `NUTS_REGION` where NUTS-0 country items are parents of NUTS-1/NUTS-2/NUTS-3 region items.
+    - A hierarchical SubCategory over `NUTS_REGION` where a NUTS-0 country item is parent of NUTS-1/NUTS-2/NUTS-3 region items.
 
 - **SubCategoryItem**  
   Link between a SubCategory and the Items it contains. It supports:
