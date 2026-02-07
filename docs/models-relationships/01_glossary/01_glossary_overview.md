@@ -131,7 +131,7 @@ classDiagram
 
 ## 1.2 DPM glossary artefacts
 
-The DPM glossary component provides a cross-domain vocabulary used to describe information requirements and variables. It defines categories, their items, subsets, and semantic properties that are later reused in the rendering and variable components. The focus here is on how the DPM glossary organises and constrains terms, not on tables, variables or operations.
+A DPM glossary refers to a structured collection or list of terms, definitions, and concepts that are relevant to the data model or domain. It defines categories, their items, subsets, and semantic properties that are later reused in the domain-specific data modelling. The focus here is on how the DPM glossary organises and constrains terms which are used to model tables, variables or operations in framework specific data models.
 
 ### Categories and items
 
