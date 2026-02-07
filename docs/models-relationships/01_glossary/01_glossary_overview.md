@@ -74,8 +74,15 @@ classDiagram
     - `NBIRTHS` (Number of births) concept with a non-enumerated integer representation (e.g. constrained to non‑negative values).
     - `FAIR_VAL` (Fair value) concept with a decimal representation (e.g. currency amounts, possibly constrained by scale or range facets).
 
-- **Representation / Facet / FacetValueType**  
-  Representation captures the allowable values. Facets (min/max, pattern, length, etc.) constrain non-enumerated types; enumerated representations point to a codelist or valuelist. Facets are reusable constraints that keep non-enumerated concepts precise.
+- **Representation**
+  Defines the allowable content for a Concept or Component. A representation takes one of two forms:
+  - *Enumerated*: references an ItemScheme (Codelist, ValueList, or GeoCodelist) that lists the valid values.
+  - *Non-enumerated*: constrains the format of values using Facets (see below).
+
+  Each Concept carries a **core representation**; structural Components (dimensions, attributes, measures) can override it with a **local representation** specific to their Structure, enabling context-specific constraints while maintaining semantic consistency.
+
+- **Facet / FacetValueType**
+  Facets define detailed constraints on non-enumerated representations. Common facet types include length constraints (`minLength`, `maxLength`), value ranges (`minValue`, `maxValue`), format specifications (`decimals`, `pattern`), and sequence definitions (`startValue`, `endValue`, `interval`). The `FacetValueType` specifies the expected data type (e.g. String, Integer, Decimal, DateTime, Duration).
 
 ```mermaid
 classDiagram
