@@ -42,9 +42,20 @@ classDiagram
   Enumerated value domain for coded concepts (e.g. `FREQ`). Contains **Code** items. Can be partial (for dissemination only; see ItemScheme above) and supports single-parent code hierarchies (lightweight trees directly inside the codelist).
   - *Example*: a codelist `CL_AREA_ISO` containing ISO country codes (`ES`, `FR`, `DE`, …) and another codelist `CL_AREA_NUTS` containing EU NUTS region codes (`ES300`, `ES302`, …). Both can be used to represent geographical areas in different levels of detail.
 
-- **Extended Codelist**  
-  Mechanism to restrict or extend a base codelist (e.g. add partner-specific codes or trim to a subset). Extension order matters when resolving code conflicts.
-  - *Example*: an extended codelist `CL_GEO_AREA` that combines `CL_AREA_ISO` (countries) and `CL_AREA_NUTS` (regions) so that a single representation can be used for the concept “Geographical area” while reusing existing code sets.
+- **Extended Codelist**
+  A codelist can include one or more **CodelistExtension** entries, each referencing a base codelist. This mechanism allows combining multiple codelists and/or creating subsets without duplicating codes. Each extension carries:
+  - **sequence**: determines precedence when multiple extensions have conflicting codes (later overrides earlier).
+  - **prefix**: optional string prepended to inherited codes to avoid conflicts.
+
+  Codes inherited from a base codelist can be filtered using:
+  - **InclusiveCodeSelection**: include only the specified codes from the base (creating a subset).
+  - **ExclusiveCodeSelection**: include all codes from the base except the specified ones.
+
+  In both cases, **MemberValue** entries identify which codes to include or exclude. MemberValues support `cascadeValues` (to include/exclude child codes automatically, with an `excludeRoot` option) and the `%` wildcard character for pattern matching on code identifiers.
+
+  - *Examples*:
+    - *Combining*: an extended codelist `CL_GEO_AREA` that combines `CL_AREA_ISO` (countries) and `CL_AREA_NUTS` (regions) so that a single representation can be used for the concept "Geographical area" while reusing existing code sets.
+    - *Subsetting*: an extended codelist `CL_EU_COUNTRIES` that extends `CL_AREA_ISO` with an InclusiveCodeSelection listing only EU member-state codes (`AT`, `BE`, `DE`, …), creating a subset without maintaining a separate codelist.
 
 - **GeoCodelist**  
   Codelist specialised for geospatial identifiers (e.g. geographic features or grids), with codes that reference geometries.
@@ -59,7 +70,14 @@ classDiagram
     Codelist "1" --> "*" Code
     ValueList "1" --> "*" ValueItem
     Codelist <|-- GeoCodelist
-    Codelist ..> Codelist : extends (Extension)
+    Codelist "1" --> "*" CodelistExtension
+    CodelistExtension "*" --> "1" Codelist : extends
+    class CodelistExtension {
+      +sequence
+      +prefix
+    }
+    CodelistExtension --> InclusiveCodeSelection
+    CodelistExtension --> ExclusiveCodeSelection
 ```
 
 ### Semantics
