@@ -245,23 +245,34 @@ classDiagram
 
 ### Composite and cross-category value domains
 
-- **Compound Item**  
-  An Item that encodes a composition of other Items across Properties (e.g. a “Treasury bill” defined as a particular instrument type, issuer sector and maturity bucket). Compound Items simplify modelling of complex terms: they can be used as a single dropdown option while still being decomposable into their underlying Property–Item pairs for analysis.
-  - *Example*: a Compound Item “Treasury bill” in an “Instrument” Category composed of:
-    - Type of financial instrument = “Debt security”,
-    - Sector of the issuer = “General governments”,
-    - Original maturity = “Up to 18 months”.
+- **Context / ContextComposition**
+  A Context gathers one or more Property–Item pairs via **ContextComposition**. Each ContextComposition links exactly one Property to one Item (from a Category that Property refers to); a given Property can appear in a Context only once. A Context carries a `signature` — a concatenation of Property and Item codes/IDs — that supports identification and reuse.
+  Contexts are used by Compound Items (see below) to define their composition, but also serve roles in the rendering and variable components of the metamodel.
+
+- **Compound Item**
+  An Item with `IsCompoundItem = TRUE` that represents a composition of other Items across Properties. Rather than holding component Items directly, a Compound Item references a **Context** whose ContextCompositions define the Property–Item pairs. Compound Items simplify modelling of complex terms: they can be used as a single dropdown option while still being decomposable into their underlying pairs for analysis.
+  - *Example*: a Compound Item "Treasury bill" in an "Instrument" Category referencing a Context composed of:
+    - Type of financial instrument = "Debt security",
+    - Sector of the issuer = "General governments",
+    - Original maturity = "Up to 18 months".
 
 ```mermaid
 classDiagram
-    class Item {
-      +code
+    class Context {
+      +signature
+    }
+    class ContextComposition {
+      +propertyId
+      +itemId
+    }
+    class CompoundItem {
       +isCompoundItem
     }
-    class CompoundItem
     Item <|-- CompoundItem
-    CompoundItem "1" --> "*" Item : componentItems
-    Category "1" --> "*" CompoundItem : enumerates
+    CompoundItem "1" --> "1" Context
+    Context "1" --> "*" ContextComposition
+    ContextComposition "*" --> "1" Property
+    ContextComposition "*" --> "1" Item
 ```
 
 - **Super Category**  
