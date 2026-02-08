@@ -47,12 +47,16 @@ flowchart LR
   sConcept --- dProp
   sCodelist --- dCat
   sCode --- dItem
-  sExt --- dSuper
+  sExt -- "merge" --- dSuper
+  sExt -- "subset" --- dSub
   sHier --- dSub
   sRep --- dDT
 ```
 
-The arrows indicate “primary” correspondences used throughout this document; they do not exclude alternative modelling choices in specific implementations.
+The lines indicate "primary" correspondences used throughout this document; they do not exclude alternative modelling choices in specific implementations. Note that:
+
+- **Extended Codelist** maps to either **SubCategory** (when subsetting a single Codelist) or **Super Category** (when merging multiple Codelists), as reflected by the two connections above.
+- **Codelist** serves as the enumerated side of SDMX **Representation** — the `Codelist → Category` correspondence above already captures this. The `Representation + Facet → DataType` line covers the non-enumerated case.
 
 ## 2.3 Artefacts without a direct counterpart
 
