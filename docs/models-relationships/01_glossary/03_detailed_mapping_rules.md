@@ -433,67 +433,39 @@ From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category 
   - This mapping is lossy: composition information is lost unless captured via annotations or external documentation.
 
 - **SDMX → DPM** (creating compound items):
-  - If a particular Code is known (from business rules or ECB mappings) to represent a combination of other dimensions/categories:
-    - model it as a Compound Category Item in DPM, with explicit links to the constituent Category Items;
-    - even though SDMX does not encode that composition explicitly.
-  - This is mainly a design choice on the DPM side; SDMX does not force it.
+  - If a particular Code is known (from business rules or external documentation) to represent a combination of other dimensions/categories, it can be modelled as a Compound Item in DPM with explicit links to its constituent Property–Item pairs — even though SDMX does not encode that composition explicitly. This is a design choice on the DPM side; SDMX does not force it.
+  - *Example*: an SDMX codelist `CL_INSTRUMENT` contains a flat Code `TBILL` ("Treasury bill") with no internal structure:
+    ```xml
+    <Codelist id="CL_INSTRUMENT" agencyID="ECB" version="1.0">
+      <Code id="TBILL">
+        <Name xml:lang="en">Treasury bill</Name>
+      </Code>
+    </Codelist>
+    ```
+    In DPM, business knowledge tells us that "Treasury bill" is actually a combination of three characteristics. We model it as a Compound Item in an "Instrument" Category, referencing a Context with the following ContextCompositions:
+    - Type of financial instrument (Property) = "Debt security" (Item),
+    - Sector of the issuer (Property) = "General governments" (Item),
+    - Original maturity (Property) = "Up to 18 months" (Item).
+
+    The flat SDMX Code `TBILL` becomes a single DPM Item that is decomposable into its underlying Property–Item pairs for analysis, validation, and reuse across tables.
 
 ## 3.2 Subsets and hierarchies
 
-### 3.2.1 Subsets (constraints and partial codelists)
+### 3.2.1 Subsets (constraints and codelist extensions)
 
-Here’s how you define a subset of codes in SDMX, with examples:
+SDMX provides two main mechanisms for defining subsets of codes:
 
-- **Option 1**: Partial Codelist using isPartial
-If you want to publish a reduced version of a maintained Codelist:
-Key points:
-The Codelist keeps the same agencyID, id, and version as the full list.
-Add isPartial="true" in the Codelist header.
-Include only the codes you need.
+- **Constraints**: use ContentConstraint to restrict allowable values for a Dataflow or ProvisionAgreement. Define a CubeRegion with MemberSelection entries to include/exclude codes. Supports `cascadeValues` and the `%` wildcard.
+- **Codelist extensions**: use CodelistExtension with InclusiveCodeSelection or ExclusiveCodeSelection to create a derived codelist that includes only a subset of codes from a base codelist (see section 1.1 for details).
 
-- **Option 2**: Using a Constraint
-For dynamic subsets or validation rules, use ContentConstraint or AttachmentConstraint.
-Key points:
-Define a CubeRegion for data or MetadataTargetRegion for metadata.
-Use MemberSelection to include/exclude codes.
-Support for cascadeValues and wildcard %.
+Note: partial codelists (`isPartial = true`) are excluded here — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
 
 #### 3.2.2 Mapping details
-Partial Codelist → DPM SubCategory
+Constraint / Codelist Extension → DPM SubCategory
 
-The subset of codes is modeled as a SubCategory of that Category.
-SubCategory groups selected Items (codes) and can be versioned via SubCategoryVersion (linked to a Release).
-Versioning
-DPM supports historization: SubCategoryVersion refers to a Release, similar to SDMX versioning.
-This allows tracking changes over time (e.g., adding/removing codes).
+The subset of codes is modelled as a SubCategory of that Category. Each SubCategory groups Items from the corresponding Category and can be versioned via SubCategoryVersion (linked to a Release), allowing tracking of changes over time (e.g. adding/removing codes).
 
-- Each SubCategory groups Items- Each SubCategory groups Items from the Category `{agencyID}.{ConceptSchemeId}.{CodelistId}`.
-- Use SubCategoryVersion for historization.
-
-
-#### DPM SubCategory Mapping Details
-
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryIDsystem-generated, e.g., 7001 |
-| Code                | EU_COUNTRIES |
-| Name                | European Union Countries |
-| Description         | Subset of EU member states within CL_COUNTRY |
-| Owner               | ECB |
-| IsActive            | TRUE |
-| RowGUID             | (system-generated UUID) |
-
-#### SubCategoryVersion
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | (system-generated, e.g., 7101) |
-| SubCategoryID       | 7001 |
-| StartReleaseID      | 3001 (e.g., Release "2025-Q1") |
-| EndReleaseID        | NULL |
-| RowGUID             | (system-generated UUID) |
-
-
-#### DPM SubCategory Examples (Partial Codelist Mapping)
+#### DPM SubCategory Example
 
 #### SubCategory: EU_COUNTRIES
 | Attribute           | Value |

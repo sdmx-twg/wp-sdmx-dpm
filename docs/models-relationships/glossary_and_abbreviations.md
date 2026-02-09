@@ -440,7 +440,7 @@ Version ID—identifier for specific versions in DPM structures (e.g. SubCategor
 ### Process and Methodology
 
 **Refit**
-Regulatory Fitness and Performance—EU program for making legislation simpler and less costly (e.g. DPM Refit 2.0 represents the updated DPM version).
+Regulatory Fitness and Performance—EU program for making legislation simpler and less costly (e.g. DPM 2.0 represents the updated DPM version).
 
 **CRS**
 Coordinate Reference System—system for defining geospatial coordinates in GeoCodelists.

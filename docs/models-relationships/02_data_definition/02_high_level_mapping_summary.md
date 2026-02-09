@@ -79,6 +79,9 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 - **AttributeRelationship (explicit attachment levels)**
   SDMX explicitly models where attributes attach (dataset, dimension, group, observation, measure). DPM attachment is implicit: an AttributeVariable references its subject Variable, but the "level" is not formally specified in the same way.
 
+- **CategoryScheme / Categorisation**
+  SDMX CategorySchemes organise subject domains and Categorisations link Categories to structural artefacts such as Dataflows. DPM achieves similar grouping via Frameworks and Modules, but has no direct counterpart to the Categorisation mechanism that explicitly links a subject-domain category to a data exchange definition.
+
 - **DataConstraint with DataKeySet**
   SDMX DataKeySet enumerates explicit key combinations (specific series). DPM constraints operate at the value-domain level (SubCategories) rather than at the key-combination level; enumerating specific variable instances requires different mechanisms.
 

@@ -1,6 +1,6 @@
 # Other Artefacts
 
-This section documents the mapping of organisational, rendering, and supporting artefacts between SDMX 3.* and DPM Refit (2.0).
+This section documents the mapping of organisational, rendering, and supporting artefacts between SDMX 3.* and DPM 2.0.
 
 It aims to:
 - Map SDMX organisational structures (Agencies, Providers, CategorySchemes) to DPM equivalents (Organisations, Frameworks).

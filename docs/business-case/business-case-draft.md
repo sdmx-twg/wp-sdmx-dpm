@@ -66,8 +66,8 @@ To ensure the success of this initiative, the following risks have been identifi
 
 *   **Complexity of Mappings**: Mapping distinct modeling paradigms (e.g., DPM's rendering artifacts vs. SDMX's structural metadata) can be complex.
     *   *Mitigation*: The project adopts a phased approach, starting with core concepts before tackling edge cases, and will document explicit assumptions and recommended best practices (e.g., stability of concept data types) that enable robust mappings.
-*   **Version Drift**: Standards evolve (e.g., SDMX 3.1, DPM Refit).
-    *   *Mitigation*: The work package explicitly targets **SDMX 3.1** and **DPM Refit (2.0)**, with a clear versioning policy for the mapping artifacts.
+*   **Version Drift**: Standards evolve (e.g., SDMX 3.1, DPM 2.0).
+    *   *Mitigation*: The work package explicitly targets **SDMX 3.1** and **DPM 2.0**, with a clear versioning policy for the mapping artifacts.
 *   **Adoption**: Technical outputs may not be widely adopted without clear guidance.
     *   *Mitigation*: A strong focus on "Transformation Guidance" and practical examples (CSV interoperability) to lower the barrier to entry.
 

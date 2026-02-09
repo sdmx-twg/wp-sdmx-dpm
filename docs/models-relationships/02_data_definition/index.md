@@ -1,6 +1,6 @@
 # Data Definition
 
-This section documents the data definition mapping between SDMX 3.* and DPM Refit (2.0). It covers how SDMX dataflows and structures correspond to DPM report tables and variables.
+This section documents the data definition mapping between SDMX 3.* and DPM 2.0. It covers how SDMX dataflows and structures correspond to DPM report tables and variables.
 
 It aims to:
 - Explain how SDMX DSDs, Dataflows, and components correspond to DPM Tables and Variables.

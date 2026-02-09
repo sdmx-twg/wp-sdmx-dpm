@@ -1,6 +1,6 @@
 # Glossary
 
-This section documents the glossary mapping between SDMX 3.* and DPM Refit (2.0). It is the first comprehensive draft of the glossary mapping.
+This section documents the glossary mapping between SDMX 3.* and DPM 2.0. It is the first comprehensive draft of the glossary mapping.
 
 It aims to:
 - Explain how core SDMX glossary artefacts correspond to DPM artefacts.
