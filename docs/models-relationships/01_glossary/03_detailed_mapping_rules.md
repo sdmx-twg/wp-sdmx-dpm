@@ -433,10 +433,21 @@ From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category 
   - This mapping is lossy: composition information is lost unless captured via annotations or external documentation.
 
 - **SDMX → DPM** (creating compound items):
-  - If a particular Code is known (from business rules or ECB mappings) to represent a combination of other dimensions/categories:
-    - model it as a Compound Category Item in DPM, with explicit links to the constituent Category Items;
-    - even though SDMX does not encode that composition explicitly.
-  - This is mainly a design choice on the DPM side; SDMX does not force it.
+  - If a particular Code is known (from business rules or external documentation) to represent a combination of other dimensions/categories, it can be modelled as a Compound Item in DPM with explicit links to its constituent Property–Item pairs — even though SDMX does not encode that composition explicitly. This is a design choice on the DPM side; SDMX does not force it.
+  - *Example*: an SDMX codelist `CL_INSTRUMENT` contains a flat Code `TBILL` ("Treasury bill") with no internal structure:
+    ```xml
+    <Codelist id="CL_INSTRUMENT" agencyID="ECB" version="1.0">
+      <Code id="TBILL">
+        <Name xml:lang="en">Treasury bill</Name>
+      </Code>
+    </Codelist>
+    ```
+    In DPM, business knowledge tells us that "Treasury bill" is actually a combination of three characteristics. We model it as a Compound Item in an "Instrument" Category, referencing a Context with the following ContextCompositions:
+    - Type of financial instrument (Property) = "Debt security" (Item),
+    - Sector of the issuer (Property) = "General governments" (Item),
+    - Original maturity (Property) = "Up to 18 months" (Item).
+
+    The flat SDMX Code `TBILL` becomes a single DPM Item that is decomposable into its underlying Property–Item pairs for analysis, validation, and reuse across tables.
 
 ## 3.2 Subsets and hierarchies
 
