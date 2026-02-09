@@ -16,7 +16,6 @@ The table below summarises the main correspondences at glossary level. It is int
 | Hierarchy (within a Codelist) | SubCategory + SubCategoryItem hierarchy | Hierarchical structures over a single Codelist can be represented as parent–child relations among SubCategoryItems. |
 | Representation + Facet / FacetValueType | DataType + Category / Item / SubCategory | SDMX representations map to DPM DataTypes; enumerated representations additionally use Categories, Items and SubCategories to restrict values. |
 | ConceptScheme | – | SDMX groups concepts into ConceptSchemes; DPM uses a single cross-domain glossary of Properties/Metrics without an explicit scheme container. |
-| CategoryScheme / Category (subject-domain) | – (glossary layer) | SDMX CategorySchemes organise subject domains; the closest DPM concepts live in the rendering/packaging layer (Frameworks/Modules), not in the glossary. |
 | – | Compound Item | DPM Compound Items bundle multiple Property–Item pairs into a single Item. SDMX has no dedicated compound-code artefact; similar semantics must be modelled using multiple dimensions or structured Codes. |
 
 ## 2.2 Graphical mapping overview
@@ -64,11 +63,8 @@ Not all glossary artefacts have a clean one-to-one mapping. This section highlig
 
 ### 2.3.1 SDMX-only (at glossary level)
 
-- **ConceptScheme**  
+- **ConceptScheme**
   Container for concepts in SDMX. DPM does not have an explicit concept-scheme artefact; instead, Properties and Metrics live in a single cross-domain glossary and are organised via Categories, ownership and releases.
-
-- **CategoryScheme / Category (subject-domain taxonomy)**  
-  SDMX CategorySchemes organise subject domains and can categorise structural artefacts such as dataflows. DPM achieves similar grouping via Frameworks and Modules (in the rendering/packaging components), which sit outside the glossary.
 
 - **Complex cross-Codelist Hierarchies**  
   SDMX Hierarchies can mix Codes from different Codelists and support multiple parents. DPM SubCategory hierarchies cover many practical cases but are limited to Items of a single Category, so some SDMX hierarchies cannot be reproduced exactly.
