@@ -451,26 +451,17 @@ From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category 
 
 ## 3.2 Subsets and hierarchies
 
-### 3.2.1 Subsets (constraints and partial codelists)
+### 3.2.1 Subsets (constraints and codelist extensions)
 
-Here’s how you define a subset of codes in SDMX, with examples:
+SDMX provides two main mechanisms for defining subsets of codes:
 
-- **Option 1**: Partial Codelist using isPartial
-If you want to publish a reduced version of a maintained Codelist:
-Key points:
-The Codelist keeps the same agencyID, id, and version as the full list.
-Add isPartial="true" in the Codelist header.
-Include only the codes you need.
+- **Constraints**: use ContentConstraint to restrict allowable values for a Dataflow or ProvisionAgreement. Define a CubeRegion with MemberSelection entries to include/exclude codes. Supports `cascadeValues` and the `%` wildcard.
+- **Codelist extensions**: use CodelistExtension with InclusiveCodeSelection or ExclusiveCodeSelection to create a derived codelist that includes only a subset of codes from a base codelist (see section 1.1 for details).
 
-- **Option 2**: Using a Constraint
-For dynamic subsets or validation rules, use ContentConstraint or AttachmentConstraint.
-Key points:
-Define a CubeRegion for data or MetadataTargetRegion for metadata.
-Use MemberSelection to include/exclude codes.
-Support for cascadeValues and wildcard %.
+Note: partial codelists (`isPartial = true`) are excluded here — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
 
 #### 3.2.2 Mapping details
-Partial Codelist → DPM SubCategory
+Constraint / Codelist Extension → DPM SubCategory
 
 The subset of codes is modeled as a SubCategory of that Category.
 SubCategory groups selected Items (codes) and can be versioned via SubCategoryVersion (linked to a Release).
@@ -504,7 +495,7 @@ This allows tracking changes over time (e.g., adding/removing codes).
 | RowGUID             | (system-generated UUID) |
 
 
-#### DPM SubCategory Examples (Partial Codelist Mapping)
+#### DPM SubCategory Examples
 
 #### SubCategory: EU_COUNTRIES
 | Attribute           | Value |
