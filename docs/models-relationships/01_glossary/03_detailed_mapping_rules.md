@@ -463,39 +463,9 @@ Note: partial codelists (`isPartial = true`) are excluded here — as discussed 
 #### 3.2.2 Mapping details
 Constraint / Codelist Extension → DPM SubCategory
 
-The subset of codes is modeled as a SubCategory of that Category.
-SubCategory groups selected Items (codes) and can be versioned via SubCategoryVersion (linked to a Release).
-Versioning
-DPM supports historization: SubCategoryVersion refers to a Release, similar to SDMX versioning.
-This allows tracking changes over time (e.g., adding/removing codes).
+The subset of codes is modelled as a SubCategory of that Category. Each SubCategory groups Items from the corresponding Category and can be versioned via SubCategoryVersion (linked to a Release), allowing tracking of changes over time (e.g. adding/removing codes).
 
-- Each SubCategory groups Items- Each SubCategory groups Items from the Category `{agencyID}.{ConceptSchemeId}.{CodelistId}`.
-- Use SubCategoryVersion for historization.
-
-
-#### DPM SubCategory Mapping Details
-
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryIDsystem-generated, e.g., 7001 |
-| Code                | EU_COUNTRIES |
-| Name                | European Union Countries |
-| Description         | Subset of EU member states within CL_COUNTRY |
-| Owner               | ECB |
-| IsActive            | TRUE |
-| RowGUID             | (system-generated UUID) |
-
-#### SubCategoryVersion
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | (system-generated, e.g., 7101) |
-| SubCategoryID       | 7001 |
-| StartReleaseID      | 3001 (e.g., Release "2025-Q1") |
-| EndReleaseID        | NULL |
-| RowGUID             | (system-generated UUID) |
-
-
-#### DPM SubCategory Examples
+#### DPM SubCategory Example
 
 #### SubCategory: EU_COUNTRIES
 | Attribute           | Value |
