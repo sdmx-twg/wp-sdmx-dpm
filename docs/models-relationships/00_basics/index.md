@@ -6,8 +6,8 @@ This section provides foundational material for understanding the SDMX-DPM inter
 
 The Basics section serves as a prerequisite for the detailed mapping chapters that follow. It establishes:
 
-- **Conceptual foundations**: Understanding how SDMX and DPM approach metadata modelling from different architectural perspectives.
 - **Design philosophies**: Recognizing the distinction between exchange-oriented (SDMX) and repository-oriented (DPM) frameworks.
+- **Conceptual foundations**: Understanding how SDMX and DPM approach metadata modelling from different architectural perspectives.
 - **Common vocabulary**: Ensuring consistent use and understanding of technical terms across both standards.
 
 ## Contents
@@ -16,8 +16,8 @@ The Basics section serves as a prerequisite for the detailed mapping chapters th
 
 A comprehensive comparison of SDMX and DPM covering their fundamental architectural differences:
 
-- **Conceptual foundations**: How DPM uses Concepts as primary building blocks versus SDMX's abstract class hierarchy.
 - **Architectural approaches**: The DPM meta-model for physical database implementation versus the SDMX Information Model for conceptual exchange.
+- **Conceptual foundations**: How DPM uses Concepts as primary building blocks versus SDMX's abstract class hierarchy.
 - **Data access models**: SDMX's distributed API-based approach versus DPM's shared repository model.
 - **Object identification**: Database-centric keys with IDPrefix (DPM) versus URN-based global identifiers (SDMX).
 - **Ownership models**: Flat organizational ownership in DPM versus hierarchical maintenance agencies in SDMX.

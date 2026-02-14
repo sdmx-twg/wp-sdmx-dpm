@@ -2,9 +2,41 @@
 
 This chapter provides a foundational comparison between SDMX (Statistical Data and Metadata eXchange) and DPM (Data Point Model), focusing on their architectural principles, design philosophies, and core structural differences. Understanding these fundamental distinctions is essential before diving into the detailed artefact-level mappings presented in subsequent chapters.
 
-## 1. Conceptual foundations
+## 1. Architectural approaches
 
-### 1.1 DPM Concepts
+### 1.1 DPM meta-model
+
+The DPM meta-model is a **model of the model**, consisting of statements and structures that hold the definitions of information requirements. Key characteristics:
+
+- **Physical orientation**: Typically expressed through entity–relationship structures aimed at physical database implementation.
+- **Database specification**: Designed to specify the precise structure of an actual database or repository.
+- **Shared semantic content**: The database content is shared among regulators and reporting entities to ensure a common understanding.
+- **Implementation-focused**: Directly maps to database schemas, tables, and relationships.
+
+### 1.2 SDMX Information Model
+
+The SDMX Information Model is a **UML-based conceptual design** that remains syntax-neutral. Key characteristics:
+
+- **Conceptual abstraction**: Focuses on the logical structure of statistical data and metadata without prescribing implementation details.
+- **Syntax neutrality**: Can be serialized in multiple formats (SDMX-ML, SDMX-JSON, SDMX-CSV).
+- **Exchange-oriented**: Designed for the standardized exchange of data and metadata across distributed systems.
+- **Implementation-agnostic**: Does not mandate specific database structures or storage mechanisms.
+
+### 1.3 Summary comparison
+
+| Aspect | DPM Meta-model | SDMX Information Model |
+| --- | --- | --- |
+| Primary purpose | Database implementation specification | Conceptual exchange framework |
+| Expression | Entity–relationship diagrams | UML class diagrams |
+| Implementation | Physical database schemas | Syntax-neutral serializations |
+| Focus | Shared repository structure | Distributed data exchange |
+| Abstraction level | Physical/logical | Conceptual |
+
+It should be noted that SDMX provides specifica syntaxes (XML, JSON and, for data, CSV) that server as actual implementations of the conceptual model. But SDMX is agnostic regarding databases.
+
+## 2. Conceptual foundations
+
+### 2.1 DPM Concepts
 
 In the Data Point Model (DPM), **Concepts** are defined as identifiable objects within a model, such as a Category, Item, or Variable. These entities serve as the primary units of metadata and are characterized by:
 
@@ -18,23 +50,23 @@ classDiagram
   class Concept {
     +ConceptGUID
   }
-  
+
   class Category {
     <<Concept>>
   }
-  
+
   class Item {
     <<Concept>>
   }
-  
+
   class classN {
     <<Concept>>
   }
-  
+
   Concept <|-- Category : is a
   Concept <|-- Item : is a
   Concept <|-- classN : is a
-  
+
 ```
 
 Concepts may be owned by an organisation (depending on the type of concept), and they may also have translations and/or legal references.
@@ -47,32 +79,32 @@ classDiagram
     +Code
     +Name
   }
-  
+
   class Organisation {
     +OrganisationID
     +Name
   }
-  
+
   class Translation {
     +TranslationID
     +Language
     +TranslatedText
     +TranslatorID
   }
-  
+
   class Reference {
     +ReferenceID
     +LegalReference
     +Description
   }
-  
+
   Concept "0..n" --> "0..1" Organisation : is owned by
   Concept "1" --> "0..n" Translation : has translations
   Concept "1" --> "0..n" Reference : has legal references
 ```
 
 
-### 1.2 SDMX abstract classes
+### 2.2 SDMX abstract classes
 
 Conversely, SDMX utilizes a hierarchy of abstract classes to serve as architectural archetypes. These base classes provide foundational building blocks that are inherited by concrete subclasses:
 
@@ -87,51 +119,51 @@ classDiagram
     <<abstract>>
     +id: string
   }
-  
+
   class NameableArtefact {
     <<abstract>>
     +name: InternationalString
     +description: InternationalString
   }
-  
+
   class VersionableArtefact {
     <<abstract>>
     +version: string
     +validFrom: DateTime
     +validTo: DateTime
   }
-  
+
   class MaintainableArtefact {
     <<abstract>>
     +agencyID: string
     +isFinal: boolean
     +isExternalReference: boolean
   }
-  
+
   class ItemScheme {
     <<abstract>>
     +isPartial: boolean
   }
-  
+
   class Item {
     <<abstract>>
   }
-  
+
   class Codelist {
   }
-  
+
   class Code {
   }
-  
+
   class ConceptScheme {
   }
-  
+
   class Concept {
   }
-  
+
   class DataStructureDefinition {
   }
-  
+
   IdentifiableArtefact <|-- NameableArtefact
   NameableArtefact <|-- VersionableArtefact
   VersionableArtefact <|-- MaintainableArtefact
@@ -148,41 +180,9 @@ classDiagram
 
 Concrete structural artefacts such as Codelists or Data Structure Definitions (DSDs) inherit these properties through the class hierarchy. This approach separates architectural concerns (identity, maintenance, naming) from domain-specific semantics (statistical concepts, data structures).
 
-### 1.3 Key distinction
+### 2.3 Key distinction
 
 Where DPM treats "Concept" as the primary building block that directly represents modelling entities, SDMX uses abstract base classes as templates from which concrete artefacts are derived. This reflects their different design origins: DPM as a database implementation model and SDMX as a conceptual exchange framework.
-
-## 2. Architectural approaches
-
-### 2.1 DPM meta-model
-
-The DPM meta-model is a **model of the model**, consisting of statements and structures that hold the definitions of information requirements. Key characteristics:
-
-- **Physical orientation**: Typically expressed through entity–relationship structures aimed at physical database implementation.
-- **Database specification**: Designed to specify the precise structure of an actual database or repository.
-- **Shared semantic content**: The database content is shared among regulators and reporting entities to ensure a common understanding.
-- **Implementation-focused**: Directly maps to database schemas, tables, and relationships.
-
-### 2.2 SDMX Information Model
-
-The SDMX Information Model is a **UML-based conceptual design** that remains syntax-neutral. Key characteristics:
-
-- **Conceptual abstraction**: Focuses on the logical structure of statistical data and metadata without prescribing implementation details.
-- **Syntax neutrality**: Can be serialized in multiple formats (SDMX-ML, SDMX-JSON, SDMX-CSV).
-- **Exchange-oriented**: Designed for the standardized exchange of data and metadata across distributed systems.
-- **Implementation-agnostic**: Does not mandate specific database structures or storage mechanisms.
-
-### 2.3 Summary comparison
-
-| Aspect | DPM Meta-model | SDMX Information Model |
-| --- | --- | --- |
-| Primary purpose | Database implementation specification | Conceptual exchange framework |
-| Expression | Entity–relationship diagrams | UML class diagrams |
-| Implementation | Physical database schemas | Syntax-neutral serializations |
-| Focus | Shared repository structure | Distributed data exchange |
-| Abstraction level | Physical/logical | Conceptual |
-
-It should be noted that SDMX provides specifica syntaxes (XML, JSON and, for data, CSV) that server as actual implementations of the conceptual model. But SDMX is agnostic regarding databases.
 
 ## 3. Metadata access models
 
