@@ -250,10 +250,10 @@ Although `name` and `description` are not attributes of the SDMX `Concept` class
 
 ### 2.4.3 Length and format constraints
 
-| Attribute | DPM Constraint | SDMX Constraint | Mapping Rule |
-|-----------|----------------|-----------------|--------------|
-| Name | Typically VARCHAR(255) | Unbounded | Truncate with warning if exceeded |
-| Description | Typically TEXT/CLOB | Unbounded | No truncation normally needed |
+| Attribute | SDMX Constraint | DPM Constraint | Mapping Rule |
+|-----------|-----------------|----------------|--------------|
+| Name | Unbounded | Typically VARCHAR(255) | Truncate with warning if exceeded |
+| Description | Unbounded | Typically TEXT/CLOB | No truncation normally needed |
 
 ### 2.4.4 Generic mapping template
 
