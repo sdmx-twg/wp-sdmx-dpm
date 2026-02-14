@@ -347,8 +347,8 @@ classDiagram
 
 An **SDMX Code** is the atomic element of a Codelist. Codes may participate in hierarchical structures as defined by the SDMX Item Scheme pattern. They inherit their identification and naming attributes from the SDMX artefact hierarchy (IdentifiableArtefact → NameableArtefact) .
 
-The equivalent artefact in the DPM is the **Category Item**.  
-A DPM Item represents one enumerated value of a Category. Items may take part in parent–child relationships.
+The equivalent artefact in the DPM is the **Category Item**.
+A DPM Item represents one enumerated value of a Category. Items may take part in parent–child relationships. Only Items with `IsProperty = false` are candidates for mapping to SDMX Codes; Items with `IsProperty = true` serve as counterparts to Properties and are mapped to SDMX Concepts instead (see [section 3.5](#35-concept--property)).
 
 **Example Code**
 
@@ -370,8 +370,8 @@ classDiagram
     direction LR
     SDMX_CODE "1" -- "1" DPM_ITEM
 ```
-From SDMX to DPM: One SDMX Code is always mapped to one DPM Item belonging to the mapped Category.
-From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category is mapped to a Codelist. 
+From SDMX to DPM: One SDMX Code is always mapped to one DPM Item (with `IsProperty = false`) belonging to the mapped Category.
+From DPM to SDMX: One DPM Item is mapped to an SDMX Code only if `IsProperty = false` and its Category is mapped to a Codelist. Items with `IsProperty = true` are not mapped to Codes — they correspond to Properties (see [section 3.5](#35-concept--property)).
 
 ### 3.3.2 Attributes equivalence
 

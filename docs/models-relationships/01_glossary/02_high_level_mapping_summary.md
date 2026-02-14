@@ -9,7 +9,7 @@ The table below summarises the main correspondences at glossary level. It is int
 | SDMX glossary artefact | DPM glossary artefact | Mapping notes |
 | --- | --- | --- |
 | Codelist, GeoCodelist, ValueList | Category (enumerated) | All provide enumerated value domains. GeoCodelist may correspond to a Category with external geospatial semantics; ValueList to lightweight Categories. |
-| Code | Item (simple) | One-to-one mapping of individual values (code, label, description, status). |
+| Code | Item (`IsProperty = false`) | One-to-one mapping of individual values. Only non-property Items are mapped; Items with `IsProperty = true` correspond to Properties, not Codes. |
 | Extended Codelist (subset of one Codelist) | SubCategory over a Category | Restrictive Extended Codelists map naturally to SubCategories that select a subset of Items from a Category. |
 | Extended Codelist (across Codelists) | Super Category over multiple Categories | Extended Codelists that merge several Codelists align with Super Categories that compose multiple Categories into one value domain. |
 | Concept (qualitative & quantitative) | Property / Metric | Both define business characteristics used as dimensions, attributes or measures. DPM distinguishes quantitative Properties via `IsMetric = TRUE` (Metric). |
