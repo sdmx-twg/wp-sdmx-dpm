@@ -30,7 +30,7 @@ Both standards use system-generated identifiers for internal management:
 
 | Standard | Generated Value | Purpose |
 |----------|-----------------|---------|
-| **DPM** | Primary Key ID (numeric) | Database row identification |
+| **DPM** | Primary Key ID (owner-prefixed numeric) | Entity identification; embeds owner via IDPrefix — not a pure surrogate key |
 | **DPM** | RowGUID (UUID) | Change tracking and synchronization |
 | **SDMX** | URN | Global unique reference (derived from id + agencyID + version) |
 
@@ -77,9 +77,9 @@ DPM uses a dual identification approach:
 ┌─────────────────────────────────────────────────────────────────┐
 │                     DPM Primary Key                             │
 ├─────────────────────────────────────────────────────────────────┤
-│  [IDPrefix (3 digits)][Sequential ID]                           │
+│  [IDPrefix (3 digits)][Numeric suffix]                          │
 │       ↓                     ↓                                   │
-│    Owner org            System-generated                        │
+│  Owning organisation    Unique within owner                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 

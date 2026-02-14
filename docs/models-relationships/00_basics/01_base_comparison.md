@@ -233,13 +233,13 @@ SDMX uses a **Universal Resource Name (URN)**, which is a globally unique identi
 
 Modellers identify concepts using **Codes** and **Names**. In physical database implementations, object identity is managed through:
 
-- **Primary Key IDs**: Numeric identifiers for database entities.
-- **IDPrefix for uniqueness**: Primary keys are made unique across organizations by prefixing the first three digits with an organization identifier (IDPrefix):
+- **Primary Key IDs**: Owner-prefixed numeric identifiers structured as a three-digit IDPrefix (indicating the owning Organisation) followed by a sequential numeric suffix. These are not pure surrogate keys — the prefix carries business meaning.
+- **IDPrefix for uniqueness**: The first three digits of any Primary Key ID identify the owning Organisation:
   - `100`: DPM Metamodel
   - `101`: EBA (European Banking Authority)
   - `102`: EIOPA (European Insurance and Occupational Pensions Authority)
 - **Model merging**: The IDPrefix simplifies the process of merging models from different databases, as keys remain globally unique.
-- **RowGUID for audit**: Every entity contains a globally unique `RowGUID` (GUID/UUID) for change logging and synchronization.
+- **RowGUID**: A separate, system-generated GUID/UUID on every entity, used for change tracking and synchronization. Unlike the Primary Key ID, the RowGUID carries no business semantics.
 
 **Example**: An EBA-owned Concept might have a primary key ID `101000042`, where `101` indicates EBA ownership.
 
