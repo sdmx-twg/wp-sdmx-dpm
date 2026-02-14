@@ -76,7 +76,7 @@ SDMX artefact defining the structure of data through dimensions, attributes, and
 SDMX construct defining a flow of data with its associated DSD. Represents a specific reporting stream or data publication. Corresponds to a combination of DPM Report Table and its context.
 
 **DataType**
-Predefined value type specification. In DPM, DataTypes include integer, decimal, boolean, date, text, and Enumeration. In SDMX, data types are specified through Representations and Facets.
+Predefined value type specification. In DPM, DataTypes include integer, decimal, boolean, date, text, and Enumeration. In SDMX, data types are specified through Representations and Facets. Note that boolean fields in the EBA DPM database use `-1` for *true* and `0` for *false* (MS Access convention) — see [Physical database conventions](00_basics/02_detailed_mapping_rules.md#25-physical-database-conventions).
 
 **Default**
 Implicit value assumed when not explicitly stated. In DPM, a Category can designate one Item as its default, which is implicitly assumed for a Property of that Category when no explicit Item is specified.

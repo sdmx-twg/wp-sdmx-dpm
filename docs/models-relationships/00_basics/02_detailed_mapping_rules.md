@@ -286,3 +286,18 @@ Translation (Description)   →          description[lang]
 Owner                       →          agencyID
 Release                     →          version (requires strategy)
 ```
+
+## 2.5 Physical database conventions
+
+### 2.5.1 Boolean representation
+
+In the EBA DPM database (historically distributed as MS Access), boolean fields such as `IsActive`, `IsEnumerated`, `IsMetric`, and `IsExternalRefData` use `-1` for *true* and `0` for *false*. This is the default boolean encoding in MS Access and differs from the more common `1`/`0` or `true`/`false` conventions.
+
+| DPM database value | Logical meaning |
+|---------------------|-----------------|
+| `-1`                | TRUE            |
+| `0`                 | FALSE           |
+
+When converting DPM boolean fields to SDMX, map `-1` to `true` and `0` to `false`. When converting SDMX booleans to DPM, reverse the mapping.
+
+> **Note**: SQLite exports of the DPM database preserve the same `-1`/`0` convention. Implementers should not assume standard `1`/`0` encoding.
