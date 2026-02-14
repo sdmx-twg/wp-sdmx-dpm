@@ -79,8 +79,10 @@ classDiagram
 | id                        | Code                      |
 |     -not applicable-      | IsEnumerated = TRUE       |
 |     -not applicable-      | IsActive = TRUE           |
-| isExternalReference       | IsExternalRefData         |
+|     -not applicable-      | IsExternalRefData         |
 |     -not applicable-      | RefDataSource = NULL      |
+
+> **Note**: SDMX `isExternalReference` is a **transmission flag** indicating that the artefact is sent as a stub whose full content can be resolved via `structureURL` or `serviceURL`. It has no semantic equivalent in DPM. Conversely, DPM `IsExternalRefData` is a **domain property** indicating that a Category refers to external reference data (e.g. master data, LEI registries). These are not equivalent despite the similar naming.
 
 
 ### 3.1.3 Example Mapping SDMX ==> DPM
@@ -449,9 +451,9 @@ From DPM to SDMX: One DPM Item is always mapped to an SDMX Code if its Category 
 
     The flat SDMX Code `TBILL` becomes a single DPM Item that is decomposable into its underlying Property–Item pairs for analysis, validation, and reuse across tables.
 
-## 3.2 Subsets and hierarchies
+## 3.4 Subsets and hierarchies
 
-### 3.2.1 Subsets (constraints and codelist extensions)
+### 3.4.1 Subsets (constraints and codelist extensions)
 
 SDMX provides two main mechanisms for defining subsets of codes:
 
@@ -460,7 +462,7 @@ SDMX provides two main mechanisms for defining subsets of codes:
 
 Note: partial codelists (`isPartial = true`) are excluded here — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
 
-#### 3.2.2 Mapping details
+### 3.4.2 Mapping details
 Constraint / Codelist Extension → DPM SubCategory
 
 The subset of codes is modelled as a SubCategory of that Category. Each SubCategory groups Items from the corresponding Category and can be versioned via SubCategoryVersion (linked to a Release), allowing tracking of changes over time (e.g. adding/removing codes).
@@ -510,7 +512,7 @@ The subset of codes is modelled as a SubCategory of that Category. Each SubCateg
 | RowGUID             | (system-generated UUID) |
 
 
-### 3.2.2 Hierarchies
+### 3.4.3 Hierarchies
 
 - **Hierarchy over a single codelist**:
   - When an SDMX Hierarchy only includes codes from one codelist:
@@ -526,12 +528,12 @@ The subset of codes is modelled as a SubCategory of that Category. Each SubCateg
       - external documentation.
 
 
-## 3.1 ConceptSchema ↔ DPM Glossary
+## 3.5 Concept ↔ Property
 In the Data Point Model (DPM), there is no construct equivalent to the SDMX `ConceptScheme`.  
 In SDMX, each `ConceptScheme` has its own identification space (defined by `agencyId`, `id`, and `version`).  
 If concepts from multiple `ConceptSchemes` are combined into a single DPM glossary, identifier collisions may occur (for example, two concepts with the same name, such as `COUNTRY`, but with different meanings). 
 
-### 3.1.1 Basic mapping
+### 3.5.1 Basic mapping
 
 To resolve this issue, a namespace can be created for each `ConceptScheme` by adopting an approach based on **composite keys** in the DPM glossary:
 
@@ -607,9 +609,9 @@ This ensures uniqueness without renaming the concepts.
 
 
 
-## 3.3 Concept ↔ Property / Metric
+## 3.6 Concept ↔ Property / Metric
 
-### 3.3.2 DPM → SDMX
+### 3.6.1 DPM → SDMX
 ### SDMX Concept → DPM Property Mapping
 
 This template maps **SDMX Concepts** (which can play the role of **dimension**, **attribute**, or **measure**) to **DPM Properties** (and shows how they are later used by Variables).
@@ -696,7 +698,7 @@ This template maps **SDMX Concepts** (which can play the role of **dimension**, 
   - May carry **Context** (e.g., Unit of measure, Currency) through additional Properties/Variables
 
 
-### 3.5.2 DPM → SDMX
+### 3.6.2 DPM → SDMX
 
 - **Metric → Concept used as measure**:
   - For each DPM Metric:

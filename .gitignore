@@ -3,3 +3,5 @@ site/
 .cursorrules
 .github/copilot-instructions.md
 .venv/
+AGENTS.md
+issue-reviewer.skill
