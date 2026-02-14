@@ -1,7 +1,11 @@
 site/
+*.db
 .agent/
 .cursorrules
 .github/copilot-instructions.md
 .venv/
 AGENTS.md
 issue-reviewer.skill
+dpm-db-inspector.skill
+dpm-db-inspector/
+scripts/

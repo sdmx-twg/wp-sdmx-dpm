@@ -529,189 +529,472 @@ The subset of codes is modelled as a SubCategory of that Category. Each SubCateg
 
 
 ## 3.5 Concept ↔ Property
-In the Data Point Model (DPM), there is no construct equivalent to the SDMX `ConceptScheme`.  
-In SDMX, each `ConceptScheme` has its own identification space (defined by `agencyId`, `id`, and `version`).  
-If concepts from multiple `ConceptSchemes` are combined into a single DPM glossary, identifier collisions may occur (for example, two concepts with the same name, such as `COUNTRY`, but with different meanings). 
 
-### 3.5.1 Basic mapping
+An SDMX **Concept** is a semantic definition of a business characteristic. Concepts are the building blocks of structural artefacts: each dimension, attribute, or measure in a Data Structure Definition references a Concept that defines its meaning. A Concept may carry a **core representation** — either enumerated (referencing a Codelist) or non-enumerated (specifying a data type with optional Facet constraints).
 
-To resolve this issue, a namespace can be created for each `ConceptScheme` by adopting an approach based on **composite keys** in the DPM glossary:
-
----
-
-### Glossary with Composite Keys
-In the DPM glossary, define each concept using a composite key in the following format:
-
-```
-{agencyID}.{ConceptSchemeId}.{ConceptId}
-```
-
-*Example:*
-```
-ECB.CL_COUNTRY.COUNTRY
-```
-
-This ensures uniqueness without renaming the concepts.
-
----
-
-### *Example ConceptScheme*
+**Example Concept** (from the BIS SDMX repository — `BIS:STANDALONE_CONCEPT_SCHEME(1.0)`)
 ```xml
-<ConceptScheme id="CL_CONCEPTS" agencyID="ECB" version="1.0">
-    <Name xml:lang="en">Statistical Concepts</Name>
-    <Description xml:lang="en">Concepts used for macroeconomic indicators</Description>
-    <Concept id="FREQ">
-        <Name xml:lang="en">Frequency</Name>
-        <Description xml:lang="en">Reporting frequency</Description>
-        <Representation>
-            <CodelistRef id="CL_FREQ" agencyID="ECB" version="1.0"/>
-        </Representation>
-    </Concept>
-    <Concept id="REF_AREA">
-        <Name xml:lang="en">Reference Area</Name>
-        <Description xml:lang="en">Geographical coverage</Description>
-        <Representation>
-            <CodelistRef id="CL_AREA" agencyID="ECB" version="1.0"/>
-        </Representation>
-    </Concept>
-    <Codelist id="CL_FREQ" agencyID="ECB" version="1.0">
-        <Name xml:lang="en">Frequency</Name>
-        <Description xml:lang="en">Reporting frequency codes</Description>
-        <Code id="A">
-            <Name xml:lang="en">Annual</Name>
-        </Code>
-        <Code id="Q">
-            <Name xml:lang="en">Quarterly</Name>
-        </Code>
-        <Code id="M">
-            <Name xml:lang="en">Monthly</Name>
-        </Code>
-    </Codelist>
+<Concept id="REF_AREA">
+  <Name xml:lang="en">Reference area</Name>
+</Concept>
+```
+
+In SDMX, the representation of a Concept can be defined at two levels: as a **CoreRepresentation** on the Concept itself, or as a **LocalRepresentation** on the DSD component that references it. In the BIS, representations are defined at the component level — the Dimension in the DSD provides the Codelist reference:
+
+```xml
+<!-- From DSD BIS:BIS_XR(1.0) -->
+<Dimension id="REF_AREA" position="2">
+  <ConceptIdentity>
+    urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REF_AREA
+  </ConceptIdentity>
+  <LocalRepresentation>
+    <Enumeration>
+      urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)
+    </Enumeration>
+  </LocalRepresentation>
+</Dimension>
+```
+
+The equivalent artefact in the DPM is the **Property**.
+
+A DPM Property defines a semantic characteristic that is later used to build variables. It refers to one or more Categories (via PropertyCategory) and carries a DataType. A Property with `IsMetric = TRUE` is informally called a **Metric** and indicates the Property is quantitative (e.g. amounts, ratios, counts); `IsMetric = FALSE` indicates a qualitative Property. The `IsMetric` flag says nothing about the component role — a qualitative Property can be used as a measure and a quantitative Property can appear as a dimension or attribute.
+
+In the DPM, a Property does not directly carry a `Code` attribute. Instead, each Property has a counterpart **Item** (with `IsProperty = TRUE`) that belongs to a dedicated Category (typically coded `_PR` — "Properties"). The Property receives its code, name, description, and owner from that Item through the **ItemCategory** association — just like any other Item (see section [1.2](01_glossary_overview.md#12-dpm-glossary-artefacts)).
+
+**Example Property** (from the EBA DPM)
+
+**Item**
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| 1012400535 | Residence of counterparty | Defines the geographical area where the counterparty of the contract or transaction resides. | TRUE | TRUE |
+
+**ItemCategory**
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| 1012400535 | `RCP` | 1002 – `_PR` (Properties) | `eba:RCP` | FALSE | 3.4 | – |
+
+**Property**
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| 1012400535 | FALSE | 8 – Enumeration | FALSE | stock | – |
+
+**PropertyCategory**
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| 1012400535 | 250 – `GA` (Geographical area) | 3.4 | – |
+
+### 3.5.1 Mapping cardinality
+
+```mermaid
+classDiagram
+    direction LR
+    SDMX_CONCEPT "1" -- "1" DPM_PROPERTY
+```
+
+- From SDMX to DPM: One Concept is always mapped to one Property. The `IsMetric` flag is set based on whether the Concept is quantitative (`TRUE`) or qualitative (`FALSE`), independent of its role (dimension, attribute or measure) in any particular DSD.
+- From DPM to SDMX: One Property is always mapped to one Concept. Whether the resulting Concept is used as a dimension, attribute, or measure in a DSD depends on how the Property is used in Variables (see chapter on Variables mapping), not on the `IsMetric` flag.
+
+
+### 3.5.2 Attributes equivalence
+
+#### 3.5.2.1 SDMX Concept attributes
+- IdentifiableArtefact attributes
+    - `id`
+    - `name`
+    - `description`
+- `coreRepresentation`
+
+#### 3.5.2.2 DPM Property attributes
+- `Code` (via counterpart Item in the `_PR` Category)
+- `Name` (via counterpart Item)
+- `Description` (via counterpart Item)
+- `IsMetric`
+- `DataType`
+- `Owner`
+
+#### 3.5.2.3 Mapping details
+
+| SDMX                                    | DPM                                      |
+|-----------------------------------------|------------------------------------------|
+| id                                      | Code                                     |
+| name                                    | Name                                     |
+| description                             | Description                              |
+| coreRepresentation (enumerated)         | DataType = Enumeration + PropertyCategory → Category |
+| coreRepresentation (non-enumerated)     | DataType (Integer, Decimal, Date, etc.)  |
+| -not applicable-                        | IsMetric (qualitative / quantitative)    |
+| -not applicable-                        | Owner                                    |
+
+> **Note**: The component role (dimension, attribute, or measure) is not encoded in the Property itself. In SDMX, the role is determined by the Component in a DSD; in DPM, it is determined by the type of Variable (KeyVariable, AttributeVariable, FactVariable) that references the Property. The `IsMetric` flag only indicates whether a Property is quantitative or qualitative and does not determine its role.
+
+
+### 3.5.3 Example Mapping SDMX ==> DPM
+
+The SDMX side uses real Concepts from the BIS repository (`BIS:STANDALONE_CONCEPT_SCHEME(1.0)`) and their representations from the Exchange Rates DSD (`BIS:BIS_XR(1.0)`). The DPM side uses real Properties from the EBA DPM database, showing how data is distributed across the Item, ItemCategory, Property, and PropertyCategory tables.
+
+#### Qualitative Concept with enumerated representation
+
+**SDMX Concept** — `REF_AREA` (Reference area), used as a dimension in the Exchange Rates DSD with an enumerated local representation referencing Codelist `BIS:CL_BIS_IF_REF_AREA(1.0)`:
+
+```xml
+<!-- Concept definition (from ConceptScheme) -->
+<Concept id="REF_AREA">
+  <Name xml:lang="en">Reference area</Name>
+</Concept>
+
+<!-- Component definition (from DSD BIS:BIS_XR) -->
+<Dimension id="REF_AREA" position="2">
+  <ConceptIdentity>
+    urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REF_AREA
+  </ConceptIdentity>
+  <LocalRepresentation>
+    <Enumeration>
+      urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)
+    </Enumeration>
+  </LocalRepresentation>
+</Dimension>
+```
+
+**Item** *(generated)*
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| *(gen)* | Reference area | – | TRUE | TRUE |
+
+**ItemCategory** *(generated)*
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| *(gen)* | `REF_AREA` | `_PR` (Properties) | `REF_AREA` | FALSE | *(current)* | – |
+
+**Property** *(generated)*
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| *(gen)* | FALSE | Enumeration | FALSE | – | – |
+
+**PropertyCategory** *(generated)*
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| *(gen)* | Category mapped from `CL_BIS_IF_REF_AREA` | *(current)* | – |
+
+The Concept `id` becomes the ItemCategory `Code` within the `_PR` Category. The Concept `Name` becomes the Item `Name`. The enumerated representation (Codelist `CL_BIS_IF_REF_AREA`) maps to a PropertyCategory association pointing to the Category mapped from that Codelist (see section 3.1), and the DataType is set to `Enumeration`.
+
+#### Qualitative Concept with non-enumerated representation
+
+**SDMX Concept** — `TITLE` (Title), used as an attribute in the Exchange Rates DSD with a non-enumerated local representation (String, max 255 characters):
+
+```xml
+<!-- Concept definition (from ConceptScheme) -->
+<Concept id="TITLE">
+  <Name xml:lang="en">Title</Name>
+</Concept>
+
+<!-- Component definition (from DSD BIS:BIS_XR) -->
+<Attribute id="TITLE" usage="optional">
+  <ConceptIdentity>
+    urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE
+  </ConceptIdentity>
+  <LocalRepresentation>
+    <TextFormat textType="String" maxLength="255"/>
+  </LocalRepresentation>
+</Attribute>
+```
+
+**Item** *(generated)*
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| *(gen)* | Title | – | TRUE | TRUE |
+
+**ItemCategory** *(generated)*
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| *(gen)* | `TITLE` | `_PR` (Properties) | `TITLE` | FALSE | *(current)* | – |
+
+**Property** *(generated)*
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| *(gen)* | FALSE | String | FALSE | – | 255 |
+
+**PropertyCategory** *(generated)*
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| *(gen)* | `_NA` (Not applicable) | *(current)* | – |
+
+When the Concept has a non-enumerated representation (free-form text), the DPM DataType is set to the corresponding type (`String`) and the PropertyCategory points to the `_NA` Category, which in the DPM indicates that no specific enumerated domain applies. The `maxLength` Facet from the SDMX representation can be preserved in the `ValueLength` field.
+
+#### Quantitative Concept (measure)
+
+**SDMX Concept** — `OBS_VALUE` (Observation Value), used as the measure in the Exchange Rates DSD:
+
+```xml
+<!-- Concept definition (from ConceptScheme) -->
+<Concept id="OBS_VALUE">
+  <Name xml:lang="en">Observation Value</Name>
+</Concept>
+
+<!-- Component definition (from DSD BIS:BIS_XR) -->
+<Measure id="OBS_VALUE" usage="optional">
+  <ConceptIdentity>
+    urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE
+  </ConceptIdentity>
+</Measure>
+```
+
+**Item** *(generated)*
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| *(gen)* | Observation Value | – | TRUE | TRUE |
+
+**ItemCategory** *(generated)*
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| *(gen)* | `OBS_VALUE` | `_PR` (Properties) | `OBS_VALUE` | FALSE | *(current)* | – |
+
+**Property** *(generated)*
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| *(gen)* | TRUE | Decimal | FALSE | – | – |
+
+**PropertyCategory** *(generated)*
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| *(gen)* | `_NA` (Not applicable) | *(current)* | – |
+
+The BIS `OBS_VALUE` Concept has no explicit representation, but it is used as the primary measure for exchange rate observations (numeric values). The resulting Property receives `IsMetric = TRUE` because it represents a quantitative measurement, and the DataType is set to `Decimal`. Like all non-enumerated Properties, the PropertyCategory points to `_NA`.
+
+
+### 3.5.4 Example Mapping DPM ==> SDMX
+
+#### Qualitative Property (enumerated)
+
+**Item**
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| 1012400535 | Residence of counterparty | Defines the geographical area where the counterparty of the contract or transaction resides. | TRUE | TRUE |
+
+**ItemCategory**
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| 1012400535 | `RCP` | 1002 – `_PR` (Properties) | `eba:RCP` | FALSE | 3.4 | – |
+
+**Property**
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| 1012400535 | FALSE | 8 – Enumeration | FALSE | stock | – |
+
+**PropertyCategory**
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| 1012400535 | 250 – `GA` (Geographical area) | 3.4 | – |
+
+```xml
+<Concept id="RCP">
+  <Name xml:lang="en">Residence of counterparty</Name>
+  <Description xml:lang="en">Defines the geographical area where the
+    counterparty of the contract or transaction resides.</Description>
+  <CoreRepresentation>
+    <Enumeration>
+      <Ref id="CL_GA" class="Codelist" agencyID="EBA" version="1.0"/>
+    </Enumeration>
+  </CoreRepresentation>
+</Concept>
+```
+
+The ItemCategory `Code` becomes the Concept `id`. The `CoreRepresentation` references the Codelist mapped from the `GA` Category associated with the Property (see section 3.1).
+
+#### Qualitative Property (typed)
+
+**Item**
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| 6454 | Identifier of the security | – | TRUE | TRUE |
+
+**ItemCategory**
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| 6454 | `si615` | 1002 – `_PR` (Properties) | `si615` | FALSE | 3.4 | – |
+
+**Property**
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| 6454 | FALSE | 3 – String | FALSE | stock | – |
+
+**PropertyCategory**
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| 6454 | 1003 – `_NA` (Not applicable) | 3.4 | – |
+
+```xml
+<Concept id="si615">
+  <Name xml:lang="en">Identifier of the security</Name>
+  <CoreRepresentation>
+    <TextFormat textType="String"/>
+  </CoreRepresentation>
+</Concept>
+```
+
+When the Property has a non-enumeration DataType and its PropertyCategory points to `_NA`, the SDMX Concept receives a non-enumerated `CoreRepresentation` with the corresponding `textType`.
+
+#### Metric (quantitative Property)
+
+**Item**
+
+| ItemID | Name | Description | IsProperty | IsActive |
+| ------ | ---- | ----------- | ---------- | -------- |
+| 1268 | Fair value | – | TRUE | TRUE |
+
+**ItemCategory**
+
+| ItemID | Code | CategoryID | Signature | IsDefaultItem | StartRelease | EndRelease |
+| ------ | ---- | ---------- | --------- | ------------- | ------------ | ---------- |
+| 1268 | `mi129` | 1002 – `_PR` (Properties) | `mi129` | FALSE | 3.4 | – |
+
+**Property**
+
+| PropertyID | IsMetric | DataTypeID | IsComposite | PeriodType | ValueLength |
+| ---------- | -------- | ---------- | ----------- | ---------- | ----------- |
+| 1268 | TRUE | 9 – Monetary | FALSE | stock | – |
+
+**PropertyCategory**
+
+| PropertyID | CategoryID | StartRelease | EndRelease |
+| ---------- | ---------- | ------------ | ---------- |
+| 1268 | 1003 – `_NA` (Not applicable) | 3.4 | – |
+
+```xml
+<Concept id="mi129">
+  <Name xml:lang="en">Fair value</Name>
+  <CoreRepresentation>
+    <TextFormat textType="Decimal"/>
+  </CoreRepresentation>
+</Concept>
+```
+
+The DPM `Monetary` DataType maps to the SDMX `Decimal` text type. The `IsMetric = TRUE` flag does not affect the Concept itself — it only indicates the Property is quantitative. The component role (measure, dimension, or attribute) is determined by Variable usage, not by `IsMetric`.
+
+
+### 3.5.5 ConceptScheme handling
+
+In SDMX, Concepts are always contained in a **ConceptScheme**. DPM has no equivalent container: Properties live in a single cross-domain glossary and are organised by ownership and releases.
+
+#### SDMX → DPM
+
+**Single ConceptScheme per organisation (common case)**
+
+Most SDMX organisations maintain a single ConceptScheme (or a small number of closely related schemes). When this is the case, the ConceptScheme can simply be ignored during the mapping — each Concept maps directly to a Property using its `id` as the Property `Code`, with no risk of identifier collisions.
+
+**Multiple ConceptSchemes per organisation**
+
+When an organisation uses multiple ConceptSchemes whose Concepts may share the same `id` (e.g. two Concepts with `id="COUNTRY"` in different schemes but with different meanings), the ConceptScheme `id` should be used as a namespace prefix to avoid collisions in the DPM glossary:
+
+```
+{ConceptSchemeId}.{ConceptId}
+```
+
+*Example*: Concept `FREQ` in ConceptScheme `CS_MACRO` becomes Property Code `CS_MACRO.FREQ`.
+
+This convention ensures uniqueness while keeping the Property Code readable and traceable back to its SDMX origin.
+
+#### DPM → SDMX
+
+When mapping DPM Properties to SDMX, one ConceptScheme is created per Owner with conventional attributes:
+
+- `id`: a conventional identifier based on the Owner's code (e.g. `CS_ECB`)
+- `agencyID`: the Owner mapped to an SDMX Agency (see [Identification mapping rules](../00_basics/02_detailed_mapping_rules.md#22-identification-dpm-ids-vs-sdmx-urns))
+- `version`: aligned with the Release version
+
+All Properties belonging to that Owner are placed in the ConceptScheme as Concepts.
+
+### 3.5.6 Representation mapping (Core vs Local)
+
+In SDMX, the representation of a Concept can be defined at two levels:
+
+- **CoreRepresentation**: defined on the Concept itself, expressing the default or broadest value domain.
+- **LocalRepresentation**: defined on each DSD component (Dimension, Attribute, Measure) that references the Concept, potentially overriding or narrowing the core representation for a specific structural context.
+
+A single Concept may therefore participate in multiple DSDs with different local representations. For example, the BIS Concept `REF_AREA` (Reference area) has no CoreRepresentation but is used with different Codelists across DSDs:
+
+| DSD | Component | Codelist |
+| --- | --------- | -------- |
+| `BIS:BIS_XR` (Exchange rates) | Dimension | `CL_BIS_IF_REF_AREA` |
+| `BIS:BIS_EER` (Effective exchange rates) | Dimension | `CL_AREA` |
+| `BIS:BIS_CBS` (Consolidated banking statistics) | Dimension (`L_REP_CTY`) | `CL_BIS_IF_REF_AREA` |
+
+In the DPM, this split does not exist. Every Property has exactly **one** representation: a DataType and a PropertyCategory pointing to a single Category. Narrower value domains for specific tables or variables are expressed through **SubCategories** (see section 3.3), not through alternative Property definitions.
+
+#### SDMX → DPM
+
+When mapping a Concept that is used across multiple DSDs with different representations, the Property must receive the **broadest representation** — the superset that covers all DSD-level usages.
+
+**Enumerated representations**
+
+1. **Same Codelist everywhere** (common case): The Concept's CoreRepresentation and all LocalRepresentations reference the same Codelist. The Property simply references the corresponding Category (mapped from that Codelist; see section 3.1).
+
+2. **Different Codelists across DSDs**: The Concept is used with different Codelists in different DSDs (as in the `REF_AREA` example above). Two approaches are possible depending on the relationship between the Codelists:
+
+    - If one Codelist is a subset of another (e.g. `CL_AREA` ⊂ `CL_BIS_IF_REF_AREA`), the Property references the Category mapped from the **broader** Codelist. The narrower usages become SubCategories.
+    - If the Codelists overlap or are disjoint, the Property references a **SuperCategory** that unions the Categories mapped from all involved Codelists (see section 3.4).
+
+    In both cases, each DSD-level restriction is captured as a SubCategory associated to the Category or SuperCategory, preserving the narrower scope for specific tables or variables.
+
+**Non-enumerated representations**
+
+When a Concept uses non-enumerated representations (e.g. `String`, `Decimal`) that differ in their Facet constraints across DSDs (different `maxLength`, `minValue`, etc.), the Property receives the **least restrictive** DataType. Since DPM DataTypes do not carry Facet-level constraints (see section [1.2](01_glossary_overview.md#12-dpm-glossary-artefacts)), the mapping simply selects the appropriate DPM DataType and any Facet details are documented but not enforced at the Property level.
+
+#### DPM → SDMX
+
+The reverse mapping is straightforward:
+
+- The Property's DataType and PropertyCategory produce the **CoreRepresentation** on the generated Concept (enumerated → Codelist reference; non-enumerated → TextFormat).
+- When a Variable or Table constrains the Property's values through a **SubCategory**, the corresponding DSD component can be given a **LocalRepresentation** that references the Codelist mapped from that SubCategory (see section 3.3), narrowing the core representation for that specific structural context.
+
+```xml
+<ConceptScheme id="CS_EBA" agencyID="EBA" version="4.2">
+  <Name xml:lang="en">EBA Concepts</Name>
+  <Concept id="RCP">
+    <Name xml:lang="en">Residence of counterparty</Name>
+    <Description xml:lang="en">Defines the geographical area where the
+      counterparty of the contract or transaction resides.</Description>
+    <CoreRepresentation>
+      <Enumeration>
+        <Ref id="CL_GA" class="Codelist" agencyID="EBA" version="4.2"/>
+      </Enumeration>
+    </CoreRepresentation>
+  </Concept>
+  <Concept id="si615">
+    <Name xml:lang="en">Identifier of the security</Name>
+    <CoreRepresentation>
+      <TextFormat textType="String"/>
+    </CoreRepresentation>
+  </Concept>
+  <Concept id="mi129">
+    <Name xml:lang="en">Fair value</Name>
+    <CoreRepresentation>
+      <TextFormat textType="Decimal"/>
+    </CoreRepresentation>
+  </Concept>
 </ConceptScheme>
 ```
-
----
-
-### **Example: SDMX ConcepSchema → DPM Glossary**
-
-### **Concepts**
-| SDMX Concept | Composite Key in DPM Glossary | Description            |
-|--------------|--------------------------------|------------------------|
-| FREQ         | ECB.CL_CONCEPTS.FREQ          | Reporting frequency    |
-| REF_AREA     | ECB.CL_CONCEPTS.REF_AREA      | Geographical coverage  |
-
-### **Codelist for FREQ**
-| SDMX Code | Composite Key in DPM Glossary | Description |
-|-----------|--------------------------------|-------------|
-| A         | ECB.CL_FREQ.A                 | Annual      |
-| Q         | ECB.CL_FREQ.Q                 | Quarterly   |
-| M         | ECB.CL_FREQ.M                 | Monthly     |
-
-
-
-## 3.6 Concept ↔ Property / Metric
-
-### 3.6.1 DPM → SDMX
-### SDMX Concept → DPM Property Mapping
-
-This template maps **SDMX Concepts** (which can play the role of **dimension**, **attribute**, or **measure**) to **DPM Properties** (and shows how they are later used by Variables).
-
----
-
-### Mapping details
-
-| Attribute        | Value / Guidance |
-|------------------|------------------|
-| **PropertyID**   | (system-generated, e.g., 7001) |
-| **Code**         | `{agencyID}.{ConceptSchemeId}.{ConceptId}` |
-| **Name**         | `Concept.Name` |
-| **Description**  | `Concept.Description` (multilingual as needed) |
-| **IsMetric**     | `TRUE` if the SDMX Concept is a **measure**; otherwise `FALSE` |
-| **DataType**     | Choose from DPM DataType set (e.g., `integer`, `decimal`, `string`, `date`, `boolean`, `enumeration`) |
-| **PeriodType**   | `stock` (instant) or `flow` (duration); *only for quantitative metrics where relevant* |
-| **IsComposite**  | `TRUE` if this Property represents a composite semantic (rare); otherwise `FALSE` |
-| **RowGUID**      | (system-generated UUID) |
-
----
-
-### Example A — SDMX **Dimension** Concept → DPM Property (+ Key Variable)
-
-**SDMX**
-- Concept ID: `COUNTRY`
-- Role: **dimension**
-- Representation: CodeList of countries (e.g., ISO 3166)
-
-**DPM mapping**
-- **Property**
-  - `Code`: `EBA.CS_GEO.COUNTRY`
-  - `Name`: `Country`
-  - `Description`: `Reporting country`
-  - `IsMetric`: `FALSE`
-  - `DataType`: `enumeration`
-  - (Optionally) `IsComposite`: `FALSE`
-- **Category** (e.g., `Countries`), with **Items** like `IT`, `ES`, `FR`, …
-- **Key Variable** (used when table is open by country)
-  - References **Property** = `Country`
-  - If needed, restrict selectable values with a **SubCategory** (e.g., `EU_Members`)
-
-
----
-
-### Example B — SDMX **Attribute** Concept → DPM Property (+ Attribute Variable)
-
-**SDMX**
-- Concept ID: `OBS_STATUS`
-- Role: **attribute** (e.g., A – provisional, F – forecast, E – estimated)
-- Representation: CodeList of status codes
-
-**DPM mapping**
-- **Property**
-  - `Code`: `EIOPA.CS_META.OBS_STATUS`
-  - `Name`: `Observation status`
-  - `Description`: `Quality/status flag of an observation`
-  - `IsMetric`: `FALSE`
-  - `DataType`: `enumeration`
-- **Category** (e.g., `ObservationStatus`), with **Items** like `A`, `E`, `F`, …
-- **Attribute Variable**
-  - References **Property** = `Observation status`
-  - Typically linked to **Fact Variables** that need the status annotation
-
----
-
-### Example C — SDMX **Measure** Concept → DPM Property (+ Fact Variable)
-
-**SDMX**
-- Concept ID: `OBS_VALUE`
-- Role: **measure** (e.g., monetary amount)
-- Representation: numeric
-
-**DPM mapping**
-- **Property**
-  - `Code`: `EBA.CS_MEASURE.OBS_VALUE`
-  - `Name`: `Observed value`
-  - `Description`: `Primary measure/observation value`
-  - `IsMetric`: `TRUE`
-  - `DataType`: `decimal` (or `integer` as appropriate)
-  - `PeriodType`: `stock` (instant) **or** `flow` (duration), depending on the phenomenon
-- **Fact Variable**
-  - References **Property** = `Observed value`
-  - May carry **Context** (e.g., Unit of measure, Currency) through additional Properties/Variables
-
-
-### 3.6.2 DPM → SDMX
-
-- **Metric → Concept used as measure**:
-  - For each DPM Metric:
-    - create an SDMX Concept in a dedicated Concept Scheme (e.g. “Metrics”),
-    - set its representation according to the Metric’s data type,
-    - use it as a measure in DSDs.
-
-- **Property → Concept used as dimension/attribute**:
-  - For each DPM Property:
-    - create an SDMX Concept in a Concept Scheme (e.g. “Properties”),
-    - set its representation:
-      - enumerated (codelist) if linked to a Category/Subcategory, or
-      - non-enumerated (facet-based) otherwise,
-    - use it as a dimension or attribute in DSDs.
 
 
