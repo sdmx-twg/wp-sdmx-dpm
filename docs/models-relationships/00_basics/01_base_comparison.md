@@ -252,7 +252,7 @@ Modellers identify concepts using **Codes** and **Names**. In physical database 
 | Format | Web-centric (URI/URN strings) | Database-centric (numeric keys) |
 | Purpose | Distributed referencing and exchange | Database merging and storage |
 | Change tracking | Version in URN | RowGUID (UUID) |
-| Human readability | URN components (parseable) | Code + Name |
+| Human readability | URN components (parseable) | Owner + Code + Name |
 
 ## 5. Ownership models
 
