@@ -203,7 +203,7 @@ The DPM provides a **database structure in which metadata is stored**:
 
 - **Database storage**: Regulatory data definitions (such as those for COREP, Solvency II, AnaCredit) result in metadata stored directly in a DPM database.
 - **Meta-model conformance**: The database follows the DPM metamodel structures (tables, variables, properties, categories).
-- **Sharing DBs**: The contents of the DPM database are shared to ensure all stakeholders (regulators, reporting entities, vendors) have access to the common definitions. The DPM is shared as a portable DB (normally Access or SQLite).
+- **Sharing DBs**: Each DPM owner creates and shares its own database as a portable DB (normally Access or SQLite). Database contents can be merged into a common database, ensuring all stakeholders (regulators, reporting entities, vendors) have access to the common definitions.
 
 ### 3.3 Implications
 
