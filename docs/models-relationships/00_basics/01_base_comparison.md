@@ -32,7 +32,7 @@ The DPM meta-model is a **model of the model**, consisting of statements and str
 | Focus | Distributed data exchange | Shared repository structure |
 | Abstraction level | Conceptual | Physical/logical |
 
-It should be noted that SDMX provides specifica syntaxes (XML, JSON and, for data, CSV) that server as actual implementations of the conceptual model. But SDMX is agnostic regarding databases.
+It should be noted that SDMX provides specific syntaxes (XML, JSON and, for data, CSV) that serve as actual implementations of the conceptual model. But the SDMX information model is agnostic regarding databases. Similarly, the exchange format using DPM is also database-agnostic.
 
 ## 2. Conceptual foundations
 
