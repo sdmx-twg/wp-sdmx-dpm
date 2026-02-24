@@ -40,7 +40,7 @@ It should be noted that SDMX provides specifica syntaxes (XML, JSON and, for dat
 
 SDMX utilizes a hierarchy of abstract classes to serve as architectural archetypes. These base classes provide foundational building blocks that are inherited by concrete subclasses:
 
-- **IdentifiableArtefact**: Provides basic identity through an ID. The URN provides globally unique identity
+- **IdentifiableArtefact**: Provides basic identity through an ID. The [URN](#41-sdmx-identification) provides globally unique identity
 - **NameableArtefact**: Adds name and description capabilities (extends IdentifiableArtefact).
 - **MaintainableArtefact**: Introduces versioning, agency ownership, and lifecycle management (extends NameableArtefact).
 - **ItemScheme / Item**: Pattern for maintained lists and their entries.
