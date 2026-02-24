@@ -199,11 +199,11 @@ SDMX is primarily focused on the **exchange and dissemination** of metadata (and
 
 ### 3.2 DPM: Shared repositories
 
-The DPM provides the **structural definition for an actual database** where data resides:
+The DPM provides a **database structure in which metadata is stored**:
 
 - **Database storage**: Regulatory data definitions (such as those for COREP, Solvency II, AnaCredit) result in metadata stored directly in a DPM database.
 - **Meta-model conformance**: The database follows the DPM metamodel structures (tables, variables, properties, categories).
-- **Sharing DBs**: The contents of the DPM database are shared to ensure all stakeholders (regulators, reporting entities, vendors) have aaccess to the commond definitions. The DPM is shared as a portable DB (normally Access or SQLite).
+- **Sharing DBs**: The contents of the DPM database are shared to ensure all stakeholders (regulators, reporting entities, vendors) have access to the common definitions. The DPM is shared as a portable DB (normally Access or SQLite).
 
 ### 3.3 Implications
 
