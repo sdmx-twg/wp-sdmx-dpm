@@ -209,7 +209,7 @@ The DPM provides a **database structure in which metadata is stored**:
 
 | Feature | SDMX | DPM |
 | --- | --- | --- |
-| Data location | Distributed (at source providers)  |
+| Data location | Distributed (at source providers) | Distributed (at collector side) |
 | Access method | RESTful APIs (pull model) | Sharing portable DB |
 | Data conceptualization | Slices of multi-dimensional cubes | Rows in tables conforming to meta-model |
 
