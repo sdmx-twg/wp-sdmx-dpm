@@ -84,6 +84,8 @@ classDiagram
 
 > **Note**: SDMX `isExternalReference` is a **transmission flag** indicating that the artefact is sent as a stub whose full content can be resolved via `structureURL` or `serviceURL`. It has no semantic equivalent in DPM. Conversely, DPM `IsExternalRefData` is a **domain property** indicating that a Category refers to external reference data (e.g. master data, LEI registries). These are not equivalent despite the similar naming.
 
+> **Note**: The mapping of multilingual `Name` and `Description` attributes (SDMX `InternationalString` with `xml:lang` → DPM `Concept.Name`/`Description` + `Translation` entities) follows the general rules described in [Multilingual support](../00_basics/02_detailed_mapping_rules.md#23-multilingual-support-internationalstring-vs-translations).
+
 
 ### 3.1.3 Example Mapping SDMX ==> DPM
 
