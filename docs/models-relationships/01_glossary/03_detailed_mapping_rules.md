@@ -186,7 +186,7 @@ The resulting extended codelist includes:
 ```
 The equivalent artefact in the DPM is the SuperCategory.
 
-A **DPM Super Category** is a Category marked with IsSuperCategory = TRUE, representing the union of multiple Categories listed through SuperCategoryComposition. 
+A **DPM Super Category** is a Category marked with IsSuperCategory = TRUE, representing the union of multiple Categories listed through SuperCategoryComposition. A Super Category can also have its own direct Items and Properties, in addition to those inherited indirectly from its composed Categories.
 
 **Example Super Category**
 
@@ -215,8 +215,8 @@ classDiagram
     SDMX_EXTENDEDCODELIST "0..1" -- "1" DPM_SUPERCATEGORY
 ```
 
-- From SDMX to DPM: An Extended Codelist can be mapped to a SuperCategory when it is simply the composition of multiple Codelists(mapped as Category); it may also be mapped to a SubCategory if it results from filtering the items of a single Category, or to a newly created Category when it represents the union of SubCategory and additional codes.
-- From DPM to SDMX: One SuperCategory can be expressed as an Extended Codelist (grouping codes from a base codelist) 
+- From SDMX to DPM: An Extended Codelist can be mapped to a SuperCategory when it composes multiple Codelists (mapped as Categories). Locally-defined Codes within the Extended Codelist map to direct Items of the SuperCategory. An Extended Codelist may also be mapped to a SubCategory if it results from filtering the items of a single Category, or to a newly created Category when it represents the union of a SubCategory and additional codes.
+- From DPM to SDMX: One SuperCategory can be expressed as an Extended Codelist (grouping codes from composed Categories, plus any direct Items as locally-defined Codes).
 
 ### 3.2.2 Attributes equivalence
 
