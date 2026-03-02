@@ -245,6 +245,13 @@ classDiagram
 | exclusiveCodeSelectionList| -not applicable-          |
 | idCode                    | -not applicable-          |
 
+> **Note — out-of-scope features**: The following SDMX Extended Codelist features have no equivalent in DPM and are currently out of scope for mapping. Mapping will fail for Extended Codelists that rely on these mechanisms:
+>
+> - **`sequence`**: Controls precedence for conflict resolution when the same code appears in multiple source codelists. DPM `SuperCategoryComposition` has no ordering or conflict-resolution mechanism.
+> - **`prefix`**: Used to disambiguate overlapping codes when combining codelists (discriminated-union use case). DPM Items retain their original codes; there is no prefixing mechanism.
+> - **`inclusiveCodeSelectionList` / `exclusiveCodeSelectionList` / wildcards**: DPM `SuperCategoryComposition` always includes *all* Items from each composed Category — there is no subset-selection at the composition level. Filtering the Items of a *single* base Category can be approximated via a SubCategory (see section 3.2.1), but cross-Category filtering and wildcard patterns (`%`) are out of scope.
+> - **`idCode`**: No DPM equivalent.
+
 ### 3.2.3 Example Mapping SDMX ==> DPM
 
 ```xml
