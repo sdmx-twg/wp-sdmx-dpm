@@ -149,14 +149,15 @@ Starting from two base codelists:
 - **CL_EXT_REGIONS** (EU, EU_W, EU_S)
 
 A new codelist, **CL_EU_REPORTING**, is defined using CodelistExtension, with the following logic:
+
 1. Inherit and filter codes: The extended codelist inherits all codes from CL_COUNTRY, but excludes ES and PT using ExclusiveCodeSelection.
 2. Add selected codes from another codelist: From CL_EXT_REGIONS, only the codes matching the pattern EU_% are included (EU, EU_W, EU_S), using InclusiveCodeSelection and wildcard matching. A prefix REG_ is added to these codes to avoid conflicts (e.g., REG_EU, REG_EU_W).
 3. Add new local codes: The extended codelist defines an additional local code, EU_CORE – Core EU reporting zone.
 
 The resulting extended codelist includes:
-•	BE, FR, DE, IT (ES and PT excluded)
-•	REG_EU, REG_EU_W, REG_EU_S
-•	EU_CORE (new)
+- BE, FR, DE, IT (ES and PT excluded)
+- REG_EU, REG_EU_W, REG_EU_S
+- EU_CORE (new)
 
 ```xml
 <!-- Extended Codelist Example -->
@@ -253,6 +254,16 @@ classDiagram
 > - **`idCode`**: No DPM equivalent.
 
 ### 3.2.3 Example Mapping SDMX ==> DPM
+
+The generic SDMX→DPM mapping follows these steps:
+
+1. **Create a SuperCategory** in DPM for the Extended Codelist, using the Extended Codelist's identifier as the Category Code, with `IsSuperCategory = TRUE`.
+2. **For each `CodelistExtension`**: map the referenced source Codelist to a DPM Category and register it in the SuperCategoryComposition.
+3. **For each locally-defined `<Code>`**: create a direct Item of the SuperCategory (with `CategoryID` pointing to the SuperCategory itself).
+
+> **Note:** SDMX features such as `prefix`, `sequence`, `InclusiveCodeSelection`, `ExclusiveCodeSelection`, and wildcards have no DPM equivalent and are out of scope (see section 3.2.2.3).
+
+The following example shows the concrete mapping of the `CL_EU_REPORTING` Extended Codelist.
 
 ```xml
 <!-- Extended Codelist Example -->
