@@ -411,10 +411,14 @@ A DPM Item represents one enumerated value of a Category. The DPM uses two table
 ```mermaid
 classDiagram
     direction LR
+    class DPM_ITEM {
+        <<IsProperty = false>>
+    }
     SDMX_CODE "1" -- "1" DPM_ITEM
 ```
-From SDMX to DPM: One SDMX Code is always mapped to one DPM Item (with `IsProperty = false`) belonging to the mapped Category.
-From DPM to SDMX: One DPM Item is mapped to an SDMX Code only if `IsProperty = false` and its Category is mapped to a Codelist. Items with `IsProperty = true` are not mapped to Codes — they correspond to Properties (see [section 3.5](#35-concept--property)).
+
+- **From SDMX to DPM:** One SDMX Code maps to one DPM Item with `IsProperty = false`, belonging to the mapped Category.
+- **From DPM to SDMX:** One DPM Item maps to an SDMX Code only if `IsProperty = false` and its Category is mapped to a Codelist. Items with `IsProperty = true` are not mapped as Codes — they correspond to Properties (see [section 3.5](#35-concept--property)).
 
 ### 3.3.2 Attributes equivalence
 
