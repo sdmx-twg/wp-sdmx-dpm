@@ -440,16 +440,18 @@ classDiagram
   - `Code`
   - `CategoryID`
   - `Signature` (computed business key — see section 3.3.2.4)
+  - `IsDefaultItem` (XBRL default member flag — see section 3.3.2.5)
 
 #### 3.3.2.3 Mapping details
 
-| SDMX             | DPM                        |
-|------------------|----------------------------|
-| id               | `ItemCategory.Code`        |
-| name             | `Item.Name`                |
-| description      | `Item.Description`         |
-| -not applicable- | `ItemCategory.CategoryID`  |
-| hierarchy        | `Item.ParentItemID`        |
+| SDMX             | DPM                            |
+|------------------|--------------------------------|
+| id               | `ItemCategory.Code`            |
+| name             | `Item.Name`                    |
+| description      | `Item.Description`             |
+| -not applicable- | `ItemCategory.CategoryID`      |
+| hierarchy        | `Item.ParentItemID`            |
+| -not applicable- | `ItemCategory.IsDefaultItem`   |
 
 #### 3.3.2.4 Signature — DPM business key
 
@@ -478,6 +480,19 @@ The `Signature` field in `ItemCategory` is a computed business key that uniquely
 - Used operationally in DPM Studio and internal tooling as a collision-free, stable reference across releases.
 - Used when generating XBRL taxonomies, particularly for open-key element naming.
 - Has no direct SDMX equivalent; when round-tripping DPM→SDMX, the signature can be preserved via an SDMX annotation (see [issue #62](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/62)).
+
+#### 3.3.2.5 IsDefaultItem — XBRL default member
+
+The `IsDefaultItem` field in `ItemCategory` is a boolean flag (DPM convention: `-1` = true, `0` = false) that marks one item per Category as the **default member**. In EBA DPM, the default item always carries Code `x0`.
+
+**Purpose:** This is an XBRL-specific workaround. XBRL formula and validation engines require every dimension to have a nominated default member so that formulas can be evaluated even when a dimension value is not specified. Default members are never actually reported in datasets — they are internal machinery.
+
+**Mapping:**
+
+| Direction    | Rule                                                                                          |
+|--------------|-----------------------------------------------------------------------------------------------|
+| DPM → SDMX  | `IsDefaultItem` is **discarded**. No information is lost: SDMX always requires explicit dimension values, so there is no concept of a default member. |
+| SDMX → DPM  | No incoming SDMX artefact carries default-member information. A default item may need to be generated when creating a DPM database for XBRL use — see [issue #64](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/64) for the proposed strategy. |
 
 ### 3.3.3 Example Mapping SDMX ==> DPM
 ```xml
