@@ -138,7 +138,7 @@ The extension indicates the order of precedence of the extended Codelists for co
 InclusiveCodeSelection and ExclusiveCodeSelection allow including or excluding subsets of Codes from the extended Codelists.
 A MemberValue may specify a Code, including its children through the cascadeValues property, or include wildcard characters (‘%’) to select a set of Codes.
 
-An SDMX Extended Codelist is a codelist that derives from one or more existing codelists, selectively including or excluding codes, optionally using wildcards, and resolving conflicts with prefixes and sequence order. 
+An SDMX Extended Codelist is a codelist that derives from one or more existing codelists, selectively including or excluding codes, optionally using wildcards, and resolving conflicts with prefixes and sequence order. An Extended Codelist can also define its own locally-defined Codes in addition to those inherited from source codelists.
 
 **Example Extended Codelist**
 
@@ -288,15 +288,19 @@ classDiagram
 | 200        | CL_EU_REPORTING | EU Reporting  | Union of multiple geography-related categories.                   | -1           | -1       | 0                 |               | {A1B2C3D4-1111-2222-3333-444455556666}   | 1              |
 | 210        | CL_COUNTRY| Country Codes            | List of national codes.                                           | -1           | -1       | 0                 |               | {BBBBBBBB-AAAA-4444-9999-111111111111}   | 1              |
 | 220        | CL_EXT_REGIONS | Regions                  | List of administrative regions.                                   | -1           | -1       | 0                 |               | {CCCCCCCC-BBBB-5555-8888-222222222222}   | 1              |
-| 230        | EU_CORE   | EU_CORE Codes           | List of codes.                                  | -1           | -1       | 0                 |               | {DDDDDDDD-CCCC-6666-7777-333333333333}   | 1              |
 
-*Definition of SuperCategory*
+*Definition of SuperCategory Composition*
 
 | SuperCategoryID | CategoryID | StartReleaseID | EndReleaseID | RowGUID                                   |
 | ---------------- |------------|----------------|--------------|-------------------------------------------- |
 | 200              | 210        | 1              | NULL         | {E1000000-0000-0000-0000-000000000001}      |
 | 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
-| 200              | 230        | 1              | NULL         | {E3000000-0000-0000-0000-000000000003}      |
+
+*Direct Items of SuperCategory (locally-defined Codes)*
+
+| ItemID | CategoryID | Code    | Name                     | Description              | RowGUID                                   |
+|--------|------------|---------|--------------------------|--------------------------|------------------------------------------- |
+| 5100   | 200        | EU_CORE | Core EU reporting zone   | Core EU reporting zone   | {DDDDDDDD-CCCC-6666-7777-333333333333}    |
 
 *Definition of SubCategory*
 
@@ -333,6 +337,12 @@ classDiagram
 | 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
 | 200              | 230        | 1              | NULL         | {E3000000-0000-0000-0000-000000000003}      |
 
+*Direct Items of SuperCategory*
+
+| ItemID | CategoryID | Code   | Name   | Description         | RowGUID                                   |
+|--------|------------|--------|--------|---------------------|------------------------------------------- |
+| 5200   | 200        | GLOBAL | Global | Worldwide aggregate | {EEEEEEEE-1111-2222-3333-444455556666}    |
+
 ```xml
 <!-- Extended Codelist Example -->
 <Codelist id="GEO_SC" agencyID="ECB" version="1.0">
@@ -348,6 +358,11 @@ classDiagram
     <!-- 3. Extend ECON -->
    <CodelistExtension codelistRef="ECON" sequence="3" prefix="ECON_">
    </CodelistExtension>
+
+    <!-- 4. Direct Items of the SuperCategory become locally-defined Codes -->
+    <Code id="GLOBAL">
+        <Name xml:lang="en">Global</Name>
+    </Code>
 
 </Codelist>
 ```
