@@ -492,7 +492,29 @@ The `IsDefaultItem` field in `ItemCategory` is a boolean flag (DPM convention: `
 | Direction    | Rule                                                                                          |
 |--------------|-----------------------------------------------------------------------------------------------|
 | DPM → SDMX  | `IsDefaultItem` is **discarded**. No information is lost: SDMX always requires explicit dimension values, so there is no concept of a default member. |
-| SDMX → DPM  | No incoming SDMX artefact carries default-member information. A default item may need to be generated when creating a DPM database for XBRL use — see [issue #64](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/64) for the proposed strategy. |
+| SDMX → DPM  | No incoming SDMX artefact carries default-member information. A default item may need to be generated when creating a DPM database for XBRL use — see [section 3.3.2.6](#3326-sdmxdpm-generating-default-items) for the proposed strategy. |
+
+#### 3.3.2.6 SDMX→DPM: generating default items
+
+When converting SDMX→DPM for XBRL taxonomy generation, a default member (`IsDefaultItem = -1`) must be designated for every Category. No SDMX artefact carries this information natively. Four options were considered at the interoperability meeting (24 February 2026):
+
+| Option | Description | Pros | Cons |
+|--------|-------------|------|------|
+| **1. Synthetic `x0`** | Always generate a new item with Code `x0` and Name "[Default]" | Deterministic; consistent with EBA DPM convention | Introduces a code absent from the source SDMX; appears if the taxonomy is round-tripped back |
+| **2. Known conventions** | Reuse a code matching established patterns (`_T`, `_SET`, `_X`) if present | Uses a semantically meaningful code already in the source | Not all codelists follow these conventions; lookup can be ambiguous |
+| **3. First code in list** | Designate the first code as the default | Simple; no annotation needed | Arbitrary — the first code has no special meaning in most contexts |
+| **4. Manual mapping** | Require the implementer to designate the default item explicitly | Always correct | Not scalable; blocks automated pipelines |
+
+> Katrin Heinze (meeting, 24 Feb 2026): *"Any automatic choice can be wrong."* Human review is therefore required whenever automatic selection is used.
+
+**Recommended tiered strategy:**
+
+1. **Check for a `DPM_DEFAULT_ITEM` annotation** on any incoming SDMX `Code`. If present, use that code as the default item. This annotation type follows the same convention as `DPM_SIGNATURE` (see [section 2.6.1](../00_basics/02_detailed_mapping_rules.md#261-dpm-signature-annotation)) and allows round-trip fidelity.
+2. **Check for known SDMX conventions.** If a code matching `_T`, `_SET`, or `_X` exists in the Codelist, use it as the default item.
+3. **Generate a synthetic `x0` item** with Name "[Default]" as a last resort. Mark it clearly as auto-generated.
+4. **Flag all automatically selected default items** in the conversion output for human review. Never silently commit an automatic choice without logging it.
+
+> **Note — manual intervention cases**: Automatic selection is unavoidable when none of the above signals are present. Implementers must review flagged items before using the DPM database for XBRL validation.
 
 ### 3.3.3 Example Mapping SDMX ==> DPM
 ```xml
