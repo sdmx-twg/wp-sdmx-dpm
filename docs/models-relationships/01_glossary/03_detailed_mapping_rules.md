@@ -383,7 +383,7 @@ The following example shows the concrete mapping of the `CL_EU_REPORTING` Extend
 An **SDMX Code** is the atomic element of a Codelist. Codes may participate in hierarchical structures as defined by the SDMX Item Scheme pattern. They inherit their identification and naming attributes from the SDMX artefact hierarchy (IdentifiableArtefact → NameableArtefact) .
 
 The equivalent artefact in the DPM is the **Category Item**.
-A DPM Item represents one enumerated value of a Category. Items may take part in parent–child relationships. Only Items with `IsProperty = false` are candidates for mapping to SDMX Codes; Items with `IsProperty = true` serve as counterparts to Properties and are mapped to SDMX Concepts instead (see [section 3.5](#35-concept--property)).
+A DPM Item represents one enumerated value of a Category. The DPM uses two tables for this: the `Item` table stores the item's identity (`ItemID`), display name (`Name`), description (`Description`), and the `IsProperty` flag; the `ItemCategory` table is the join between an `Item` and the `Category` it belongs to, and it is where the `Code` and the `CategoryID` foreign key are stored. Items may take part in parent–child relationships. Only Items with `IsProperty = false` are candidates for mapping to SDMX Codes; Items with `IsProperty = true` serve as counterparts to Properties and are mapped to SDMX Concepts instead (see [section 3.5](#35-concept--property)).
 
 **Example Code**
 
@@ -395,9 +395,17 @@ A DPM Item represents one enumerated value of a Category. Items may take part in
 
 **Example Item**
 
-| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
-|--------|------------|------|--------|-------------------------|--------------------------------------------|
-| 5001   | 210        | ES   | Spain  | Member state of the EU | {AABBCCDD-1111-2222-3333-444455556666}     |
+*Table Item*
+
+| ItemID | Name  | Description             | IsProperty | RowGUID                                   |
+|--------|-------|-------------------------|------------|-------------------------------------------|
+| 5001   | Spain | Member state of the EU  | 0          | {AABBCCDD-1111-2222-3333-444455556666}    |
+
+*Table ItemCategory*
+
+| ItemID | CategoryID | Code | StartReleaseID | RowGUID                                   |
+|--------|------------|------|----------------|-------------------------------------------|
+| 5001   | 210        | ES   | 1              | {BBCCDDEE-2222-3333-4444-555566667777}    |
 
 ### 3.3.1 Mapping cardinality
 ```mermaid
@@ -418,24 +426,25 @@ From DPM to SDMX: One DPM Item is mapped to an SDMX Code only if `IsProperty = f
     - `hierarchy`
 
 #### 3.3.2.2 Item attributes
--
-    - `Code`
-    - `Name`
-    - `Description`
-    - `CategoryID`
-    - `RowGUID`
-    - `ParentItemID`  
+
+`Item` table:
+  - `Name`
+  - `Description`
+  - `IsProperty`
+
+`ItemCategory` table (join between Item and Category):
+  - `Code`
+  - `CategoryID`
 
 #### 3.3.2.3 Mapping details
 
-| SDMX        | DPM          |
-|-------------|--------------|
-| id          | Code         |
-| name        | Name         |
-| description | Description  |
-| -not applicable-          | CategoryID   |
-| -not applicable-         | RowGUID      |
-| hierarchy   | ParentItemID |
+| SDMX             | DPM                        |
+|------------------|----------------------------|
+| id               | `ItemCategory.Code`        |
+| name             | `Item.Name`                |
+| description      | `Item.Description`         |
+| -not applicable- | `ItemCategory.CategoryID`  |
+| hierarchy        | `Item.ParentItemID`        |
 
 ### 3.3.3 Example Mapping SDMX ==> DPM
 ```xml
@@ -444,15 +453,31 @@ From DPM to SDMX: One DPM Item is mapped to an SDMX Code only if `IsProperty = f
 </Code>
 ```
 
-| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
-|--------|------------|------|--------|-------------------------|--------------------------------------------|
-| 5001   | 210        | ES   | Spain  | Member state of the EU | {AABBCCDD-1111-2222-3333-444455556666}     |
+*Table Item*
+
+| ItemID | Name  | Description             | IsProperty | RowGUID                                   |
+|--------|-------|-------------------------|------------|-------------------------------------------|
+| 5001   | Spain | Member state of the EU  | 0          | {AABBCCDD-1111-2222-3333-444455556666}    |
+
+*Table ItemCategory*
+
+| ItemID | CategoryID | Code | StartReleaseID | RowGUID                                   |
+|--------|------------|------|----------------|-------------------------------------------|
+| 5001   | 210        | ES   | 1              | {BBCCDDEE-2222-3333-4444-555566667777}    |
 
 ### 3.3.4 Example Mapping DPM ==> SDMX
 
-| ItemID | CategoryID | Code | Name  | Description             | RowGUID                                   |
-|--------|------------|------|--------|-------------------------|--------------------------------------------|
-| 5001   | 210        | ES   | Spain  | Member state of the 
+*Table Item*
+
+| ItemID | Name  | Description             | IsProperty | RowGUID                                   |
+|--------|-------|-------------------------|------------|-------------------------------------------|
+| 5001   | Spain | Member state of the EU  | 0          | {AABBCCDD-1111-2222-3333-444455556666}    |
+
+*Table ItemCategory*
+
+| ItemID | CategoryID | Code | StartReleaseID | RowGUID                                   |
+|--------|------------|------|----------------|-------------------------------------------|
+| 5001   | 210        | ES   | 1              | {BBCCDDEE-2222-3333-4444-555566667777}    |
 
 ```xml
 <Code id="ES">
