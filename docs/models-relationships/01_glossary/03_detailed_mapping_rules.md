@@ -439,6 +439,7 @@ classDiagram
 `ItemCategory` table (join between Item and Category):
   - `Code`
   - `CategoryID`
+  - `Signature` (computed business key — see section 3.3.2.4)
 
 #### 3.3.2.3 Mapping details
 
@@ -449,6 +450,34 @@ classDiagram
 | description      | `Item.Description`         |
 | -not applicable- | `ItemCategory.CategoryID`  |
 | hierarchy        | `Item.ParentItemID`        |
+
+#### 3.3.2.4 Signature — DPM business key
+
+The `Signature` field in `ItemCategory` is a computed business key that uniquely identifies an item within a release. It serves a role analogous to an SDMX URN: a structured, human-readable string used as a stable reference in DPM tooling and XBRL taxonomy generation.
+
+**Construction rule:**
+
+```
+{OwnerAcronym}_{CategoryCode}:{ItemCode}
+```
+
+| Component      | Description                                                          | Example |
+|----------------|----------------------------------------------------------------------|---------|
+| `OwnerAcronym` | Lowercase acronym of the organisation that owns the Category         | `eba`   |
+| `CategoryCode` | Code of the Category the item belongs to (`ItemCategory.CategoryID` → `Category.Code`) | `BA` |
+| `ItemCode`     | Code of the item within that Category (`ItemCategory.Code`)          | `x6`    |
+
+**Example:**
+
+| Owner | Category | Item Code | Signature   |
+|-------|----------|-----------|-------------|
+| EBA   | BA       | x6        | `eba_BA:x6` |
+
+**Role:**
+
+- Used operationally in DPM Studio and internal tooling as a collision-free, stable reference across releases.
+- Used when generating XBRL taxonomies, particularly for open-key element naming.
+- Has no direct SDMX equivalent; when round-tripping DPM→SDMX, the signature can be preserved via an SDMX annotation (see [issue #62](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/62)).
 
 ### 3.3.3 Example Mapping SDMX ==> DPM
 ```xml
