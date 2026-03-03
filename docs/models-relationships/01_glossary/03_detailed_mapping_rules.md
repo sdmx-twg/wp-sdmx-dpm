@@ -564,7 +564,7 @@ A **DPM Compound Category Item** explicitly encodes that one item is composed of
 
 A Compound Category Item maps to an **ordinary SDMX Code**. The composition structure (links to constituent Property–Item pairs) is lost. The resulting Code is indistinguishable from any other Code in the Codelist.
 
-Annotations may be used for documentation purposes — the compound semantics can be described in an annotation on the Code to preserve human-readable information, though the structure cannot be recovered automatically. See [issue #66](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/66) for exploration of SDMX options (hierarchies, representation maps, annotations) to partially preserve compound semantics.
+Annotations may be used for documentation purposes — the compound semantics can be described in an annotation on the Code to preserve human-readable information, though the structure cannot be recovered automatically. See [section 3.3.6](#336-sdmx-workarounds-for-compound-item-semantics) for exploration of SDMX options (hierarchies, representation maps, annotations) to partially preserve compound semantics.
 
 **SDMX → DPM:**
 
@@ -581,6 +581,59 @@ Nothing special can be inferred from a plain SDMX Code about compound semantics.
 ```
 
 In automated mapping, `TBILL` becomes a simple DPM Item. Only if domain knowledge confirms that “Treasury bill” is a combination of three characteristics (instrument type = “Debt security”, issuer sector = “General governments”, original maturity = “Up to 18 months”) can it be manually re-modelled as a Compound Item with the corresponding ContextCompositions.
+
+### 3.3.6 SDMX workarounds for compound item semantics
+
+Although SDMX has no explicit compound item construct, three mechanisms can partially preserve compound semantics when converting DPM→SDMX. None is a complete solution; they should be considered documentation or interoperability aids rather than faithful representations.
+
+| Option | Feasibility | Fidelity | Summary |
+|--------|-------------|----------|---------|
+| **Hierarchies** | Medium | Low | Can express aggregation structure but cannot capture cross-category composition |
+| **Representation maps** | Low | Low | Designed for code equivalence between codelists; does not fit composition semantics |
+| **Annotations** | High | Medium | Flexible and machine-readable if format is standardised; **recommended** |
+
+#### Hierarchies
+
+SDMX supports parent-child relationships between codes within a `Hierarchy` (SDMX 3.x) or `HierarchicalCodelist` (SDMX 2.1). A compound item could be placed as a parent code with its constituent items as children. However:
+
+- SDMX hierarchies express sub-type or aggregation relationships *within a single codelist*, not cross-category composition.
+- DPM compound items span multiple Properties (different dimensions/categories), which a hierarchy cannot represent.
+- A reader would have no way to distinguish a genuine sub-type hierarchy from a compound-item workaround.
+
+**Verdict:** Usable only to hint at aggregation; loses the multi-dimensional composition semantics entirely.
+
+#### Representation maps
+
+SDMX `RepresentationMap` artefacts map codes between two representations (codelists). They are designed to express *equivalence* — that a code in one scheme corresponds to a code in another — not to express that a code is *composed of* multiple values across different dimensions.
+
+**Verdict:** Not applicable for compound item semantics.
+
+#### Annotations (recommended)
+
+An annotation on the SDMX `Code` can document the compound structure in a standardised, machine-readable format. Following the convention established for `DPM_SIGNATURE` (see [section 2.6.1](../00_basics/02_detailed_mapping_rules.md#261-dpm-signature-annotation)), a dedicated annotation type is proposed:
+
+| Property         | Value                                                                 |
+|------------------|-----------------------------------------------------------------------|
+| Attached to      | SDMX `Code`                                                           |
+| `AnnotationType` | `DPM_COMPOUND_COMPONENTS`                                             |
+| `AnnotationText` | Semicolon-separated list of `PropertyCode=ItemCode` pairs            |
+
+**Example** — the `TBILL` compound item with three components:
+
+```xml
+<Code id="TBILL">
+  <Name xml:lang="en">Treasury bill</Name>
+  <Annotations>
+    <Annotation>
+      <AnnotationTitle>DPM Compound Components</AnnotationTitle>
+      <AnnotationType>DPM_COMPOUND_COMPONENTS</AnnotationType>
+      <AnnotationText xml:lang="en">InstrumentType=DebtSecurity;IssuerSector=GeneralGovernments;Maturity=UpTo18Months</AnnotationText>
+    </Annotation>
+  </Annotations>
+</Code>
+```
+
+> **Note — SDMX→DPM direction**: If a `DPM_COMPOUND_COMPONENTS` annotation is present on an incoming Code, it can be used to reconstruct the compound item structure instead of creating a simple Item. This enables round-trip fidelity when the annotation is preserved.
 
 ## 3.4 Subsets and hierarchies
 
