@@ -554,32 +554,33 @@ When converting SDMX→DPM for XBRL taxonomy generation, a default member (`IsDe
   <Name xml:lang="en">Spain</Name>
 </Code>
 ```
-### 3.3.5 Compound Item
+### 3.3.5 Compound Item — known limitation
 
-- **DPM Compound Category Item** encodes a composition of multiple items across categories (e.g. the “Treasury bill” example in the report).
+A **DPM Compound Category Item** explicitly encodes that one item is composed of other items (e.g. a “Treasury bill” composed of instrument type, issuer sector, and original maturity). This composition is useful for slicing, aggregation, and reuse across tables. **SDMX has no equivalent construct.**
 
-- **DPM → SDMX**:
-  - Map Compound Category Item → **Code**:
-    - one Code in SDMX represents the compound item;
-    - the internal structure (links to other Category Items) is not represented in core SDMX.
-  - This mapping is lossy: composition information is lost unless captured via annotations or external documentation.
+> **Known limitation**: Compound item semantics cannot be represented in core SDMX. This is a structural gap between the two standards.
 
-- **SDMX → DPM** (creating compound items):
-  - If a particular Code is known (from business rules or external documentation) to represent a combination of other dimensions/categories, it can be modelled as a Compound Item in DPM with explicit links to its constituent Property–Item pairs — even though SDMX does not encode that composition explicitly. This is a design choice on the DPM side; SDMX does not force it.
-  - *Example*: an SDMX codelist `CL_INSTRUMENT` contains a flat Code `TBILL` ("Treasury bill") with no internal structure:
-    ```xml
-    <Codelist id="CL_INSTRUMENT" agencyID="ECB" version="1.0">
-      <Code id="TBILL">
-        <Name xml:lang="en">Treasury bill</Name>
-      </Code>
-    </Codelist>
-    ```
-    In DPM, business knowledge tells us that "Treasury bill" is actually a combination of three characteristics. We model it as a Compound Item in an "Instrument" Category, referencing a Context with the following ContextCompositions:
-    - Type of financial instrument (Property) = "Debt security" (Item),
-    - Sector of the issuer (Property) = "General governments" (Item),
-    - Original maturity (Property) = "Up to 18 months" (Item).
+**DPM → SDMX:**
 
-    The flat SDMX Code `TBILL` becomes a single DPM Item that is decomposable into its underlying Property–Item pairs for analysis, validation, and reuse across tables.
+A Compound Category Item maps to an **ordinary SDMX Code**. The composition structure (links to constituent Property–Item pairs) is lost. The resulting Code is indistinguishable from any other Code in the Codelist.
+
+Annotations may be used for documentation purposes — the compound semantics can be described in an annotation on the Code to preserve human-readable information, though the structure cannot be recovered automatically. See [issue #66](https://github.com/sdmx-twg/wp-sdmx-dpm/issues/66) for exploration of SDMX options (hierarchies, representation maps, annotations) to partially preserve compound semantics.
+
+**SDMX → DPM:**
+
+Nothing special can be inferred from a plain SDMX Code about compound semantics. By default, every incoming Code maps to a simple DPM Item. A Compound Item can only be created if **explicit external business knowledge** identifies that a particular Code represents a composition — this is outside the scope of automated mapping and requires manual modelling.
+
+*Example*: an SDMX codelist `CL_INSTRUMENT` contains a flat Code `TBILL` (“Treasury bill”) with no internal structure:
+
+```xml
+<Codelist id=”CL_INSTRUMENT” agencyID=”ECB” version=”1.0”>
+  <Code id=”TBILL”>
+    <Name xml:lang=”en”>Treasury bill</Name>
+  </Code>
+</Codelist>
+```
+
+In automated mapping, `TBILL` becomes a simple DPM Item. Only if domain knowledge confirms that “Treasury bill” is a combination of three characteristics (instrument type = “Debt security”, issuer sector = “General governments”, original maturity = “Up to 18 months”) can it be manually re-modelled as a Compound Item with the corresponding ContextCompositions.
 
 ## 3.4 Subsets and hierarchies
 
