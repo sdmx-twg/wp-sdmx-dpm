@@ -301,3 +301,35 @@ In the EBA DPM database (historically distributed as MS Access), boolean fields 
 When converting DPM boolean fields to SDMX, map `-1` to `true` and `0` to `false`. When converting SDMX booleans to DPM, reverse the mapping.
 
 > **Note**: SQLite exports of the DPM database preserve the same `-1`/`0` convention. Implementers should not assume standard `1`/`0` encoding.
+
+## 2.6 DPM-specific SDMX annotations
+
+SDMX annotations (`AnnotationType` / `AnnotationText`) provide a standard extension mechanism for attaching metadata that has no native SDMX equivalent. DPM round-trip mappings use the following annotation conventions to preserve information that would otherwise be lost.
+
+### 2.6.1 DPM Signature annotation
+
+The DPM `Signature` field (see [Glossary mapping rules §3.3.2.4](../01_glossary/03_detailed_mapping_rules.md#3324-signature--dpm-business-key)) has no direct SDMX equivalent. When converting DPM→SDMX, it is preserved as an annotation on the corresponding `Code`.
+
+| Property         | Value                                                                 |
+|------------------|-----------------------------------------------------------------------|
+| Attached to      | SDMX `Code` (child of a `Codelist`)                                  |
+| `AnnotationType` | `DPM_SIGNATURE`                                                       |
+| `AnnotationText` | The full DPM signature string, e.g. `eba_BA:x6`                      |
+| Direction        | DPM → SDMX (round-trip preservation)                                 |
+
+**Example:**
+
+```xml
+<Code id="x6">
+  <Name xml:lang="en">1 250% for positions not subject to any method</Name>
+  <Annotations>
+    <Annotation>
+      <AnnotationTitle>DPM Signature</AnnotationTitle>
+      <AnnotationType>DPM_SIGNATURE</AnnotationType>
+      <AnnotationText xml:lang="en">eba_BA:x6</AnnotationText>
+    </Annotation>
+  </Annotations>
+</Code>
+```
+
+> **Note — SDMX→DPM direction**: If a `DPM_SIGNATURE` annotation is present on an incoming `Code`, it should be used to rehydrate the `Signature` field directly rather than recomputing it, in order to preserve any custom values.
