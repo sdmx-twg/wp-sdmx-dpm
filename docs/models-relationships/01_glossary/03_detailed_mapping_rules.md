@@ -1332,6 +1332,18 @@ A single Concept may therefore participate in multiple DSDs with different local
 
 In the DPM, this split does not exist. Every Property has exactly **one** representation: a DataType and a PropertyCategory pointing to a single Category. Narrower value domains for specific tables or variables are expressed through **SubCategories** (see section 3.3), not through alternative Property definitions.
 
+#### Design decision — PropertyCategory as core representation
+
+> **Decision:** *The DPM link between a Property and its Category (via `PropertyCategory`) shall be mapped to the SDMX Concept's **CoreRepresentation**. Local representations on DSD components are handled at the data-definition mapping stage, not at the glossary level.
+
+**Rationale:**
+
+- **Information preservation**: The DPM PropertyCategory captures the broadest value domain for a Property — exactly the semantics of SDMX CoreRepresentation. Mapping it to a LocalRepresentation on one particular DSD component would lose the property-level scope and bind it to a single structural context.
+- **Alignment with common practice**: Eurostat and DDI-based frameworks treat the concept-level representation as the canonical value domain. SDMX organisations that populate CoreRepresentation (e.g. Eurostat's concept schemes) follow the same pattern. Mapping PropertyCategory to CoreRepresentation aligns DPM output with these established practices.
+- **Clean separation of concerns**: Glossary-level mapping (Concept ↔ Property) produces the core representation. Data-definition-level mapping (DSD components ↔ Variables/Tables) produces local representations that may narrow the core. This separation mirrors the DPM architecture, where SubCategories narrow the PropertyCategory's Category for specific tables.
+
+**Superset assumption:** SDMX does not formally enforce that the CoreRepresentation must be a superset of all LocalRepresentations used across DSDs. However, this mapping **conceptually treats it as such** — the Property's Category is always the broadest domain, and any DSD-level narrowing is expressed through SubCategories mapped to LocalRepresentations. Implementers should be aware that SDMX validators will not flag a LocalRepresentation that is broader than the CoreRepresentation.
+
 #### SDMX → DPM
 
 When mapping a Concept that is used across multiple DSDs with different representations, the Property must receive the **broadest representation** — the superset that covers all DSD-level usages.
