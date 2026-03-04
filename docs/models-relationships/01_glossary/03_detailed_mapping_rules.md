@@ -890,6 +890,51 @@ classDiagram
 
 > **Note**: The component role (dimension, attribute, or measure) is not encoded in the Property itself. In SDMX, the role is determined by the Component in a DSD; in DPM, it is determined by the type of Variable (KeyVariable, AttributeVariable, FactVariable) that references the Property. The `IsMetric` flag only indicates whether a Property is quantitative or qualitative and does not determine its role.
 
+#### 3.5.3.4 `IsMetric` flag mapping
+
+The DPM `IsMetric` flag classifies a Property at the **glossary level** as either:
+
+- **Metric** (`IsMetric = TRUE`) — the Property represents a quantitative measurement (amounts, ratios, percentages, counts). In the EBA DPM these Properties typically use DataTypes such as `Monetary`, `Decimal`, `Integer`, or `Percentage`.
+- **Non-metric** (`IsMetric = FALSE`) — the Property represents a qualitative characteristic (a classifier, category, or descriptive attribute). These Properties typically use `Enumeration` (referencing a Category of allowed values) or `String`.
+
+The flag is a **glossary-level** classification that exists only in DPM. SDMX has no equivalent attribute on Concepts — the quantitative/qualitative distinction is not formally modelled in SDMX at the concept level.
+
+**SDMX → DPM**
+
+When creating a DPM Property from an SDMX Concept, the `IsMetric` flag must be inferred because SDMX does not provide it. The following heuristics can be applied, in order of reliability:
+
+1. **Explicit annotation**: If the Concept carries a `DPM_IS_METRIC` annotation (from a previous DPM→SDMX round-trip), use its value directly.
+2. **DataType hint**: If the Concept's representation uses a numeric type (`Decimal`, `Integer`, `Float`) without an enumerated Codelist, `IsMetric = TRUE` is likely appropriate.
+3. **Semantic convention**: Concepts whose `id` follows known metric naming patterns (e.g. `OBS_VALUE`, or EBA-style `mi*` prefixes) can be classified as metric.
+4. **Default**: When none of the above apply, set `IsMetric = FALSE`. Qualitative is the safe default — it is always correct for enumerated Concepts and for free-text attributes.
+
+> **Note**: The heuristics above are guidelines, not rules. In practice, `IsMetric` often requires human judgement or a mapping configuration table that assigns the flag per Concept.
+
+**DPM → SDMX**
+
+`IsMetric` has no target in SDMX at the Concept level. The flag is **not preserved** in the generated Concept — SDMX Concepts carry no quantitative/qualitative marker.
+
+However, the flag can optionally be preserved as a round-trip annotation:
+
+| Property         | Value |
+|------------------|-------|
+| Attached to      | SDMX `Concept` |
+| `AnnotationType` | `DPM_IS_METRIC` |
+| `AnnotationText` | `true` or `false` |
+
+This annotation enables faithful rehydration of the flag when converting back to DPM.
+
+**Relationship to component role**
+
+The `IsMetric` flag does **not** determine whether a Property becomes a dimension, attribute, or measure. That mapping occurs at the data-definition level:
+
+| DPM Variable type | SDMX component role | `IsMetric` relevance |
+|--------------------|---------------------|----------------------|
+| FactVariable | Measure | Typically `TRUE`, but not required |
+| KeyVariable | Dimension | Typically `FALSE`, but not required |
+| AttributeVariable | Attribute | Either value possible |
+
+A qualitative Property (`IsMetric = FALSE`) can be used as a FactVariable (measure), and a quantitative Property (`IsMetric = TRUE`) can appear as a KeyVariable (dimension). The flag describes the *nature* of the Property, not its *role* in a specific table or DSD.
 
 ### 3.5.4 Example Mapping SDMX ==> DPM
 
