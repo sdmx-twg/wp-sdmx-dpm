@@ -637,79 +637,119 @@ An annotation on the SDMX `Code` can document the compound structure in a standa
 
 ## 3.4 Subsets and hierarchies
 
-### 3.4.1 Subsets (constraints and codelist extensions)
+Subset and hierarchy mapping is one of the trickier areas because SDMX uses two fundamentally different mechanisms that operate at different levels:
 
-SDMX provides two main mechanisms for defining subsets of codes:
+| SDMX mechanism | Attached to | Mapping level | DPM target |
+|----------------|-------------|---------------|------------|
+| **Codelist Extension** (InclusiveCodeSelection / ExclusiveCodeSelection) | Codelist (vocabulary) | Glossary | SubCategory (see also section 3.2) |
+| **ContentConstraint** (CubeRegion / MemberSelection) | Dataflow / ProvisionAgreement / DSD | Data-definition | SubCategory (at Variable/Table level) |
 
-- **Constraints**: use ContentConstraint to restrict allowable values for a Dataflow or ProvisionAgreement. Define a CubeRegion with MemberSelection entries to include/exclude codes. Supports `cascadeValues` and the `%` wildcard.
-- **Codelist extensions**: use CodelistExtension with InclusiveCodeSelection or ExclusiveCodeSelection to create a derived codelist that includes only a subset of codes from a base codelist (see section 1.1 for details).
+The DPM target in both cases is the **SubCategory** — a named, versioned subset of Items within a Category. However, the *trigger* for creating the SubCategory differs: Codelist Extensions are vocabulary-level artefacts and are handled here at the glossary mapping stage; Constraints are structural-context artefacts and are deferred to the data-definition mapping chapter.
 
-Note: partial codelists (`isPartial = true`) are excluded here — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
+> **Note**: Partial codelists (`isPartial = true`) are excluded — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
 
-### 3.4.2 Mapping details
-Constraint / Codelist Extension → DPM SubCategory
+### 3.4.1 Subsets from Codelist Extensions (glossary level)
 
-The subset of codes is modelled as a SubCategory of that Category. Each SubCategory groups Items from the corresponding Category and can be versioned via SubCategoryVersion (linked to a Release), allowing tracking of changes over time (e.g. adding/removing codes).
+When an SDMX Codelist Extension filters a base Codelist using InclusiveCodeSelection or ExclusiveCodeSelection, the filtered result maps to a DPM **SubCategory** of the Category mapped from the base Codelist. This is already illustrated in the Extended Codelist mapping (section 3.2.3), where the `CL_EU_REPORTING` example produces a SubCategory containing only the included Items.
 
-#### DPM SubCategory Example
+The general rule:
 
-#### SubCategory: EU_COUNTRIES
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryID       | 7001 |
-| Code                | EU_COUNTRIES |
-| Name                | European Union Countries |
-| Description         | Subset of EU member states within CL_COUNTRY |
-| RowGUID             | (system-generated UUID) |
+1. Map the base Codelist to a DPM Category (section 3.1).
+2. Create a SubCategory of that Category.
+3. Populate the SubCategory with the Items that survive the inclusion/exclusion filters.
 
-#### SubCategoryVersion
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | 7101 |
-| SubCategoryID       | 7001 |
-| StartReleaseID      | 3001 |
-| EndReleaseID        | NULL |
+> **Note**: SDMX wildcard patterns (`%`) and `cascadeValues` in code selections have no DPM equivalent. When these are present, the filter must be evaluated at conversion time to produce a flat list of Items for the SubCategory. See section 3.2.2.3 for the full list of out-of-scope features.
 
-#### SubCategoryItems (Members of EU_COUNTRIES)
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | 7101 |
-| ItemID              | 5001 |
-| Label               | France |
-| ParentItemID        | NULL |
-| RowGUID             | (system-generated UUID) |
+### 3.4.2 Subsets from Constraints (data-definition level)
 
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | 7101 |
-| ItemID              | 5002 |
-| Label               | Germany |
-| ParentItemID        | NULL |
-| RowGUID             | (system-generated UUID) |
+SDMX ContentConstraints restrict allowable values for a Dataflow, ProvisionAgreement, or DSD component. They use CubeRegion with MemberSelection entries to include or exclude codes, optionally with `cascadeValues` and wildcards.
 
-| Attribute           | Value |
-|---------------------|-------|
-| SubCategoryVID      | 7101 |
-| ItemID              | 5003 |
-| Label               | Italy |
-| ParentItemID        | NULL |
-| RowGUID             | (system-generated UUID) |
+Constraints are **not vocabulary-level artefacts** — they are attached to structural contexts (which Dataflow, which component). In DPM terms, they correspond to SubCategories associated with specific Variables or Tables, not to the glossary.
 
+**Mapping approach:**
+
+- When a Constraint restricts a single component's values to a subset of a Codelist, the resulting SubCategory is associated with the corresponding DPM Variable or Table (data-definition level), not with the Property itself.
+- The Property's `PropertyCategory` still points to the full Category (the broadest domain), consistent with the core representation design decision (section 3.5.7).
+- Detailed rules for Constraint→SubCategory mapping at the Variable/Table level are deferred to the data-definition mapping chapter.
+
+**Example** — an SDMX Constraint restricting `REF_AREA` to EU countries in a specific Dataflow:
+
+```xml
+<ContentConstraint id="CC_EU_REPORTING" agencyID="ECB" version="1.0"
+    type="Allowed">
+  <ConstraintAttachment>
+    <Dataflow>
+      <Ref id="DF_MACRO" agencyID="ECB" version="1.0"/>
+    </Dataflow>
+  </ConstraintAttachment>
+  <CubeRegion include="true">
+    <MemberSelection id="REF_AREA">
+      <MemberValue value="FR"/>
+      <MemberValue value="DE"/>
+      <MemberValue value="IT"/>
+    </MemberSelection>
+  </CubeRegion>
+</ContentConstraint>
+```
+
+This Constraint does not affect the glossary-level mapping of `CL_COUNTRY` → Category. Instead, it produces a SubCategory `EU_COUNTRIES` containing Items `FR`, `DE`, `IT`, associated with the Variable that uses the `REF_AREA` Property in the corresponding DPM Table.
+
+**DPM SubCategory** (created at data-definition mapping stage):
+
+*SubCategory*
+
+| SubCategoryID | Code | Name | Description |
+|---------------|------|------|-------------|
+| 7001 | EU_COUNTRIES | European Union Countries | Subset of EU member states within CL_COUNTRY |
+
+*SubCategoryVersion*
+
+| SubCategoryVID | SubCategoryID | StartReleaseID | EndReleaseID |
+|----------------|---------------|----------------|--------------|
+| 7101 | 7001 | 3001 | NULL |
+
+*SubCategoryItems*
+
+| SubCategoryVID | ItemID | Label | ParentItemID |
+|----------------|--------|-------|--------------|
+| 7101 | 5001 | France | NULL |
+| 7101 | 5002 | Germany | NULL |
+| 7101 | 5003 | Italy | NULL |
 
 ### 3.4.3 Hierarchies
 
-- **Hierarchy over a single codelist**:
-  - When an SDMX Hierarchy only includes codes from one codelist:
-    - map the codelist to a Category,
-    - represent the hierarchy using a Subcategory that carries parent–child relationships between Category Items.
+SDMX Hierarchies (SDMX 3.x `Hierarchy`, SDMX 2.1 `HierarchicalCodelist`) define parent–child relationships between codes for aggregation, navigation, or reporting structure purposes.
 
-- **Hierarchy over multiple codelists**:
-  - DPM Subcategories must draw items from a single Category; they cannot directly represent a hierarchy that mixes items from multiple categories.
-  - In such cases:
-    - the mapping to DPM is not direct and is generally considered **out of scope** for strict interoperability;
-    - the hierarchy should be handled via:
-      - separate hierarchies per Category, and/or
-      - external documentation.
+#### Hierarchy over a single Codelist (glossary level)
+
+When an SDMX Hierarchy includes codes from only one Codelist, it maps cleanly to a DPM SubCategory that carries parent–child relationships via `ParentItemID`:
+
+1. Map the Codelist to a DPM Category (section 3.1).
+2. Create a SubCategory of that Category.
+3. Populate the SubCategory with the hierarchy's codes as Items, setting `ParentItemID` to reflect the parent–child structure.
+
+*Example*: A geographic hierarchy within `CL_COUNTRY` grouping countries under regions:
+
+*SubCategoryItems*
+
+| SubCategoryVID | ItemID | Label | ParentItemID |
+|----------------|--------|-------|--------------|
+| 7201 | 6000 | Western Europe | NULL |
+| 7201 | 5001 | France | 6000 |
+| 7201 | 5002 | Germany | 6000 |
+| 7201 | 6001 | Southern Europe | NULL |
+| 7201 | 5003 | Italy | 6001 |
+| 7201 | 5004 | Spain | 6001 |
+
+#### Hierarchy over multiple Codelists (out of scope)
+
+DPM SubCategories draw Items from a **single Category** — they cannot represent a hierarchy that mixes Items from different Categories. When an SDMX Hierarchy spans multiple Codelists:
+
+- The mapping is not direct and is considered **out of scope** for strict glossary-level interoperability.
+- Possible workarounds:
+  - Create separate SubCategory hierarchies per Category, each reflecting the portion of the cross-codelist hierarchy that falls within that Category.
+  - Use a SuperCategory (section 3.2) to union the Categories and build the hierarchy within the SuperCategory's Items.
+  - Document the cross-Category structure externally (annotations or supplementary metadata).
 
 
 ## 3.5 Concept ↔ Property
