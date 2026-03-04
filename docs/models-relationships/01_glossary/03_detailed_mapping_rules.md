@@ -253,81 +253,105 @@ classDiagram
 > - **`inclusiveCodeSelectionList` / `exclusiveCodeSelectionList` / wildcards**: DPM `SuperCategoryComposition` always includes *all* Items from each composed Category — there is no subset-selection at the composition level. Filtering the Items of a *single* base Category can be approximated via a SubCategory (see section 3.2.1), but cross-Category filtering and wildcard patterns (`%`) are out of scope.
 > - **`idCode`**: No DPM equivalent.
 
-### 3.2.3 Example Mapping SDMX ==> DPM
+### 3.2.3 Mapping SDMX ==> DPM
 
-The generic SDMX→DPM mapping follows these steps:
+#### Generic pattern
 
-1. **Create a SuperCategory** in DPM for the Extended Codelist, using the Extended Codelist's identifier as the Category Code, with `IsSuperCategory = TRUE`.
-2. **For each `CodelistExtension`**: map the referenced source Codelist to a DPM Category and register it in the SuperCategoryComposition.
+Mapping an SDMX Extended Codelist to DPM can produce up to three artefacts, depending on whether the Extended Codelist filters codes or only unions them:
+
+| SDMX feature | DPM artefact | When created |
+|--------------|--------------|--------------|
+| Extended Codelist itself | **SuperCategory** (`IsSuperCategory = TRUE`) | Always — one SuperCategory per Extended Codelist |
+| Each `CodelistExtension` reference | **SuperCategoryComposition** entry | Always — one row per base Codelist |
+| Locally-defined `<Code>` elements | **Direct Items** of the SuperCategory | Only if the Extended Codelist defines its own codes |
+| `InclusiveCodeSelection` / `ExclusiveCodeSelection` | **SubCategory** of the SuperCategory | Only if the Extended Codelist filters codes from a base Codelist |
+
+The mapping proceeds in four steps:
+
+1. **Create a SuperCategory** for the Extended Codelist, using the Extended Codelist's `id` as the Category Code, with `IsSuperCategory = TRUE`.
+2. **For each `CodelistExtension`**: map the referenced source Codelist to a DPM Category (section 3.1) and register it in `SuperCategoryComposition`.
 3. **For each locally-defined `<Code>`**: create a direct Item of the SuperCategory (with `CategoryID` pointing to the SuperCategory itself).
+4. **If code selection is present**: create a SubCategory of the SuperCategory containing only the Items that survive the inclusion/exclusion filters. The SubCategory captures the *effective membership* of the Extended Codelist — the actual subset of codes available after filtering.
 
-> **Note:** SDMX features such as `prefix`, `sequence`, `InclusiveCodeSelection`, `ExclusiveCodeSelection`, and wildcards have no DPM equivalent and are out of scope (see section 3.2.2.3).
+> **Note:** SDMX features such as `prefix`, `sequence`, and wildcard patterns (`%`) have no DPM equivalent and are out of scope (see section 3.2.2.3). When code selections use these features, the filter must be evaluated at conversion time to produce a flat list of Items for the SubCategory.
 
-The following example shows the concrete mapping of the `CL_EU_REPORTING` Extended Codelist.
+**When is step 4 needed?**
+
+- **No filtering** (all `CodelistExtension` entries include all codes from their base Codelists): The SuperCategory alone is sufficient — it already represents the union of all base Categories. No SubCategory is needed.
+- **Filtering present** (at least one `CodelistExtension` uses `InclusiveCodeSelection` or `ExclusiveCodeSelection`): A SubCategory must be created to record which Items are actually included. Without it, the SuperCategory would imply all Items from all base Categories are available, which is incorrect.
+
+#### Worked example
+
+The `CL_EU_REPORTING` Extended Codelist combines two base Codelists with filtering and adds a locally-defined code:
+
+- **CL_COUNTRY** (BE, FR, DE, IT, ES, PT) — excludes ES and PT
+- **CL_EXT_REGIONS** (EU, EU_W, EU_S) — includes only codes matching `EU_%`
+- **EU_CORE** — locally-defined code
 
 ```xml
-<!-- Extended Codelist Example -->
 <Codelist id="CL_EU_REPORTING" agencyID="ECB" version="1.0">
-
-    <!-- 1. Extend CL_COUNTRY, excluding ES and PT -->
     <CodelistExtension codelistRef="CL_COUNTRY" sequence="1">
         <ExclusiveCodeSelection>
             <MemberValue value="ES"/>
             <MemberValue value="PT"/>
         </ExclusiveCodeSelection>
     </CodelistExtension>
-
-    <!-- 2. Extend CL_EXT_REGIONS, include only codes matching EU_% -->
     <CodelistExtension codelistRef="CL_EXT_REGIONS" sequence="2" prefix="REG_">
         <InclusiveCodeSelection>
             <MemberValue value="EU_%"/>
         </InclusiveCodeSelection>
     </CodelistExtension>
-
-    <!-- 3. Add a locally-defined code -->
     <Code id="EU_CORE">
         <Name xml:lang="en">Core EU reporting zone</Name>
     </Code>
-
 </Codelist>
 ```
 
-*Definition of Categories*
+**Step 1 — SuperCategory** (the Extended Codelist itself):
 
-| CategoryID | Code   | Name                     | Description                                                       | IsEnumerated | IsActive | IsExternalRefData | RefDataSource | RowGUID                                 | CreatedRelease |
-| ---------- | ------ | ------------------------ | ----------------------------------------------------------------- | ------------ | -------- | ----------------- | ------------- | ---------------------------------------- | -------------- |
-| 200        | CL_EU_REPORTING | EU Reporting  | Union of multiple geography-related categories.                   | -1           | -1       | 0                 |               | {A1B2C3D4-1111-2222-3333-444455556666}   | 1              |
-| 210        | CL_COUNTRY| Country Codes            | List of national codes.                                           | -1           | -1       | 0                 |               | {BBBBBBBB-AAAA-4444-9999-111111111111}   | 1              |
-| 220        | CL_EXT_REGIONS | Regions                  | List of administrative regions.                                   | -1           | -1       | 0                 |               | {CCCCCCCC-BBBB-5555-8888-222222222222}   | 1              |
+| CategoryID | Code | Name | IsSuperCategory |
+|------------|------|------|-----------------|
+| 200 | CL_EU_REPORTING | EU Reporting | TRUE |
 
-*Definition of SuperCategory Composition*
+**Step 2 — SuperCategoryComposition** (one row per base Codelist):
 
-| SuperCategoryID | CategoryID | StartReleaseID | EndReleaseID | RowGUID                                   |
-| ---------------- |------------|----------------|--------------|-------------------------------------------- |
-| 200              | 210        | 1              | NULL         | {E1000000-0000-0000-0000-000000000001}      |
-| 200              | 220        | 1              | NULL         | {E2000000-0000-0000-0000-000000000002}      |
+| SuperCategoryID | CategoryID | Category Code | Note |
+|-----------------|------------|---------------|------|
+| 200 | 210 | CL_COUNTRY | All 6 country codes are in the Category |
+| 200 | 220 | CL_EXT_REGIONS | All 3 region codes are in the Category |
 
-*Direct Items of SuperCategory (locally-defined Codes)*
+The SuperCategory now represents the **full union** of both Categories (9 Items total). The filtering has not been applied yet.
 
-| ItemID | CategoryID | Code    | Name                     | Description              | RowGUID                                   |
-|--------|------------|---------|--------------------------|--------------------------|------------------------------------------- |
-| 5100   | 200        | EU_CORE | Core EU reporting zone   | Core EU reporting zone   | {DDDDDDDD-CCCC-6666-7777-333333333333}    |
+**Step 3 — Direct Items** (locally-defined codes):
 
-*Definition of SubCategory*
+| ItemID | CategoryID | Code | Name |
+|--------|------------|------|------|
+| 5100 | 200 (SuperCategory) | EU_CORE | Core EU reporting zone |
 
-| SubCategoryID | CategoryID | Code | Name                                         | Description                                                             | RowGUID                                   |
-|---------------|------------|------|----------------------------------------------|-------------------------------------------------------------------------|--------------------------------------------|
-| 20010         | 200        | CL_EU_REPORTING  | Reporting Countries     | Reporting Countries  | {5F6F7F44-FB94-4EC1-95F3-711DD9FA8F1B}     |
+**Step 4 — SubCategory** (filtered subset):
 
-*Definition of SubCategory Composition*
+Because `CL_EU_REPORTING` uses `ExclusiveCodeSelection` (excluding ES, PT) and `InclusiveCodeSelection` (including only `EU_%`), the effective membership is only 8 of the 10 total Items (9 from base Categories + 1 direct). A SubCategory records this:
 
-| ItemID | SubCategoryVID | Order | Label | ParentItemID | ComparisonOperatorID | ArithmeticOperatorID | RowGUID                                   |
-|--------|-----------------|-------|-------|---------------|------------------------|------------------------|--------------------------------------------|
-| 1000   | 20010             | 1    |       |           |                        |                       | {76FD1DFC-DA28-4AB2-ABE5-EA5B1191450A}     |
-| 1006   | 20010              | 2    |       |           |                        |                       | {C4DC92DB-ED65-4FDB-8B1C-D70644D4C15E}     |
-| 1007   | 20010              | 3    |       |           |                        |                       | {C1099C3F-1FBC-4F79-9DB0-891CFC664FAD}     |
-| 1008   | 20010              | 4    |       |           |                        |                       | {C3AAC52B-9054-4C03-8A31-BD41A055338F}     |
-| 1009   | 20010           | 5     |       |               |                        |                        | {B4CA88A9-A1C9-494E-A42C-80BCE3F0BF32}     |
+*SubCategory*
+
+| SubCategoryID | CategoryID | Code | Name |
+|---------------|------------|------|------|
+| 20010 | 200 | CL_EU_REPORTING_SUBSET | Reporting Countries |
+
+*SubCategoryItems* (the Items that survive filtering + the direct Item):
+
+| SubCategoryVID | ItemID | Code | Source | Note |
+|----------------|--------|------|--------|------|
+| 20010 | 3001 | BE | CL_COUNTRY | Included (not excluded) |
+| 20010 | 3002 | FR | CL_COUNTRY | Included (not excluded) |
+| 20010 | 3003 | DE | CL_COUNTRY | Included (not excluded) |
+| 20010 | 3004 | IT | CL_COUNTRY | Included (not excluded) |
+| 20010 | 4001 | EU | CL_EXT_REGIONS | Matches `EU_%` |
+| 20010 | 4002 | EU_W | CL_EXT_REGIONS | Matches `EU_%` |
+| 20010 | 4003 | EU_S | CL_EXT_REGIONS | Matches `EU_%` |
+| 20010 | 5100 | EU_CORE | Direct Item | Locally-defined |
+
+Items ES (3005) and PT (3006) from CL_COUNTRY are **not** in the SubCategory — they were excluded by `ExclusiveCodeSelection`.
 
 ### 3.2.4 Example Mapping DPM ==> SDMX
 
