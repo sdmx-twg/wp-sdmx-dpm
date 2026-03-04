@@ -1289,21 +1289,47 @@ In SDMX, Concepts are always contained in a **ConceptScheme**. DPM has no equiva
 
 #### SDMX → DPM
 
+The DPM Property `Code` is derived from the SDMX Concept `id`. The ConceptScheme container is used only as a disambiguation prefix when needed — the goal is to keep Property Codes as short and readable as possible while guaranteeing uniqueness within the DPM glossary.
+
 **Single ConceptScheme per organisation (common case)**
 
-Most SDMX organisations maintain a single ConceptScheme (or a small number of closely related schemes). When this is the case, the ConceptScheme can simply be ignored during the mapping — each Concept maps directly to a Property using its `id` as the Property `Code`, with no risk of identifier collisions.
+Most SDMX organisations maintain a single ConceptScheme (or a small number of closely related schemes with disjoint Concept IDs). When this is the case, the ConceptScheme can be ignored during the mapping — each Concept maps directly to a Property using its `id` as the Property `Code`:
+
+```
+Property Code = {ConceptId}
+```
+
+*Example*: Concept `REF_AREA` in ConceptScheme `BIS:STANDALONE_CONCEPT_SCHEME(1.0)` becomes Property Code `REF_AREA`. The scheme container is not reflected in the code.
 
 **Multiple ConceptSchemes per organisation**
 
-When an organisation uses multiple ConceptSchemes whose Concepts may share the same `id` (e.g. two Concepts with `id="COUNTRY"` in different schemes but with different meanings), the ConceptScheme `id` should be used as a namespace prefix to avoid collisions in the DPM glossary:
+When an organisation uses multiple ConceptSchemes and two or more Concepts share the same `id` but have different meanings (a collision), the ConceptScheme `id` must be used as a prefix to disambiguate:
 
 ```
-{ConceptSchemeId}.{ConceptId}
+Property Code = {ConceptSchemeId}_{ConceptId}
 ```
 
-*Example*: Concept `FREQ` in ConceptScheme `CS_MACRO` becomes Property Code `CS_MACRO.FREQ`.
+The separator is an underscore (`_`) to avoid confusion with the dot used in versioned URNs and to stay within typical DPM Code character constraints.
 
-This convention ensures uniqueness while keeping the Property Code readable and traceable back to its SDMX origin.
+*Example*: Two ConceptSchemes both contain a Concept with `id="COUNTRY"` but with different semantics:
+
+| ConceptScheme | Concept id | Property Code |
+|---------------|------------|---------------|
+| `CS_MACRO` | `COUNTRY` | `CS_MACRO_COUNTRY` |
+| `CS_MICRO` | `COUNTRY` | `CS_MICRO_COUNTRY` |
+
+Without the prefix, both would generate the same Property Code `COUNTRY`, causing a collision. With the prefix, they are distinct.
+
+**Applying the prefix consistently**
+
+The prefix rule is triggered by collision risk, not applied universally. Two approaches are possible:
+
+| Approach | Description | Trade-off |
+|----------|-------------|-----------|
+| **On-demand** (recommended) | Apply the prefix only for Concepts whose `id` collides with another Concept from a different scheme | Shorter codes; requires a pre-scan of all Concept IDs before mapping |
+| **Always-prefix** | Apply the prefix to every Concept regardless of collision | Consistent, no pre-scan needed; produces longer codes even when unnecessary |
+
+The on-demand approach is recommended for readability. Implementers who prefer consistency or are operating in automated pipelines without a pre-scan step may apply the always-prefix approach.
 
 #### DPM → SDMX
 
