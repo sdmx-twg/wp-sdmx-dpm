@@ -936,6 +936,90 @@ The `IsMetric` flag does **not** determine whether a Property becomes a dimensio
 
 A qualitative Property (`IsMetric = FALSE`) can be used as a FactVariable (measure), and a quantitative Property (`IsMetric = TRUE`) can appear as a KeyVariable (dimension). The flag describes the *nature* of the Property, not its *role* in a specific table or DSD.
 
+#### 3.5.3.5 Data type mapping
+
+Every DPM Property carries a `DataTypeID` that determines whether the Property is **enumerated** (values drawn from a Category) or **open** (free-form values of a specified type). The full DPM DataType catalogue is:
+
+| DataTypeID | Code | Name | Parent | Classification |
+|------------|------|------|--------|----------------|
+| 8 | `e` | Enumeration | String | **Enumerated** |
+| 1 | `i` | Integer | – | Open (numeric) |
+| 2 | `r` | Decimal | – | Open (numeric) |
+| 9 | `m` | Monetary | – | Open (numeric) |
+| 10 | `p` | Percentage | – | Open (numeric) |
+| 12 | `o` | Ordinals | – | Open (numeric) |
+| 3 | `s` | String (non empty) | – | Open (text) |
+| 13 | `es` | String (including empty string) | – | Open (text) |
+| 11 | `u` | URI | – | Open (text) |
+| 4 | `b` | Boolean | – | Open (logical) |
+| 5 | `t` | True | Boolean | Open (logical) |
+| 6 | `dt` | Date time | – | Open (temporal) |
+| 7 | `d` | Date | Date time | Open (temporal) |
+
+> **Note**: The `Parent` column reflects the DPM DataType hierarchy (e.g. `Date` is a child of `Date time`, `Enumeration` is a child of `String`). This hierarchy is used internally for type compatibility checks; it does not affect the mapping rules below.
+
+**Enumerated properties**
+
+When `DataTypeID = 8` (Enumeration), the Property's allowed values come from the Category linked via `PropertyCategory`. The mapping is:
+
+- **DPM → SDMX**: The Concept receives a `CoreRepresentation` with an `<Enumeration>` referencing the Codelist mapped from the PropertyCategory's Category (see section 3.1).
+- **SDMX → DPM**: A Concept with an enumerated representation (Codelist reference) produces `DataType = Enumeration` and a PropertyCategory pointing to the Category mapped from that Codelist.
+
+**Open properties — type correspondence**
+
+For non-enumerated Properties, the DPM DataType maps to an SDMX `textType` within a `<TextFormat>` element:
+
+| DPM DataType | SDMX `textType` | Notes |
+|--------------|-----------------|-------|
+| Integer (`i`) | `Integer` | Direct mapping |
+| Decimal (`r`) | `Decimal` | Direct mapping |
+| Monetary (`m`) | `Decimal` | SDMX has no monetary type; semantic distinction lost |
+| Percentage (`p`) | `Decimal` | SDMX has no percentage type; semantic distinction lost |
+| Ordinals (`o`) | `Integer` | Ordinal values are integers in SDMX |
+| String non empty (`s`) | `String` | Direct mapping |
+| String incl. empty (`es`) | `String` | Empty-string distinction not expressible in SDMX |
+| URI (`u`) | `URI` | Direct mapping |
+| Boolean (`b`) | `Boolean` | Direct mapping |
+| True (`t`) | `Boolean` | Subtype collapsed to Boolean |
+| Date time (`dt`) | `DateTime` | Direct mapping |
+| Date (`d`) | `ObservationalTimePeriod` | Or `BasicTimePeriod` depending on context |
+
+> **Note**: `Monetary` and `Percentage` both map to SDMX `Decimal`. When converting back (SDMX → DPM), the distinction cannot be recovered from the `textType` alone — it requires semantic inference from the Concept's name, annotations, or a mapping configuration table.
+
+**Facet handling**
+
+DPM Properties can carry a `ValueLength` attribute that constrains the maximum length of open values. This maps to the SDMX `maxLength` Facet:
+
+| DPM | SDMX | Direction |
+|-----|------|-----------|
+| `ValueLength` (integer) | `maxLength` in `<TextFormat>` | Bidirectional |
+| – | `minLength` | No DPM equivalent |
+| – | `minValue` / `maxValue` | No DPM equivalent |
+| – | `pattern` (regex) | No DPM equivalent |
+| – | `decimals` | No DPM equivalent |
+
+When converting SDMX → DPM, only `maxLength` can be preserved in `ValueLength`. All other Facet constraints are documented in the Property description but not enforced at the schema level.
+
+**SDMX → DPM type selection**
+
+When an SDMX Concept has a non-enumerated representation, the DPM DataType is selected based on the `textType`:
+
+| SDMX `textType` | DPM DataType | Condition |
+|------------------|--------------|-----------|
+| `Integer` / `Long` / `Short` | Integer (`i`) | – |
+| `Decimal` / `Float` / `Double` | Decimal (`r`) | Default for numeric |
+| `Decimal` | Monetary (`m`) | Only if Concept is semantically monetary (e.g. amounts, balances) |
+| `Decimal` | Percentage (`p`) | Only if Concept is semantically a percentage or ratio |
+| `String` | String non empty (`s`) | Default for text |
+| `String` | String incl. empty (`es`) | Only if empty values are explicitly allowed |
+| `URI` | URI (`u`) | – |
+| `Boolean` | Boolean (`b`) | – |
+| `DateTime` | Date time (`dt`) | – |
+| `ObservationalTimePeriod` / `BasicTimePeriod` | Date (`d`) | – |
+| `ReportingTimePeriod` | Date (`d`) | Reporting periods normalised to dates |
+
+The disambiguation between `Decimal` → `Monetary` / `Percentage` / plain `Decimal` requires semantic analysis or explicit configuration, as SDMX does not distinguish these sub-types.
+
 ### 3.5.4 Example Mapping SDMX ==> DPM
 
 The SDMX side uses real Concepts from the BIS repository (`BIS:STANDALONE_CONCEPT_SCHEME(1.0)`) and their representations from the Exchange Rates DSD (`BIS:BIS_XR(1.0)`). The DPM side uses real Properties from the EBA DPM database, showing how data is distributed across the Item, ItemCategory, Property, and PropertyCategory tables.
