@@ -771,7 +771,83 @@ In the DPM, a Property does not directly carry a `Code` attribute. Instead, each
 | ---------- | ---------- | ------------ | ---------- |
 | 1012400535 | 250 – `GA` (Geographical area) | 3.4 | – |
 
-### 3.5.1 Mapping cardinality
+### 3.5.1 DPM table structure and join path
+
+A DPM Property is not stored in a single table. Its attributes are spread across four tables that must be joined to obtain the complete picture:
+
+```mermaid
+erDiagram
+    Item {
+        int ItemID PK
+        nvarchar Name
+        nvarchar Description
+        bit IsProperty
+        bit IsActive
+    }
+    ItemCategory {
+        int ItemID FK
+        int CategoryID FK
+        nvarchar Code
+        nvarchar Signature
+        bit IsDefaultItem
+        int StartReleaseID FK
+        int EndReleaseID FK
+    }
+    Property {
+        int PropertyID PK
+        bit IsMetric
+        int DataTypeID FK
+        bit IsComposite
+        nvarchar PeriodType
+        int ValueLength
+    }
+    PropertyCategory {
+        int PropertyID FK
+        int CategoryID FK
+        int StartReleaseID FK
+        int EndReleaseID FK
+    }
+
+    Item ||--o{ ItemCategory : "ItemID"
+    Item ||--o| Property : "ItemID = PropertyID"
+    Property ||--o{ PropertyCategory : "PropertyID"
+```
+
+**Key relationships**:
+
+- **Item ↔ Property**: `Property.PropertyID = Item.ItemID`. Every Property row has the same primary key as its counterpart Item row — they share the identity. The Item provides the name, description, and `IsProperty = TRUE` flag.
+- **Item → ItemCategory**: `ItemCategory.ItemID = Item.ItemID` with `ItemCategory.CategoryID` pointing to the `_PR` (Properties) Category. This association provides the Property's `Code` and `Signature`.
+- **Property → PropertyCategory**: `PropertyCategory.PropertyID = Property.PropertyID`. This links the Property to the Category that defines its allowed values (the "core category"). For non-enumerated Properties, the core category is `_NA` (Not applicable).
+
+**Join path** to retrieve all Property attributes:
+
+```
+Item (IsProperty = TRUE)
+ ├─ ItemCategory    ON ItemCategory.ItemID = Item.ItemID
+ │                  AND ItemCategory.CategoryID = <_PR category>
+ ├─ Property        ON Property.PropertyID = Item.ItemID
+ └─ PropertyCategory ON PropertyCategory.PropertyID = Property.PropertyID
+```
+
+**Joined result** for Property `RCP` (Residence of counterparty) from the EBA DPM:
+
+| Source table | Attribute | Value |
+|--------------|-----------|-------|
+| Item | Name | Residence of counterparty |
+| Item | Description | Defines the geographical area where the counterparty… |
+| Item | IsProperty | TRUE |
+| ItemCategory | Code | `RCP` |
+| ItemCategory | Signature | `eba:RCP` |
+| ItemCategory | CategoryID | 1002 – `_PR` (Properties) |
+| Property | IsMetric | FALSE |
+| Property | DataTypeID | 8 – Enumeration |
+| Property | IsComposite | FALSE |
+| Property | PeriodType | stock |
+| PropertyCategory | CategoryID | 250 – `GA` (Geographical area) |
+
+> **Note**: The ItemCategory row shown here is the one linking the Property's counterpart Item to the `_PR` Category. The same Item may have additional ItemCategory rows if it belongs to other Categories, but the `_PR` association is the one that provides the Property's code and signature.
+
+### 3.5.2 Mapping cardinality
 
 ```mermaid
 classDiagram
@@ -783,16 +859,16 @@ classDiagram
 - From DPM to SDMX: One Property is always mapped to one Concept. Whether the resulting Concept is used as a dimension, attribute, or measure in a DSD depends on how the Property is used in Variables (see chapter on Variables mapping), not on the `IsMetric` flag.
 
 
-### 3.5.2 Attributes equivalence
+### 3.5.3 Attributes equivalence
 
-#### 3.5.2.1 SDMX Concept attributes
+#### 3.5.3.1 SDMX Concept attributes
 - IdentifiableArtefact attributes
     - `id`
     - `name`
     - `description`
 - `coreRepresentation`
 
-#### 3.5.2.2 DPM Property attributes
+#### 3.5.3.2 DPM Property attributes
 - `Code` (via counterpart Item in the `_PR` Category)
 - `Name` (via counterpart Item)
 - `Description` (via counterpart Item)
@@ -800,7 +876,7 @@ classDiagram
 - `DataType`
 - `Owner`
 
-#### 3.5.2.3 Mapping details
+#### 3.5.3.3 Mapping details
 
 | SDMX                                    | DPM                                      |
 |-----------------------------------------|------------------------------------------|
@@ -815,7 +891,7 @@ classDiagram
 > **Note**: The component role (dimension, attribute, or measure) is not encoded in the Property itself. In SDMX, the role is determined by the Component in a DSD; in DPM, it is determined by the type of Variable (KeyVariable, AttributeVariable, FactVariable) that references the Property. The `IsMetric` flag only indicates whether a Property is quantitative or qualitative and does not determine its role.
 
 
-### 3.5.3 Example Mapping SDMX ==> DPM
+### 3.5.4 Example Mapping SDMX ==> DPM
 
 The SDMX side uses real Concepts from the BIS repository (`BIS:STANDALONE_CONCEPT_SCHEME(1.0)`) and their representations from the Exchange Rates DSD (`BIS:BIS_XR(1.0)`). The DPM side uses real Properties from the EBA DPM database, showing how data is distributed across the Item, ItemCategory, Property, and PropertyCategory tables.
 
@@ -960,7 +1036,7 @@ When the Concept has a non-enumerated representation (free-form text), the DPM D
 The BIS `OBS_VALUE` Concept has no explicit representation, but it is used as the primary measure for exchange rate observations (numeric values). The resulting Property receives `IsMetric = TRUE` because it represents a quantitative measurement, and the DataType is set to `Decimal`. Like all non-enumerated Properties, the PropertyCategory points to `_NA`.
 
 
-### 3.5.4 Example Mapping DPM ==> SDMX
+### 3.5.5 Example Mapping DPM ==> SDMX
 
 #### Qualitative Property (enumerated)
 
@@ -1078,7 +1154,7 @@ When the Property has a non-enumeration DataType and its PropertyCategory points
 The DPM `Monetary` DataType maps to the SDMX `Decimal` text type. The `IsMetric = TRUE` flag does not affect the Concept itself — it only indicates the Property is quantitative. The component role (measure, dimension, or attribute) is determined by Variable usage, not by `IsMetric`.
 
 
-### 3.5.5 ConceptScheme handling
+### 3.5.6 ConceptScheme handling
 
 In SDMX, Concepts are always contained in a **ConceptScheme**. DPM has no equivalent container: Properties live in a single cross-domain glossary and are organised by ownership and releases.
 
@@ -1110,7 +1186,7 @@ When mapping DPM Properties to SDMX, one ConceptScheme is created per Owner with
 
 All Properties belonging to that Owner are placed in the ConceptScheme as Concepts.
 
-### 3.5.6 Representation mapping (Core vs Local)
+### 3.5.7 Representation mapping (Core vs Local)
 
 In SDMX, the representation of a Concept can be defined at two levels:
 
