@@ -134,7 +134,37 @@ SDMX and DPM handle these differently, and XBRL (often used for DPM serialisatio
 3. **Time period normalisation**: Define canonical time period formats that work across all three models.
 4. **Documentation**: Clearly document temporal semantics in Property/Concept descriptions to enable correct inference.
 
-## 2.4 Summary of mitigation strategies
+## 2.4 Compound items — SDMX feature gap
+
+### 2.4.1 The gap
+
+SDMX has no explicit construct for expressing that a single code is *composed of* multiple values across different dimensions or categories. Every code in a Codelist is a flat, atomic value with no built-in mechanism to encode its internal structure.
+
+DPM provides an explicit **Compound Category Item**: an item that declares its composition via a set of Property–Item pairs (a `Context` with `ContextCompositions`). This makes the multi-dimensional semantics machine-readable and reusable across tables and validation rules. See [glossary mapping rules §3.3.5](../01_glossary/03_detailed_mapping_rules.md#335-compound-item--known-limitation) for the mapping consequences.
+
+### 2.4.2 DPM use case
+
+The canonical example is a financial instrument such as "Treasury bill" (`TBILL`). In SDMX it appears as a flat code in `CL_INSTRUMENT` with no internal structure. In DPM it is a Compound Item explicitly composed of:
+
+- Type of financial instrument (Property) = "Debt security" (Item)
+- Sector of the issuer (Property) = "General governments" (Item)
+- Original maturity (Property) = "Up to 18 months" (Item)
+
+This composition enables DPM to use `TBILL` directly in slicing, aggregation, and cross-table validation without duplicating the business logic. SDMX cannot express this at the vocabulary level; the semantics must be documented externally or approximated via workarounds (see [§3.3.6](../01_glossary/03_detailed_mapping_rules.md#336-sdmx-workarounds-for-compound-item-semantics)).
+
+### 2.4.3 Previous SDMX proposal
+
+A compound item feature was previously proposed for inclusion in SDMX, inspired in part by the DPM model and similar needs expressed by the IMF. The proposal was rejected during standardisation. The precise version cycle and rejection rationale are not documented here; this section records that the gap is known and was previously considered.
+
+### 2.4.4 Future SDMX candidate
+
+The DPM compound item pattern provides a concrete, well-specified use case that could support revisiting the feature in a future SDMX version. Key arguments for reconsideration:
+
+- **Expressiveness**: Compound items allow vocabulary-level encoding of multi-dimensional semantics that are currently left to documentation or external business rules.
+- **Interoperability**: Without native compound item support, DPM→SDMX conversion is necessarily lossy for these structures.
+- **Reuse**: Explicit composition at the codelist level enables automated validation and aggregation that SDMX currently cannot perform without out-of-band knowledge.
+
+## 2.5 Summary of mitigation strategies
 
 | Gap area | Primary mitigation | Secondary mitigation |
 |----------|-------------------|---------------------|
@@ -142,7 +172,7 @@ SDMX and DPM handle these differently, and XBRL (often used for DPM serialisatio
 | Multi-measure patterns | Naming conventions + Module structure | Round-trip metadata |
 | Stock vs flow | Explicit markers (Property/Annotation) | Documentation |
 | Temporal semantics | Canonical formats + conventions | Transformation rules |
-| Compound Items | Decomposition + documentation | Annotations |
+| Compound Items (§2.4) | Decomposition + documentation | Annotations (DPM_COMPOUND_COMPONENTS) |
 | Cross-codelist hierarchies | SuperCategory + flattening | Accept partial loss |
 | Attribute attachment | Convention-based mapping | Flatten to observation |
 | Rendering | External specification | Accept loss for SDMX |
