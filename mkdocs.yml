@@ -84,6 +84,7 @@ nav:
           - models-relationships/02_data_definition/index.md
           - 1. Data Definition Overview: models-relationships/02_data_definition/01_data_definition_overview.md
           - 2. High-Level Mapping Summary: models-relationships/02_data_definition/02_high_level_mapping_summary.md
+          - 3. Detailed Mapping Rules: models-relationships/02_data_definition/03_detailed_mapping_rules.md
       - Other Artefacts:
           - models-relationships/03_other_artifacts/index.md
           - 1. Other Artefacts Overview: models-relationships/03_other_artifacts/01_other_artifacts_overview.md
