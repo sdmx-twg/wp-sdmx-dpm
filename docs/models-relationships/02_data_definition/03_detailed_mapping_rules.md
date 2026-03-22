@@ -41,9 +41,9 @@ flowchart LR
     DSD -.->|"components define"| T
 ```
 
-**Example**
+**Example Dataflow + DSD**
 
-*SDMX side*: The ECB publishes a Dataflow `CBD2` referencing DSD `ECB_CBD2`, which defines 16 dimensions (including FREQ, REF_AREA, BS_COUNT_SECTOR, CB_ITEM, CB_PORTFOLIO, etc.), a primary measure (OBS_VALUE), and 19 attributes (including OBS_STATUS, CONF_STATUS, DECIMALS).
+The ECB publishes a Dataflow `CBD2` referencing DSD `ECB_CBD2`, which defines 16 dimensions (including FREQ, REF_AREA, BS_COUNT_SECTOR, CB_ITEM, CB_PORTFOLIO, etc.), a primary measure (OBS_VALUE), and 19 attributes (including OBS_STATUS, CONF_STATUS, DECIMALS).
 
 ```xml
 <Dataflow agencyID="ECB" id="CBD2" version="1.0">
@@ -54,21 +54,21 @@ flowchart LR
 </Dataflow>
 ```
 
-*DPM side*: The standard mapping produces a flat table where each DSD component becomes a Header + Variable:
+**Example Table**
+
+The EBA's FINREP template F_04.04.1 (*Breakdown of financial assets by instrument and by counterparty sector: financial assets at amortised cost*) is a non-flat table with 180 Variables organised through dimensional Contexts:
 
 *Table*
 
 | TableID | IsAbstract | HasOpenColumns | HasOpenRows | HasOpenSheets | IsNormalised | IsFlat |
 | ------- | ---------- | -------------- | ----------- | ------------- | ------------ | ------ |
-| 1001    | FALSE      | FALSE          | TRUE        | FALSE         | FALSE        | TRUE   |
+| 406     | FALSE      | FALSE          | FALSE       | FALSE         | FALSE        | FALSE  |
 
-*TableVersion*
+*TableVersion* (release 4.2)
 
-| TableVID | TableID | KeyID | Code | Name                       | StartReleaseID | EndReleaseID |
-| -------- | ------- | ----- | ---- | -------------------------- | -------------- | ------------ |
-| 1101     | 1001    | 8001  | CBD2 | Consolidated Banking data  | 1              | NULL         |
-
-The Dataflow `id` maps to `TableVersion.Code`. The DSD structural information is distributed across the Table's Headers and Variables (see section 3.2), with each DSD dimension becoming a key Header + KeyVariable, each measure becoming a fact Header + FactVariable, and each attribute becoming an attribute Header + AttributeVariable.
+| TableVID | TableID | KeyID | Code      | Name                                                                                                      | StartReleaseID | EndReleaseID |
+| -------- | ------- | ----- | --------- | --------------------------------------------------------------------------------------------------------- | -------------- | ------------ |
+| 6476     | 406     | NULL  | F_04.04.1 | Breakdown of financial assets by instrument and by counterparty sector: financial assets at amortised cost | 5 (v4.2)       | NULL         |
 
 ### 3.1.1 The `IsFlat` flag
 
@@ -130,6 +130,7 @@ classDiagram
 - `TableVersion.KeyID`
 - `TableVersion.Code`
 - `TableVersion.Name`
+- `TableVersion.Description`
 - `TableVersion.StartReleaseID`, `EndReleaseID`
 
 #### 3.1.3.4 Mapping details
@@ -138,7 +139,7 @@ classDiagram
 |------------------------------------|--------------------------------------|--------------------------------------------------------|
 | Dataflow.`id`                      | TableVersion.`Code`                  | The Dataflow id becomes the Table's identifying code   |
 | Dataflow.`Name`                    | TableVersion.`Name`                  | Multilingual mapping via [general rules](../00_basics/02_detailed_mapping_rules.md#23-multilingual-support-internationalstring-vs-translations) |
-| Dataflow.`Description`             | — (no direct equivalent)             | May be stored as extended metadata                     |
+| Dataflow.`Description`             | TableVersion.`Description`           | Multilingual mapping via [general rules](../00_basics/02_detailed_mapping_rules.md#23-multilingual-support-internationalstring-vs-translations) |
 | Dataflow.`Structure` (DSD ref)     | — (structural content distributed)   | DSD components map to Headers + Variables (section 3.2) |
 | DSD.`id`                           | — (no separate artefact)             | Absorbed into Table                                    |
 | DSD structural content             | Headers, Variables, CompoundKey      | See section 3.2 for component-level mapping            |
