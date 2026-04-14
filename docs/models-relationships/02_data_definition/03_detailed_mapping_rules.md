@@ -456,7 +456,7 @@ classDiagram
 The three sources are:
 
 1. **Variable Contexts → inner Dimensions.** Each FactVariable carries a **Context**: a set of (Property, Item) pairs that fix its position in the dimensional space. The union of Context Properties across all Variables defines the table's inner dimensional axes; each such Property becomes a DSD Dimension.
-2. **Open axes (`HasOpenColumns`, `HasOpenRows`, `HasOpenSheets`) → transmission Dimensions.** Open axes represent dimensions whose values are not materialised in the grid but are reported alongside the data — typically time, reporting entity, reference area, frequency. Their Properties complete the dimensional key and contribute additional DSD Dimensions (see §3.2.7, "transmission dimensions").
+2. **Open axes (`HasOpenColumns`, `HasOpenRows`, `HasOpenSheets`) → additional Dimensions.** Open axes represent dimensions whose values are not materialised in the grid but are reported alongside the data — typically reporting entity or currency. Their Properties complete the dimensional key and contribute additional DSD Dimensions. Note that some SDMX exchange-convention dimensions (e.g. `FREQ`, `TIME_PERIOD`) may have no DPM structural source at all and must be added by convention when generating the DSD (see §3.2.7).
 3. **Main (metric) Property → Measure(s).** Each FactVariable is associated with a Property marked `IsMetric = TRUE` — its **main Property**. The set of distinct metric Properties across the table's FactVariables yields one DSD Measure per metric.
 
 Attributes are identified separately via AttributeVariables (`IsAttribute = TRUE`) and attach to their subject Variable through a `ConceptRelation` (see §3.2.3 note on AttributeRelationship).
@@ -504,7 +504,9 @@ Each Header references a **Property** (semantic meaning) and optionally restrict
 
 ### 3.2.3 Component type correspondence
 
-The parallel between DSD components and Table components (flat case) follows a consistent pattern:
+The correspondence between DSD components and Table components depends on the `IsFlat` flag.
+
+#### 3.2.3.1 Flat tables (`IsFlat = TRUE`)
 
 | DSD component  | Table component                                        |
 |----------------|--------------------------------------------------------|
@@ -513,16 +515,29 @@ The parallel between DSD components and Table components (flat case) follows a c
 | Measure        | Header (`IsKey=FALSE`) + FactVariable                  |
 | DataAttribute  | Header (`IsAttribute=TRUE`) + AttributeVariable        |
 
-In all cases, the mapping follows the same two-level pattern:
+#### 3.2.3.2 Non-flat tables (`IsFlat = FALSE`)
+
+In non-flat tables, dimensions are not discrete components but emerge from two sources: the Context Properties across all FactVariables, and the open keys (KeyVariables on Key Headers) that identify additional dimensions such as reporting entity or time period:
+
+| DSD component  | Table component                                                                    |
+|----------------|------------------------------------------------------------------------------------|
+| Dimension      | Context Property (from ContextComposition) or open key (KeyVariable on Key Header) |
+| TimeDimension  | No direct equivalent (exchange-convention dimension, added by convention for SDMX)  |
+| Measure        | VariableVersion.PropertyID where Property is metric                                |
+| DataAttribute  | VariableVersion linked via ConceptRelation `variable_attribute`                     |
+
+In both cases, the mapping follows the same two-level pattern:
 
 1. **Semantic level**: The SDMX Concept has already been mapped to the DPM Property ([glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property))
 2. **Value domain level**: The SDMX Codelist/Facet has already been mapped to the DPM Category/DataType ([glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category))
 
-> **Note on TimeDimension**: DPM has no dedicated time dimension type. SDMX distinguishes multiple time FacetValueTypes (`ObservationalTimePeriod`, `ReportingTimePeriod`, etc.); DPM collapses these into `Property.DataType = Date`. The DPM `Property.PeriodType` attribute (`stock`/`flow`) captures whether the time represents a point-in-time snapshot or a period aggregate — a distinction not modelled in SDMX at the component level.
+> **Note on TimeDimension**: DPM has no dedicated time dimension type. SDMX distinguishes multiple time FacetValueTypes (`ObservationalTimePeriod`, `ReportingTimePeriod`, etc.); DPM collapses these into `Property.DataType = Date`. The DPM `Property.PeriodType` attribute (`stock`/`flow`) captures whether the time represents a point-in-time snapshot or a period aggregate — a distinction not modelled in SDMX at the component level. In non-flat tables, time is typically absent from Variable Contexts and has no DPM structural source; it must be added by convention when generating the DSD (see §3.2.7).
 
 > **Note on AttributeRelationship**: SDMX DataAttributes have an explicit `AttributeRelationship` (Observation, Dimension, Dataflow, Group, Measure) specifying the attachment level. In DPM, this relationship is implicit: an AttributeVariable references its subject (a FactVariable or KeyVariable) via a `ConceptRelation` of type `variable_attribute`. The SDMX `GroupRelationship` has no DPM equivalent.
 
 ### 3.2.4 Mapping cardinality
+
+#### 3.2.4.1 Flat tables (`IsFlat = TRUE`)
 
 Each DSD component type maps 1:1 to its corresponding Table component:
 
@@ -561,49 +576,144 @@ classDiagram
 - **Measure** (1:1) ↔ Header (`IsKey=FALSE`) + FactVariable. The measure's concept and representation map to the FactVariable's Property and DataType.
 - **DataAttribute** (1:1) ↔ Header (`IsAttribute=TRUE`) + AttributeVariable. The attribute's attachment level is implicit in DPM (via `ConceptRelation`).
 
-> **Note**: The 1:1 cardinality holds for the flat table case. For non-flat tables, DSD components do not map to separate Headers but instead form part of each Variable's Context (see section 3.3).
+#### 3.2.4.2 Non-flat tables (`IsFlat = FALSE`)
+
+The cardinality is fundamentally different — DSD components are not 1:1 with Table components but are reconstructed from Variable Contexts and open keys:
+
+```mermaid
+classDiagram
+    direction LR
+    class DSD_Dimension {
+    }
+    class Context_Property {
+        from ContextComposition
+    }
+    class Open_Key {
+        KeyVariable on Key Header
+    }
+    class DSD_TimeDimension {
+    }
+    class Exchange_Convention {
+        no DPM structural source
+    }
+    class DSD_Measure {
+    }
+    class Metric_Property {
+        IsMetric = TRUE
+    }
+    class DSD_DataAttribute {
+    }
+    class AttributeVariable {
+        via ConceptRelation
+    }
+    DSD_Dimension "1" -- "1" Context_Property : one per distinct Property
+    DSD_Dimension "1" -- "1" Open_Key : one per Key Header
+    DSD_TimeDimension "0..1" -- "0" Exchange_Convention : no DPM source
+    DSD_Measure "1" -- "1" Metric_Property : one per distinct metric
+    DSD_DataAttribute "1" -- "1" AttributeVariable
+```
+
+- **Dimension** (1:1 per distinct source) ↔ Context Property or open key. Each distinct Property in the union of all Contexts becomes one DSD Dimension; each KeyVariable on a Key Header contributes an additional Dimension (e.g., reporting entity, currency).
+- **TimeDimension** (0..1) ↔ no direct DPM equivalent. An exchange-convention dimension with no DPM structural source; must be added by convention when generating the DSD.
+- **Measure** (1:1 per distinct metric Property) ↔ metric Property. Each distinct metric Property across the table's FactVariables yields one DSD Measure.
+- **DataAttribute** (1:1) ↔ AttributeVariable linked via ConceptRelation `variable_attribute`.
 
 ### 3.2.5 Attributes equivalence
 
-#### 3.2.5.1 Dimension ↔ Header + KeyVariable
+#### 3.2.5.1 Flat tables (`IsFlat = TRUE`)
 
-| SDMX Dimension attribute                        | DPM equivalent                              | Notes |
-|--------------------------------------------------|---------------------------------------------|-------|
-| `id`                                             | Header cell code / KeyVariable.`Code`       | Component identifier |
-| `position`                                       | Header cell order                           | Position in the series key |
-| `ConceptIdentity` → Concept                      | Header.`PropertyID` → Property              | Already mapped per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
-| `LocalRepresentation` → Codelist                 | Property.`CategoryID` → Category            | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
-| `LocalRepresentation` → Codelist (value subset)  | HeaderVersion.`SubCategoryVID` → SubCategory | Value restriction (see section 3.3) |
+**Dimension ↔ Header + KeyVariable**
 
-#### 3.2.5.2 TimeDimension ↔ Header + KeyVariable
+| SDMX Dimension attribute                        | DPM equivalent                                    | Notes |
+|--------------------------------------------------|---------------------------------------------------|-------|
+| `id`                                             | HeaderVersion.`Code` / VariableVersion.`Code`     | Component identifier |
+| `position`                                       | TableVersionHeader.`Order`                        | Position in the series key |
+| `ConceptIdentity` → Concept                      | HeaderVersion.`PropertyID` → Property             | Already mapped per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
+| `LocalRepresentation` → Codelist                 | PropertyCategory → Category                       | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
+| `LocalRepresentation` → Codelist (value subset)  | HeaderVersion.`SubCategoryVID` → SubCategory      | Value restriction (see section 3.3) |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                             | SDMX concept role has no structural DPM mapping |
 
-| SDMX TimeDimension attribute                     | DPM equivalent                              | Notes |
-|--------------------------------------------------|---------------------------------------------|-------|
-| `id` (always `TIME_PERIOD`)                      | Header cell code / KeyVariable.`Code`       | |
-| `ConceptIdentity` → Concept                      | Header.`PropertyID` → Property              | Property with `DataType = Date` |
-| `LocalRepresentation` → `TextFormat.textType`    | Property.`DataType` = Date                  | All SDMX time types collapse to Date |
-| — (not applicable)                               | Property.`PeriodType` (`stock`/`flow`)      | DPM-specific distinction |
+**TimeDimension ↔ Header + KeyVariable**
 
-#### 3.2.5.3 Measure ↔ Header + FactVariable
+| SDMX TimeDimension attribute                     | DPM equivalent                                    | Notes |
+|--------------------------------------------------|---------------------------------------------------|-------|
+| `id` (always `TIME_PERIOD`)                      | HeaderVersion.`Code` / VariableVersion.`Code`     | |
+| `ConceptIdentity` → Concept                      | HeaderVersion.`PropertyID` → Property             | Property with `DataType = Date` |
+| `LocalRepresentation` → `TextFormat.textType`    | Property.`DataType` = Date                        | All SDMX time types collapse to Date |
+| — (not applicable)                               | Property.`PeriodType` (`stock`/`flow`)            | DPM-specific distinction |
 
-| SDMX Measure attribute                           | DPM equivalent                              | Notes |
-|--------------------------------------------------|---------------------------------------------|-------|
-| `id`                                             | Header cell code / FactVariable.`Code`      | |
-| `usage` (`mandatory`/`conditional`)              | — (implicit in DPM)                         | All FactVariables in a flat table are reported |
-| `ConceptIdentity` → Concept                      | Header.`PropertyID` → Property              | Property with `IsMetric = TRUE` |
-| `LocalRepresentation` → TextFormat               | Property.`DataType`                         | e.g., `Decimal`, `Integer` |
+**Measure ↔ Header + FactVariable**
 
-#### 3.2.5.4 DataAttribute ↔ Header + AttributeVariable
+| SDMX Measure attribute                           | DPM equivalent                                    | Notes |
+|--------------------------------------------------|---------------------------------------------------|-------|
+| `id`                                             | HeaderVersion.`Code` / VariableVersion.`Code`     | |
+| `usage` (`mandatory`/`conditional`)              | — (implicit in DPM)                               | All FactVariables in a flat table are reported |
+| `ConceptIdentity` → Concept                      | HeaderVersion.`PropertyID` → Property             | Property with `IsMetric = TRUE` |
+| `LocalRepresentation` → TextFormat               | Property.`DataType`                               | e.g., `Decimal`, `Integer` |
+| `minOccurs`, `maxOccurs`                         | — (no DPM equivalent)                             | SDMX array cardinality has no DPM structural equivalent |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                             | |
 
-| SDMX DataAttribute attribute                     | DPM equivalent                              | Notes |
-|--------------------------------------------------|---------------------------------------------|-------|
-| `id`                                             | Header cell code / AttributeVariable.`Code` | |
-| `usage` (`mandatory`/`conditional`)              | — (conventions may apply)                   | DPM does not enforce attribute optionality at the structural level |
-| `ConceptIdentity` → Concept                      | Header.`PropertyID` → Property              | Already mapped per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
-| `LocalRepresentation` → Codelist                 | Property.`CategoryID` → Category            | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
-| `LocalRepresentation` → TextFormat               | Property.`DataType`                         | For non-enumerated attributes |
-| `AttributeRelationship` (Observation, Dimension, etc.) | ConceptRelation (`variable_attribute`)  | Attachment level is implicit in DPM |
-| `AttributeRelationship` → `GroupRelationship`    | — (no DPM equivalent)                       | |
+**DataAttribute ↔ Header + AttributeVariable**
+
+| SDMX DataAttribute attribute                     | DPM equivalent                                    | Notes |
+|--------------------------------------------------|---------------------------------------------------|-------|
+| `id`                                             | HeaderVersion.`Code` / VariableVersion.`Code`     | |
+| `usage` (`mandatory`/`conditional`)              | — (conventions may apply)                         | DPM does not enforce attribute optionality at the structural level |
+| `ConceptIdentity` → Concept                      | HeaderVersion.`PropertyID` → Property             | Already mapped per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
+| `LocalRepresentation` → Codelist                 | PropertyCategory → Category                       | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
+| `LocalRepresentation` → TextFormat               | Property.`DataType`                               | For non-enumerated attributes |
+| `AttributeRelationship` (Observation, Dimension, etc.) | ConceptRelation (`variable_attribute`)       | Attachment level is implicit in DPM |
+| `AttributeRelationship` → `GroupRelationship`    | — (no DPM equivalent)                             | |
+| `minOccurs`, `maxOccurs`                         | — (no DPM equivalent)                             | |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                             | |
+
+#### 3.2.5.2 Non-flat tables (`IsFlat = FALSE`)
+
+In non-flat tables, there are no Headers carrying component semantics. The DPM equivalents come from Variable Contexts, metric Properties, and ConceptRelations instead.
+
+**Dimension ↔ Context Property (ContextComposition)**
+
+| SDMX Dimension attribute                        | DPM equivalent                                              | Notes |
+|--------------------------------------------------|-------------------------------------------------------------|-------|
+| `id`                                             | — (derived from Property identifier)                        | No direct code; the Property itself carries identity |
+| `position`                                       | — (no ordering among Context Properties)                    | Context Properties are unordered; SDMX position must be assigned by convention |
+| `ConceptIdentity` → Concept                      | ContextComposition.`PropertyID` → Property                  | Each Context Property was already mapped to a Concept per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
+| `LocalRepresentation` → Codelist                 | PropertyCategory → Category                                 | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
+| `LocalRepresentation` → Codelist (value subset)  | ContextComposition.`ItemID` → Item (per-Variable restriction) | Each Variable's Context fixes a specific Item per Property |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                                       | |
+
+**TimeDimension ↔ (no direct equivalent)**
+
+| SDMX TimeDimension attribute                     | DPM equivalent                                    | Notes |
+|--------------------------------------------------|---------------------------------------------------|-------|
+| `id`                                             | — (exchange-convention dimension)                 | No DPM structural source; added by convention for SDMX |
+| `ConceptIdentity` → Concept                      | — (no Context Property for time)                  | If modelled, would be via a Property with `DataType = Date` |
+| `LocalRepresentation` → `TextFormat.textType`    | — (not represented)                               | See §3.2.7 |
+
+**Measure ↔ VariableVersion (metric Property)**
+
+| SDMX Measure attribute                           | DPM equivalent                                              | Notes |
+|--------------------------------------------------|-------------------------------------------------------------|-------|
+| `id`                                             | — (derived from Property identifier)                        | Each distinct metric Property yields one Measure |
+| `usage` (`mandatory`/`conditional`)              | — (implicit)                                                | Each FactVariable is explicitly defined |
+| `ConceptIdentity` → Concept                      | VariableVersion.`PropertyID` → Property (`IsMetric = TRUE`) | The metric Property was already mapped to a Concept per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
+| `LocalRepresentation` → TextFormat               | Property.`DataType`                                         | e.g., `Decimal`, `Integer` |
+| `minOccurs`, `maxOccurs`                         | — (no DPM equivalent)                                       | |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                                       | |
+
+**DataAttribute ↔ VariableVersion (via ConceptRelation)**
+
+| SDMX DataAttribute attribute                     | DPM equivalent                                              | Notes |
+|--------------------------------------------------|-------------------------------------------------------------|-------|
+| `id`                                             | VariableVersion.`Code`                                      | |
+| `usage` (`mandatory`/`conditional`)              | — (conventions may apply)                                   | |
+| `ConceptIdentity` → Concept                      | VariableVersion.`PropertyID` → Property                     | Already mapped per [glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property) |
+| `LocalRepresentation` → Codelist                 | PropertyCategory → Category                                 | |
+| `LocalRepresentation` → TextFormat               | Property.`DataType`                                         | |
+| `AttributeRelationship` (Observation, Dimension, etc.) | ConceptRelation (`variable_attribute`) → subject Variable | The ConceptRelation source is the subject; target is the attribute |
+| `AttributeRelationship` → `GroupRelationship`    | — (no DPM equivalent)                                       | |
+| `minOccurs`, `maxOccurs`                         | — (no DPM equivalent)                                       | |
+| `role` → Concept[0..*]                           | — (no DPM equivalent)                                       | |
 
 ### 3.2.6 Example Mapping SDMX ==> DPM
 
@@ -802,7 +912,7 @@ Key observations on the non-flat → SDMX mapping:
 
 - **One Property, one Dimension**: Unlike the SDMX → DPM flat case where multiple Context properties might need consolidation, here each DPM Context property maps directly to its own DSD Dimension, referencing the Concept and Codelist already produced by the glossary mapping. No codification scheme is needed in this direction.
 - **Multiple Measures**: Each DPM metric Property produces a separate SDMX Measure, referencing its already-mapped Concept. SDMX 3.0 supports multiple measures natively.
-- **Transmission dimensions**: Dimensions like `FREQ`, `REF_AREA`, and `TIME_PERIOD` may need to be added for SDMX data exchange — they are not present in the DPM Variable Contexts and have no corresponding Properties.
+- **Exchange-convention dimensions**: Dimensions like `FREQ`, `REF_AREA`, and `TIME_PERIOD` have no DPM structural source — they are not present in Variable Contexts, nor as open keys. They must be added by convention when generating the DSD for SDMX data exchange.
 
 This mapping is **mechanical** in the non-flat → SDMX direction when using the glossary artefacts directly. Design decisions arise only when the target is a *pre-existing* SDMX DSD (like ECB CBD2) that consolidates multiple DPM properties into fewer dimensions — that consolidation requires a codification scheme and is not part of the standard mapping path.
 
