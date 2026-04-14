@@ -664,26 +664,36 @@ The CompoundKey members mirror the DSD's DimensionDescriptor: each KeyVariable p
 
 ### 3.2.8 Example Mapping DPM ==> SDMX
 
-Starting from the F_04.04.1 non-flat table, the DSD must be reconstructed from the Variables' Context properties and metric Properties.
+Starting from the F_04.04.1 non-flat table, the DSD must be reconstructed from the Variables' Context properties and metric Properties. The glossary mapping ([chapter 1](../01_glossary/03_detailed_mapping_rules.md)) has already produced an SDMX Concept for each DPM Property and a Codelist for each Category — this step references those artefacts, it does not create them.
 
 **Step 1 — Extract dimensions from Context properties**
 
-The union of all Context properties across the table's 180 Variables defines the dimensional space:
+The union of all Context properties across the table's Variables defines the dimensional space. Each Property was already mapped to a Concept, and each Category to a Codelist, in the glossary:
 
-| Context Property (DPM)               | Proposed DSD Dimension | Codelist                  |
-| ------------------------------------ | ---------------------- | ------------------------- |
-| Accounting items (`qCAA`)            | CB_ITEM (partial)      | CL_CB_ITEM                |
-| Type of financial instruments (`qAFF`) | CB_ITEM (partial)    | CL_CB_ITEM                |
-| Accounting portfolio (`qEEG`)        | CB_PORTFOLIO           | CL_CB_PORTFOLIO           |
-| Counterparty sector (`qBBF`)         | BS_COUNT_SECTOR        | CL_SECTOR                 |
-| Calculation method (`qAAA`)          | CB_ITEM (partial)      | CL_CB_ITEM                |
-| Impaired or not-impaired (`qBUQ`)    | CB_ITEM (partial)      | CL_CB_ITEM                |
+| DPM Property (Category)                         | Already-mapped Concept | Already-mapped Codelist |
+| ------------------------------------------------ | ---------------------- | ----------------------- |
+| Accounting items (`qAI`)                         | ACCOUNTING_ITEMS       | CL_qAI                 |
+| Type of financial instruments (`qFI`)            | TYPE_FINANCIAL_INSTR   | CL_qFI                 |
+| Accounting portfolio (`qPL`)                     | ACCOUNTING_PORTFOLIO   | CL_qPL                 |
+| Counterparty sector (`qSR`)                      | COUNTERPARTY_SECTOR    | CL_qSR                 |
+| Calculation method (`qCM`)                       | CALCULATION_METHOD     | CL_qCM                 |
+| Impaired or not-impaired (`qIM`)                 | IMPAIRED_STATUS        | CL_qIM                 |
+| Regulatory assessment of type of entity (`qOR`)  | REG_ENTITY_TYPE        | CL_qOR                 |
+| Type of risk (`qTR`)                             | TYPE_OF_RISK           | CL_qTR                 |
+| Type of write-off (`qAI`)                        | *(shares Category with Accounting items)* | CL_qAI  |
 
-> **Note**: Multiple DPM Context properties may map to a single DSD dimension. In the CBD2 case, four Context properties (accounting items, instrument type, calculation method, impaired status) are encoded together in the `CB_ITEM` dimension code. This is because SDMX uses a **flat key** where each dimension has a single code, while DPM uses **compositional contexts** where multiple (Property, Item) pairs contribute to the data point identity.
+Each DPM dimension Property becomes a DSD Dimension that references the corresponding Concept and Codelist from the glossary mapping. Unlike the SDMX → DPM direction, this mapping is **one-to-one**: each Context property produces its own Dimension.
 
 **Step 2 — Identify metric properties → Measure**
 
-The four metric properties (qCCB Carrying amount, qHNN Gross carrying amount, qIHI Impairment, qAIU Amount of write-offs) all map to a single SDMX measure `OBS_VALUE`. The metric type distinction is absorbed into the `CB_ITEM` dimension coding.
+The table's four metric Properties — Carrying amount, Gross carrying amount, Impairment, and Amount of write-offs — were each mapped to a Concept in the glossary. In the DSD, each produces a separate Measure:
+
+| DPM Metric Property     | Already-mapped Concept   |
+| ----------------------- | ------------------------ |
+| Carrying amount         | CARRYING_AMOUNT          |
+| Gross carrying amount   | GROSS_CARRYING_AMOUNT    |
+| Impairment              | IMPAIRMENT               |
+| Amount of write-offs    | AMOUNT_WRITE_OFFS        |
 
 **Step 3 — Generate DSD XML** (abbreviated)
 
@@ -693,56 +703,58 @@ The four metric properties (qCCB Carrying amount, qHNN Gross carrying amount, qI
     counterparty sector: financial assets at amortised cost</Name>
   <DataStructureComponents>
     <DimensionList id="DimensionDescriptor">
-      <!-- Context property qBBF (Counterparty sector) → Dimension -->
-      <Dimension id="BS_COUNT_SECTOR" position="1">
+      <!-- DPM Property "Counterparty sector" (Category qSR)
+           → already-mapped Concept + Codelist -->
+      <Dimension id="COUNTERPARTY_SECTOR" position="1">
         <ConceptIdentity>
-          <Ref id="BS_COUNT_SECTOR" maintainableParentID="ECB_CONCEPTS"
-               agencyID="ECB" maintainableParentVersion="1.0" class="Concept"/>
+          <Ref id="COUNTERPARTY_SECTOR" maintainableParentID="EBA_CONCEPTS"
+               agencyID="EBA" maintainableParentVersion="1.0" class="Concept"/>
         </ConceptIdentity>
         <LocalRepresentation>
           <Enumeration>
-            <Ref id="CL_SECTOR" agencyID="ECB" version="1.0" class="Codelist"/>
+            <Ref id="CL_qSR" agencyID="EBA" version="1.0" class="Codelist"/>
           </Enumeration>
         </LocalRepresentation>
       </Dimension>
-      <!-- Context properties qCAA + qAFF + qAAA + qBUQ → CB_ITEM
-           (consolidated via codification scheme) -->
-      <Dimension id="CB_ITEM" position="2">
+      <!-- DPM Property "Accounting items" (Category qAI) -->
+      <Dimension id="ACCOUNTING_ITEMS" position="2">
         <ConceptIdentity>
-          <Ref id="CB_ITEM" maintainableParentID="ECB_CONCEPTS"
-               agencyID="ECB" maintainableParentVersion="1.0" class="Concept"/>
+          <Ref id="ACCOUNTING_ITEMS" maintainableParentID="EBA_CONCEPTS"
+               agencyID="EBA" maintainableParentVersion="1.0" class="Concept"/>
         </ConceptIdentity>
         <LocalRepresentation>
           <Enumeration>
-            <Ref id="CL_CB_ITEM" agencyID="ECB" version="1.0" class="Codelist"/>
+            <Ref id="CL_qAI" agencyID="EBA" version="1.0" class="Codelist"/>
           </Enumeration>
         </LocalRepresentation>
       </Dimension>
-      <!-- Context property qEEG (Accounting portfolio) → Dimension -->
-      <Dimension id="CB_PORTFOLIO" position="3">
+      <!-- DPM Property "Accounting portfolio" (Category qPL) -->
+      <Dimension id="ACCOUNTING_PORTFOLIO" position="3">
         <ConceptIdentity>
-          <Ref id="CB_PORTFOLIO" maintainableParentID="ECB_CONCEPTS"
-               agencyID="ECB" maintainableParentVersion="1.0" class="Concept"/>
+          <Ref id="ACCOUNTING_PORTFOLIO" maintainableParentID="EBA_CONCEPTS"
+               agencyID="EBA" maintainableParentVersion="1.0" class="Concept"/>
         </ConceptIdentity>
         <LocalRepresentation>
           <Enumeration>
-            <Ref id="CL_CB_PORTFOLIO" agencyID="ECB" version="1.0"
-                 class="Codelist"/>
+            <Ref id="CL_qPL" agencyID="EBA" version="1.0" class="Codelist"/>
           </Enumeration>
         </LocalRepresentation>
       </Dimension>
+      <!-- ... remaining dimensions for qFI, qCM, qIM, qOR, qTR -->
     </DimensionList>
     <MeasureList id="MeasureDescriptor">
-      <!-- Four metric properties → single OBS_VALUE -->
-      <Measure id="OBS_VALUE">
+      <!-- DPM metric Property "Carrying amount" → Measure -->
+      <Measure id="CARRYING_AMOUNT">
         <ConceptIdentity>
-          <Ref id="OBS_VALUE" maintainableParentID="ECB_CONCEPTS"
-               agencyID="ECB" maintainableParentVersion="1.0" class="Concept"/>
+          <Ref id="CARRYING_AMOUNT" maintainableParentID="EBA_CONCEPTS"
+               agencyID="EBA" maintainableParentVersion="1.0" class="Concept"/>
         </ConceptIdentity>
         <LocalRepresentation>
-          <TextFormat textType="String" maxLength="30"/>
+          <TextFormat textType="Decimal"/>
         </LocalRepresentation>
       </Measure>
+      <!-- ... remaining measures for GROSS_CARRYING_AMOUNT, IMPAIRMENT,
+               AMOUNT_WRITE_OFFS -->
     </MeasureList>
   </DataStructureComponents>
 </DataStructureDefinition>
@@ -750,11 +762,11 @@ The four metric properties (qCCB Carrying amount, qHNN Gross carrying amount, qI
 
 Key observations on the non-flat → SDMX mapping:
 
-- **Context property consolidation**: Multiple DPM Context properties (accounting items, instrument type, impairment stage, calculation method) must be consolidated into a single `CB_ITEM` dimension code. This requires a **codification scheme** (e.g., `A1200` for "Debt securities, carrying amount") that maps DPM compositional contexts to single SDMX code values.
-- **Metric consolidation**: Four DPM metric Properties (carrying amount, gross carrying amount, impairment, write-offs) map to a single SDMX measure (`OBS_VALUE`). The metric type is encoded in the `CB_ITEM` dimension.
-- **Transmission dimensions**: Dimensions like `FREQ`, `REF_AREA`, and `TIME_PERIOD` may need to be added for the SDMX data exchange format — they are not present in the DPM Variable Contexts.
+- **One Property, one Dimension**: Unlike the SDMX → DPM flat case where multiple Context properties might need consolidation, here each DPM Context property maps directly to its own DSD Dimension, referencing the Concept and Codelist already produced by the glossary mapping. No codification scheme is needed in this direction.
+- **Multiple Measures**: Each DPM metric Property produces a separate SDMX Measure, referencing its already-mapped Concept. SDMX 3.0 supports multiple measures natively.
+- **Transmission dimensions**: Dimensions like `FREQ`, `REF_AREA`, and `TIME_PERIOD` may need to be added for SDMX data exchange — they are not present in the DPM Variable Contexts and have no corresponding Properties.
 
-This mapping is **not mechanical** — it requires design decisions about how to consolidate Context properties into SDMX dimensions and which codification scheme to use. This is the main reason why the flat table approach is recommended for new SDMX-originated structures.
+This mapping is **mechanical** in the non-flat → SDMX direction when using the glossary artefacts directly. Design decisions arise only when the target is a *pre-existing* SDMX DSD (like ECB CBD2) that consolidates multiple DPM properties into fewer dimensions — that consolidation requires a codification scheme and is not part of the standard mapping path.
 
 
 ## 3.3 Series Constraints ↔ Variables
