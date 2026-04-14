@@ -6,24 +6,19 @@ This chapter provides the detailed rules for each of the high-level corresponden
 2. **Structural composition** — how the DSD's components (dimensions, measures, attributes) relate to the Table's components (headers and variables)
 3. **Data space definition** — how SDMX series constraints relate to DPM variables, with fundamentally different mechanisms for flat and non-flat tables
 
-Throughout this chapter, a running example based on real artefacts from European banking supervision is used. The **SDMX side** uses the ECB's Consolidated Banking Data dataflow (`ECB:CBD2`), which transmits data reported under the FINREP framework. The standard SDMX→DPM mapping produces a **flat table** (`IsFlat = TRUE`) that preserves the DSD's dimensional structure directly. For comparison, the EBA's existing FINREP template `F_04.04.1` (*Breakdown of financial assets by instrument and by counterparty sector: financial assets at amortised cost*) is shown as an example of the non-flat approach.
+Throughout this chapter, a running example based on real artefacts from European banking supervision is used. The **SDMX side** uses the ECB's Consolidated Banking Data dataflow (`ECB:CBD2`). For the **DPM Side**, the EBA's FINREP template `F_04.04.1` (*Breakdown of financial assets by instrument and by counterparty sector: financial assets at amortised cost*) is shown as an example of the non-flat approach.
 
-> **Prerequisite — glossary mapping**: This chapter assumes that the glossary-level artefacts have already been mapped following [Glossary — Detailed Mapping Rules](../01_glossary/03_detailed_mapping_rules.md). Concretely, this means that for every DSD component:
->
-> - Each **Codelist** has been mapped to a **Category**, and each **Code** to an **Item** within that Category ([glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category), [3.3](../01_glossary/03_detailed_mapping_rules.md#33-code-category-item)).
-> - Each **Concept** has been mapped to a **Property** ([glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property)).
->
-> The data definition mapping rules below reference these already-existing Properties, Categories, and Items — they do not create them. For example, when a DSD Dimension references Concept `FREQ` and Codelist `CL_FREQ`, this chapter assumes that Property `FREQ` and Category `CL_FREQ` (with its Items) already exist in the DPM glossary.
-
-> **Cross-references**: Identification, multilingual, and naming rules follow the general principles established in [Basics — Detailed Mapping Rules](../00_basics/02_detailed_mapping_rules.md). This chapter focuses on the structural and semantic aspects specific to data definition artefacts.
-
+> - **Prerequisite — glossary mapping**: This chapter assumes that the glossary-level artefacts have already been mapped following [Glossary — Detailed Mapping Rules](../01_glossary/03_detailed_mapping_rules.md). Concretely, this means that for every DSD component:
+>     - Each **Codelist** has been mapped to a **Category**, and each **Code** to an **Item** within that Category ([glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category), [3.3](../01_glossary/03_detailed_mapping_rules.md#33-code-category-item)).
+>     - Each **Concept** has been mapped to a **Property** ([glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property)).
+> - The data definition mapping rules below reference these already-existing Properties, Categories, and Items — they do not create them. For example, when a DSD Dimension references Concept `FREQ` and Codelist `CL_FREQ`, this chapter assumes that Property `FREQ` and Category `CL_FREQ` (with its Items) already exist in the DPM glossary.
 
 ## 3.1 Dataflow + DSD ↔ Table
 
-In SDMX, defining a data collection requires two artefacts working together:
+In SDMX, defining a data collection normally requires two artefacts working together:
 
 - A **Data Structure Definition (DSD)** specifies the complete structure: which dimensions identify observations, what measures are collected, and what attributes describe the data.
-- A **Dataflow** applies that DSD to a specific exchange context. Reporters submit data *against* a Dataflow, not directly against a DSD.
+- A **Dataflow** applies that DSD to a specific exchange context. Reporters normally submit data *against* a Dataflow, not directly against a DSD.
 
 In the DPM, a single artefact — the **Table** (with its **TableVersion**) — serves both roles. A Table defines both the structural content (headers, cells, variables) and the exchange context (what reporters submit).
 
@@ -70,7 +65,7 @@ The EBA's FINREP template F_04.04.1 (*Breakdown of financial assets by instrumen
 | -------- | ------- | ----- | --------- | --------------------------------------------------------------------------------------------------------- | -------------- | ------------ |
 | 6476     | 406     | NULL  | F_04.04.1 | Breakdown of financial assets by instrument and by counterparty sector: financial assets at amortised cost | 5 (v4.2)       | NULL         |
 
-### 3.1.1 The `IsFlat` flag
+### 3.1.1 The DPM `IsFlat` flag
 
 The `Table.IsFlat` flag determines how the DSD structural information is captured and, consequently, the degree of interoperability with SDMX:
 
@@ -184,7 +179,7 @@ The mapping produces the following DPM artefacts:
 - `Name` = Dataflow.`Name`.
 - `KeyID` = 8001 references the CompoundKey capturing the DSD's dimension structure.
 
-The DSD's structural components (dimensions, measure, attributes) are mapped to Headers and Variables — see section 3.2.7 for the worked component-level example.
+The DSD's structural components (dimensions, measure, attributes) are mapped to Headers and Variables — see section 3.2.6 for the worked component-level example.
 
 ### 3.1.5 Example Mapping DPM ==> SDMX
 
@@ -211,7 +206,7 @@ The mapping produces the following SDMX artefacts:
     counterparty sector: financial assets at amortised cost</Name>
   <DataStructureComponents>
     <!-- Components derived from Variable Context properties
-         — see section 3.2.8 -->
+         — see section 3.2.7 -->
   </DataStructureComponents>
 </DataStructureDefinition>
 
@@ -229,12 +224,12 @@ The mapping produces the following SDMX artefacts:
 - Dataflow.`id` = derived from `TableVersion.Code` = `DF_F_04_04_1`.
 - DSD.`id` = `DSD_F_04_04_1` — derived by convention from the Table code.
 - Dataflow.`Name` = `TableVersion.Name`.
-- Since F_04.04.1 is non-flat, DSD dimensions must be reconstructed from the Context properties across all 180 Variables (section 3.2.8). This requires a codification scheme to consolidate compositional contexts into flat SDMX dimension codes.
+- Since F_04.04.1 is non-flat, DSD dimensions must be reconstructed from the Context properties across all 180 Variables (section 3.2.7). This requires a codification scheme to consolidate compositional contexts into flat SDMX dimension codes.
 
 
 ## 3.2 DSD ↔ Table as structural collections
 
-Both the DSD and the Table are **collections of typed components**. The structural parallel becomes clear when we examine what each contains.
+The DSD is natively a **collection of typed components** — Dimensions, Measures, and Attributes under explicit descriptors. A DPM Table is not: its Headers and Variables signal role through flags, and non-flat Tables embed dimensions inside Variable Contexts. To compare the two, we recast the Table as an equivalent collection of typed components; the structural parallel that follows is that constructed equivalence.
 
 ### 3.2.1 DSD components
 
@@ -413,46 +408,110 @@ The DSD `ECB:ECB_CBD2(1.0)` defines 16 dimensions, a TimeDimension, 1 primary me
 
 ### 3.2.2 Table components
 
-A DPM Table organises its components through Headers linked to Variables. The compositional hierarchy depends on the `IsFlat` flag.
+A DPM Table organises its components through Headers linked to Variables. Unlike the DSD, a Table is not natively a collection of typed components — its dimensional structure may be explicit or implicit depending on the `Table.IsFlat` flag. We describe the general (non-flat) case first, then the SDMX-aligned flat case.
 
-**Flat tables (`IsFlat = TRUE`)** — standard mapping from SDMX
+#### 3.2.2.1 Non-flat tables (`IsFlat = FALSE`) — traditional DPM pattern
 
+In the traditional DPM pattern, the table has no typed-component layer. The equivalent of the DSD's Dimensions, Measures, and Attributes must be *reconstructed* from three sources:
+
+> *Conceptual diagram — versioning (Table/TableVersion, Header/HeaderVersion) is omitted for simplicity.*
+
+```mermaid
+classDiagram
+    direction LR
+    class Table {
+      IsFlat = FALSE
+      HasOpenColumns
+      HasOpenRows
+      HasOpenSheets
+    }
+    class Cell 
+    class Variable {
+      mainProperty → Property (IsMetric=TRUE)
+    }
+    class FactVariable
+    class KeyVariable
+    class AttributeVariable
+    class Context {
+      set of (Property, Item) pairs
+    }
+
+    class Property
+    class SubCateogry
+
+    Variable <|-- FactVariable
+    Variable <|-- KeyVariable
+    Variable <|-- AttributeVariable
+
+    Table "1" --> "*" Cell
+    Cell "*" --> "*" Variable 
+    FactVariable "*" --> "1" Context
+    AttributeVariable "*" --> "1" Variable : subject
+
+    Variable "*" --> "1" Property
+    Variable "*" --> "1" SubCategory
+    Context "*" --> "1" Property
 ```
-Table / TableVersion
-├── Headers (IsKey = TRUE)
-│   └── KeyVariable(s)          — identify data points (compound key)
-├── Headers (IsKey = FALSE, fact)
-│   └── FactVariable(s)         — the measured/reported values
-└── Headers (IsAttribute = TRUE)
-    └── AttributeVariable(s)    — metadata describing the data
+
+The three sources are:
+
+1. **Variable Contexts → inner Dimensions.** Each FactVariable carries a **Context**: a set of (Property, Item) pairs that fix its position in the dimensional space. The union of Context Properties across all Variables defines the table's inner dimensional axes; each such Property becomes a DSD Dimension.
+2. **Open axes (`HasOpenColumns`, `HasOpenRows`, `HasOpenSheets`) → transmission Dimensions.** Open axes represent dimensions whose values are not materialised in the grid but are reported alongside the data — typically time, reporting entity, reference area, frequency. Their Properties complete the dimensional key and contribute additional DSD Dimensions (see §3.2.7, "transmission dimensions").
+3. **Main (metric) Property → Measure(s).** Each FactVariable is associated with a Property marked `IsMetric = TRUE` — its **main Property**. The set of distinct metric Properties across the table's FactVariables yields one DSD Measure per metric.
+
+Attributes are identified separately via AttributeVariables (`IsAttribute = TRUE`) and attach to their subject Variable through a `ConceptRelation` (see §3.2.3 note on AttributeRelationship).
+
+
+#### 3.2.2.2 Flat tables (`IsFlat = TRUE`) — SDMX-aligned pattern
+
+Flat tables *are* organised as a collection of typed components, mirroring the DSD directly. There are no Contexts: each Header declares its role through flags (`IsKey`, `IsAttribute`) and references a Property via `PropertyID`:
+
+> *Conceptual diagram — versioning (Table/TableVersion, Header/HeaderVersion) is omitted for simplicity.*
+
+```mermaid
+classDiagram
+    direction LR
+    class Table {
+      IsFlat = TRUE
+    }
+    class Header {
+      IsKey
+      IsAttribute
+      PropertyID → Property
+      SubCategoryVID
+    }
+    class Variable {
+      Code
+    }
+    class KeyVariable
+    class FactVariable
+    class AttributeVariable
+    class Property
+    class SubCategory
+
+    Variable <|-- KeyVariable
+    Variable <|-- FactVariable
+    Variable <|-- AttributeVariable
+
+    Table "1" --> "*" Header
+    Header "1" --> "1" Variable
+    Variable "*" --> "1" Property
+    Variable "*" --> "0..1" SubCategory
+    AttributeVariable "*" --> "1" Variable : subject
 ```
 
-Each Header references a **Property** (semantic meaning, via `PropertyID`) and optionally restricts values via a **SubCategory** (`SubCategoryVID`). Variables inherit their semantic meaning from the same Property.
-
-**Non-flat tables (`IsFlat = FALSE`)** — traditional DPM pattern
-
-```
-Table / TableVersion
-├── Headers
-│   └── Cells (Category or Property cells)
-└── Variables (identified by Context)
-    ├── FactVariable(s)       — each with a Context (dimensional signature)
-    ├── KeyVariable(s)        — part of CompoundKey
-    └── AttributeVariable(s)  — referencing subject Variables
-```
-
-In non-flat tables, dimensions are not separate Headers but are embedded in each Variable's **Context** — a set of (Property, Item) pairs that form the Variable's dimensional signature. This difference fundamentally affects the series constraint mapping (section 3.3).
+Each Header references a **Property** (semantic meaning) and optionally restricts values via a **SubCategory** (`SubCategoryVID`); Variables inherit their semantic meaning from the same Property. The correspondence with DSD components is 1:1 — see §3.2.3.
 
 ### 3.2.3 Component type correspondence
 
 The parallel between DSD components and Table components (flat case) follows a consistent pattern:
 
-| DSD component  | Table component                               | Semantic link     | Value domain                                 |
-|----------------|-----------------------------------------------|-------------------|----------------------------------------------|
-| Dimension      | Header (`IsKey=TRUE`) + KeyVariable           | Concept ↔ Property | Codelist ↔ Category + SubCategory            |
-| TimeDimension  | Header (`IsKey=TRUE`) + KeyVariable with time Property | Concept ↔ Property | FacetValueType ↔ `Property.DataType = Date`  |
-| Measure        | Header (`IsKey=FALSE`) + FactVariable         | Concept ↔ Property | Representation ↔ `Property.DataType`         |
-| DataAttribute  | Header (`IsAttribute=TRUE`) + AttributeVariable | Concept ↔ Property | Codelist/Facet ↔ `Property.DataType` + SubCategory |
+| DSD component  | Table component                                        |
+|----------------|--------------------------------------------------------|
+| Dimension      | Header (`IsKey=TRUE`) + KeyVariable                    |
+| TimeDimension  | Header (`IsKey=TRUE`) + KeyVariable with time Property |
+| Measure        | Header (`IsKey=FALSE`) + FactVariable                  |
+| DataAttribute  | Header (`IsAttribute=TRUE`) + AttributeVariable        |
 
 In all cases, the mapping follows the same two-level pattern:
 
@@ -463,28 +522,7 @@ In all cases, the mapping follows the same two-level pattern:
 
 > **Note on AttributeRelationship**: SDMX DataAttributes have an explicit `AttributeRelationship` (Observation, Dimension, Dataflow, Group, Measure) specifying the attachment level. In DPM, this relationship is implicit: an AttributeVariable references its subject (a FactVariable or KeyVariable) via a `ConceptRelation` of type `variable_attribute`. The SDMX `GroupRelationship` has no DPM equivalent.
 
-### 3.2.4 Example: ECB_CBD2 DSD ↔ flat Table
-
-In a flat table, each DSD component maps directly to a Header + Variable. The following table shows the correspondence for a representative subset of the CBD2 DSD components:
-
-| Component         | DSD role                        | Table component                                   | Property             |
-|-------------------|---------------------------------|---------------------------------------------------|----------------------|
-| FREQ              | Dimension (position 1)          | Header `IsKey=TRUE`, Order=1 + KeyVariable        | Frequency            |
-| REF_AREA          | Dimension (position 2)          | Header `IsKey=TRUE`, Order=2 + KeyVariable        | Reporting area       |
-| BS_COUNT_SECTOR   | Dimension (position 5)          | Header `IsKey=TRUE`, Order=5 + KeyVariable        | Counterparty sector  |
-| CB_REP_FRAMEWRK   | Dimension (position 8)          | Header `IsKey=TRUE`, Order=8 + KeyVariable        | Reporting framework  |
-| CB_ITEM           | Dimension (position 9)          | Header `IsKey=TRUE`, Order=9 + KeyVariable        | Data item            |
-| CB_PORTFOLIO      | Dimension (position 10)         | Header `IsKey=TRUE`, Order=10 + KeyVariable       | Accounting portfolio |
-| TIME_PERIOD       | TimeDimension (position 17)     | Header `IsKey=TRUE`, Order=17 + KeyVariable       | Time period (DataType=Date) |
-| OBS_VALUE         | Measure                         | Header `IsKey=FALSE` + FactVariable               | Observation value (IsMetric=TRUE) |
-| OBS_STATUS        | DataAttribute (Mandatory)       | Header `IsAttribute=TRUE` + AttributeVariable     | Observation status   |
-| CONF_STATUS       | DataAttribute (Conditional)     | Header `IsAttribute=TRUE` + AttributeVariable     | Confidentiality status |
-
-This shows the structural equivalence: every DSD component has a 1:1 counterpart in the flat table. The DSD groups by component *type* (all dimensions together, all measures together), while the Table arranges components as Headers in a single flat list.
-
-> **Note on non-flat tables**: In the existing EBA DPM, table F_04.04.1 represents the same data domain using a non-flat structure. The 16 DSD dimensions are not exposed as separate key Headers. Instead, multiple DPM Context properties (e.g., Accounting items, Type of financial instruments, Counterparty sector, Accounting portfolio) encode the dimensional coordinates of each cell. Four metric Properties (Carrying amount, Gross carrying amount, Impairment, Amount of write-offs) replace the single `OBS_VALUE` measure. This non-flat approach requires a codification scheme to map between compositional contexts and flat SDMX dimension codes.
-
-### 3.2.5 Mapping cardinality
+### 3.2.4 Mapping cardinality
 
 Each DSD component type maps 1:1 to its corresponding Table component:
 
@@ -525,9 +563,9 @@ classDiagram
 
 > **Note**: The 1:1 cardinality holds for the flat table case. For non-flat tables, DSD components do not map to separate Headers but instead form part of each Variable's Context (see section 3.3).
 
-### 3.2.6 Attributes equivalence
+### 3.2.5 Attributes equivalence
 
-#### 3.2.6.1 Dimension ↔ Header + KeyVariable
+#### 3.2.5.1 Dimension ↔ Header + KeyVariable
 
 | SDMX Dimension attribute                        | DPM equivalent                              | Notes |
 |--------------------------------------------------|---------------------------------------------|-------|
@@ -537,7 +575,7 @@ classDiagram
 | `LocalRepresentation` → Codelist                 | Property.`CategoryID` → Category            | Already mapped per [glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category) |
 | `LocalRepresentation` → Codelist (value subset)  | HeaderVersion.`SubCategoryVID` → SubCategory | Value restriction (see section 3.3) |
 
-#### 3.2.6.2 TimeDimension ↔ Header + KeyVariable
+#### 3.2.5.2 TimeDimension ↔ Header + KeyVariable
 
 | SDMX TimeDimension attribute                     | DPM equivalent                              | Notes |
 |--------------------------------------------------|---------------------------------------------|-------|
@@ -546,7 +584,7 @@ classDiagram
 | `LocalRepresentation` → `TextFormat.textType`    | Property.`DataType` = Date                  | All SDMX time types collapse to Date |
 | — (not applicable)                               | Property.`PeriodType` (`stock`/`flow`)      | DPM-specific distinction |
 
-#### 3.2.6.3 Measure ↔ Header + FactVariable
+#### 3.2.5.3 Measure ↔ Header + FactVariable
 
 | SDMX Measure attribute                           | DPM equivalent                              | Notes |
 |--------------------------------------------------|---------------------------------------------|-------|
@@ -555,7 +593,7 @@ classDiagram
 | `ConceptIdentity` → Concept                      | Header.`PropertyID` → Property              | Property with `IsMetric = TRUE` |
 | `LocalRepresentation` → TextFormat               | Property.`DataType`                         | e.g., `Decimal`, `Integer` |
 
-#### 3.2.6.4 DataAttribute ↔ Header + AttributeVariable
+#### 3.2.5.4 DataAttribute ↔ Header + AttributeVariable
 
 | SDMX DataAttribute attribute                     | DPM equivalent                              | Notes |
 |--------------------------------------------------|---------------------------------------------|-------|
@@ -567,7 +605,7 @@ classDiagram
 | `AttributeRelationship` (Observation, Dimension, etc.) | ConceptRelation (`variable_attribute`)  | Attachment level is implicit in DPM |
 | `AttributeRelationship` → `GroupRelationship`    | — (no DPM equivalent)                       | |
 
-### 3.2.7 Example Mapping SDMX ==> DPM
+### 3.2.6 Example Mapping SDMX ==> DPM
 
 Starting from the ECB_CBD2 DSD (section 3.2.1), the standard flat mapping produces the following DPM artefacts. A representative subset of components is shown (6 of 16 dimensions, the TimeDimension, 1 measure, and 2 attributes).
 
@@ -662,7 +700,7 @@ Each Variable references the same Property already mapped from the corresponding
 
 The CompoundKey members mirror the DSD's DimensionDescriptor: each KeyVariable participates in the key, ordered by the Dimension `position`.
 
-### 3.2.8 Example Mapping DPM ==> SDMX
+### 3.2.7 Example Mapping DPM ==> SDMX
 
 Starting from the F_04.04.1 non-flat table, the DSD must be reconstructed from the Variables' Context properties and metric Properties. The glossary mapping ([chapter 1](../01_glossary/03_detailed_mapping_rules.md)) has already produced an SDMX Concept for each DPM Property and a Codelist for each Category — this step references those artefacts, it does not create them.
 
