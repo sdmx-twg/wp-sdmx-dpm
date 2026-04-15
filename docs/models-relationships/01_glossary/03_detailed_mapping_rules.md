@@ -760,15 +760,19 @@ When an SDMX Hierarchy includes codes from only one Codelist, it maps cleanly to
 | 7201 | 5003 | Italy | 6001 |
 | 7201 | 5004 | Spain | 6001 |
 
-#### Hierarchy over multiple Codelists (out of scope)
+#### Hierarchy over multiple Codelists (via SuperCategory)
 
-DPM SubCategories draw Items from a **single Category** — they cannot represent a hierarchy that mixes Items from different Categories. When an SDMX Hierarchy spans multiple Codelists:
+DPM SubCategories draw Items from a **single Category** — directly, they cannot represent a hierarchy that mixes Items from different Categories. The mapping is nevertheless achieved by introducing a **SuperCategory** that unions the involved Categories: once all base Items live under the SuperCategory's namespace, a SubCategory of the SuperCategory can carry the hierarchy's parent–child relationships across original-Codelist boundaries.
 
-- The mapping is not direct and is considered **out of scope** for strict glossary-level interoperability.
-- Possible workarounds:
-  - Create separate SubCategory hierarchies per Category, each reflecting the portion of the cross-codelist hierarchy that falls within that Category.
-  - Use a SuperCategory (section 3.2) to union the Categories and build the hierarchy within the SuperCategory's Items.
-  - Document the cross-Category structure externally (annotations or supplementary metadata).
+**Recommended approach:**
+
+1. Map each base Codelist to a DPM Category (section 3.1).
+2. Create (or reuse) a SuperCategory unioning those Categories via `SuperCategoryComposition` (section 3.2).
+3. Create a SubCategory of the SuperCategory; populate it with the hierarchy's codes as Items, setting `ParentItemID` to reflect the parent–child structure. Parent and child Items may come from different base Categories.
+
+This is consistent with the SuperCategory pattern already used at the Property-representation level (see section 3.5.7, "Representation mapping (Core vs Local)") to handle Concepts whose enumeration spans multiple Codelists across DSDs.
+
+> **Fallback**: When no SuperCategory can reasonably be defined (for example, base Codelists owned by different agencies with no aggregating Extended Codelist), create separate SubCategory hierarchies per Category, each reflecting the portion of the cross-codelist hierarchy that falls within that Category. The cross-Category linkage is then lost from the model.
 
 
 ## 3.5 Concept ↔ Property
