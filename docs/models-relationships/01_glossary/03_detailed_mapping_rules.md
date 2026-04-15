@@ -618,19 +618,11 @@ Although SDMX has no explicit compound item construct, three mechanisms can part
 
 #### Hierarchies
 
-SDMX supports parent-child relationships between codes within a `Hierarchy` (SDMX 3.x) or `HierarchicalCodelist` (SDMX 2.1). A compound item could be placed as a parent code with its constituent items as children. However:
-
-- SDMX hierarchies express sub-type or aggregation relationships *within a single codelist*, not cross-category composition.
-- DPM compound items span multiple Properties (different dimensions/categories), which a hierarchy cannot represent.
-- A reader would have no way to distinguish a genuine sub-type hierarchy from a compound-item workaround.
-
-**Verdict:** Usable only to hint at aggregation; loses the multi-dimensional composition semantics entirely.
+SDMX hierarchies (`Hierarchy` in SDMX 3.x, `HierarchicalCodelist` in SDMX 2.1) express parent–child relationships *within a single codelist*, while DPM compound items span multiple Properties across different categories. A hierarchy can at best hint at aggregation, cannot capture cross-category composition, and gives the reader no way to distinguish a genuine sub-type hierarchy from a compound-item workaround.
 
 #### Representation maps
 
-SDMX `RepresentationMap` artefacts map codes between two representations (codelists). They are designed to express *equivalence* — that a code in one scheme corresponds to a code in another — not to express that a code is *composed of* multiple values across different dimensions.
-
-**Verdict:** Not applicable for compound item semantics.
+SDMX `RepresentationMap` artefacts express *equivalence* between codes in two codelists, not *composition* across dimensions, so they do not fit compound-item semantics.
 
 #### Annotations (recommended)
 
