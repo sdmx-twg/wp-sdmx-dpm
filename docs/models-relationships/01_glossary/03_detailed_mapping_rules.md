@@ -966,12 +966,14 @@ The flag is a **glossary-level** classification that exists only in DPM. SDMX ha
 
 **SDMX → DPM**
 
-When creating a DPM Property from an SDMX Concept, the `IsMetric` flag must be inferred because SDMX does not provide it. The following heuristics can be applied, in order of reliability:
+When creating a DPM Property from an SDMX Concept, the `IsMetric` flag must be inferred because SDMX does not provide it.
 
-1. **Explicit annotation**: If the Concept carries a `DPM_IS_METRIC` annotation (from a previous DPM→SDMX round-trip), use its value directly.
-2. **DataType hint**: If the Concept's representation uses a numeric type (`Decimal`, `Integer`, `Float`) without an enumerated Codelist, `IsMetric = TRUE` is likely appropriate.
+**Annotation override** — if the Concept carries a `DPM_IS_METRIC` annotation (e.g. from a prior DPM→SDMX round-trip), use its value directly: it overrides all heuristics below. In practice the annotation is rarely available, so the following heuristics typically apply, in suggested order of application:
+
+1. **DSD/dataflow usage**: if the Concept is used as a **measure** in any available DSD or dataflow, set `IsMetric = TRUE`. Measure usage is a strong indicator that the underlying Property is metric in nature, even though the component role itself is a data-definition-level concern (see "Relationship to component role" below).
+2. **DataType hint**: if the Concept's representation uses a numeric type (`Decimal`, `Integer`, `Float`) without an enumerated Codelist, `IsMetric = TRUE` is likely appropriate.
 3. **Semantic convention**: Concepts whose `id` follows known metric naming patterns (e.g. `OBS_VALUE`, or EBA-style `mi*` prefixes) can be classified as metric.
-4. **Default**: When none of the above apply, set `IsMetric = FALSE`. Qualitative is the safe default — it is always correct for enumerated Concepts and for free-text attributes.
+4. **Default**: when none of the above apply, set `IsMetric = FALSE`. Qualitative is the safe default — it is always correct for enumerated Concepts, for free-text attributes, and for Concepts that mainly carry additional metadata.
 
 > **Note**: The heuristics above are guidelines, not rules. In practice, `IsMetric` often requires human judgement or a mapping configuration table that assigns the flag per Concept.
 
