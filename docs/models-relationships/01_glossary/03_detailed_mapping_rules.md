@@ -1134,9 +1134,11 @@ The SDMX side uses real Concepts from the BIS repository (`BIS:STANDALONE_CONCEP
 
 | PropertyID | CategoryID | StartRelease | EndRelease |
 | ---------- | ---------- | ------------ | ---------- |
-| *(gen)* | Category mapped from `CL_BIS_IF_REF_AREA` | *(current)* | – |
+| *(gen)* | Category mapped from `CL_BIS_IF_REF_AREA` (broadest Codelist across DSDs — see note) | *(current)* | – |
 
-The Concept `id` becomes the ItemCategory `Code` within the `_PR` Category. The Concept `Name` becomes the Item `Name`. The enumerated representation (Codelist `CL_BIS_IF_REF_AREA`) maps to a PropertyCategory association pointing to the Category mapped from that Codelist (see section 3.1), and the DataType is set to `Enumeration`.
+The Concept `id` becomes the ItemCategory `Code` within the `_PR` Category. The Concept `Name` becomes the Item `Name`. The DataType is set to `Enumeration`.
+
+The PropertyCategory association is mapped from the Concept's **CoreRepresentation**, not from the LocalRepresentation on the DSD's Dimension — this follows the design decision in [section 3.5.7](#357-representation-mapping-core-vs-local). In this BIS example the Concept `REF_AREA` has **no CoreRepresentation defined**; it is used with different Codelists across DSDs (`CL_BIS_IF_REF_AREA` in `BIS_XR` and `BIS_CBS`, the narrower `CL_AREA` in `BIS_EER`). Per the multi-DSD rule in 3.5.7, the broadest Codelist (`CL_BIS_IF_REF_AREA`) is therefore used as the de facto core, and the PropertyCategory points to the Category mapped from it (see section 3.1). Narrower LocalRepresentations from other DSDs (e.g. `CL_AREA` in `BIS_EER`) become **SubCategories** of this Category, associated with the relevant Variable or Table at data-definition mapping time — these SubCategories do not appear in this glossary-level example.
 
 #### Qualitative Concept with non-enumerated representation
 
