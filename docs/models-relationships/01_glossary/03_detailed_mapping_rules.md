@@ -657,10 +657,10 @@ Subset and hierarchy mapping is one of the trickier areas because SDMX uses two 
 
 | SDMX mechanism | Attached to | Mapping level | DPM target |
 |----------------|-------------|---------------|------------|
-| **Codelist Extension** (InclusiveCodeSelection / ExclusiveCodeSelection) | Codelist (vocabulary) | Glossary | SubCategory (see also section 3.2) |
+| **Codelist Extension** (InclusiveCodeSelection / ExclusiveCodeSelection) | Codelist | Glossary | SubCategory (see also section 3.2) |
 | **ContentConstraint** (CubeRegion / MemberSelection) | Dataflow / ProvisionAgreement / DSD | Data-definition | SubCategory (at Variable/Table level) |
 
-The DPM target in both cases is the **SubCategory** — a named, versioned subset of Items within a Category. However, the *trigger* for creating the SubCategory differs: Codelist Extensions are vocabulary-level artefacts and are handled here at the glossary mapping stage; Constraints are structural-context artefacts and are deferred to the data-definition mapping chapter.
+The DPM target in both cases is the **SubCategory** — a named, versioned subset of Items within a Category. However, the *trigger* for creating the SubCategory differs: Codelist Extensions are glossary-level artefacts and are handled here at the glossary mapping stage; Constraints are structural-context artefacts and are deferred to the data-definition mapping chapter.
 
 > **Note**: Partial codelists (`isPartial = true`) are excluded — as discussed in section 1.1, they are strictly a dissemination mechanism and do not create independent subsets.
 
@@ -680,7 +680,7 @@ The general rule:
 
 SDMX ContentConstraints restrict allowable values for a Dataflow, ProvisionAgreement, or DSD component. They use CubeRegion with MemberSelection entries to include or exclude codes, optionally with `cascadeValues` and wildcards.
 
-Constraints are **not vocabulary-level artefacts** — they are attached to structural contexts (which Dataflow, which component). In DPM terms, they correspond to SubCategories associated with specific Variables or Tables, not to the glossary.
+Constraints are **not glossary-level artefacts** — they are attached to structural contexts (which Dataflow, which component). In DPM terms, they correspond to SubCategories associated with specific Variables or Tables, not to the glossary.
 
 **Mapping approach:**
 
