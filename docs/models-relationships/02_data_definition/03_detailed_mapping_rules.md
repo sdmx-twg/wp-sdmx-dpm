@@ -717,102 +717,170 @@ In non-flat tables, there are no Headers carrying component semantics. The DPM e
 
 ### 3.2.6 Example Mapping SDMX ==> DPM
 
-Starting from the ECB_CBD2 DSD (section 3.2.1), the standard flat mapping produces the following DPM artefacts. A representative subset of components is shown (6 of 16 dimensions, the TimeDimension, 1 measure, and 2 attributes).
+Starting from the [ECB_CBD2 DSD](#321-dsd-components), the standard flat mapping produces the following DPM artefacts. A representative subset of components is shown (6 of 16 dimensions, the TimeDimension, 1 measure, and 2 attributes).
 
-**Step 1 — Create Headers**
+**Step 1 — Create Headers, HeaderVersions, and TableVersionHeaders**
 
-Each DSD component becomes a Header:
+Each DSD component becomes a Header. The Header itself is linked to the Table (not to a specific TableVersion) so it can be reused across versions; the TableVersion↔Header binding — together with the Order — lives on TableVersionHeader.
 
-*Header*
+*Header* (one row per distinct Header; linked to the Table via `TableID`)
 
-| HeaderID | TableVID | IsKey | IsAttribute |
-| -------- | -------- | ----- | ----------- |
-| 6001     | 1101     | TRUE  | FALSE       |
-| 6002     | 1101     | TRUE  | FALSE       |
-| 6005     | 1101     | TRUE  | FALSE       |
-| 6008     | 1101     | TRUE  | FALSE       |
-| 6009     | 1101     | TRUE  | FALSE       |
-| 6010     | 1101     | TRUE  | FALSE       |
-| 6017     | 1101     | TRUE  | FALSE       |
-| 6018     | 1101     | FALSE | FALSE       |
-| 6019     | 1101     | FALSE | TRUE        |
-| 6020     | 1101     | FALSE | TRUE        |
+| HeaderID | TableID | Direction | IsKey | IsAttribute |
+| -------- | ------- | --------- | ----- | ----------- |
+| 6001     | 1001    | column    | TRUE  | FALSE       |
+| 6002     | 1001    | column    | TRUE  | FALSE       |
+| 6005     | 1001    | column    | TRUE  | FALSE       |
+| 6008     | 1001    | column    | TRUE  | FALSE       |
+| 6009     | 1001    | column    | TRUE  | FALSE       |
+| 6010     | 1001    | column    | TRUE  | FALSE       |
+| 6017     | 1001    | column    | TRUE  | FALSE       |
+| 6018     | 1001    | column    | FALSE | FALSE       |
+| 6019     | 1001    | column    | FALSE | TRUE        |
+| 6020     | 1001    | column    | FALSE | TRUE        |
 
-*HeaderVersion* (with references to already-mapped Properties and Categories)
+> `IsAttribute` is a convention used in this document to distinguish attribute Headers from fact Headers; the DPM metamodel identifies AttributeVariables through a `ConceptRelation` of type `variable_attribute` rather than a Header-level flag.
 
-| HeaderVID | HeaderID | PropertyID → Property  | SubCategoryVID | Order | Code            | StartReleaseID | EndReleaseID |
-| --------- | -------- | ---------------------- | -------------- | ----- | --------------- | -------------- | ------------ |
-| 6101      | 6001     | Property `FREQ`        | 2001           | 1     | FREQ            | 1              | NULL         |
-| 6102      | 6002     | Property `REF_AREA`    | 2002           | 2     | REF_AREA        | 1              | NULL         |
-| 6105      | 6005     | Property `BS_COUNT_SECTOR` | 2005       | 5     | BS_COUNT_SECTOR | 1              | NULL         |
-| 6108      | 6008     | Property `CB_REP_FRAMEWRK` | 2008       | 8     | CB_REP_FRAMEWRK | 1              | NULL         |
-| 6109      | 6009     | Property `CB_ITEM`     | 2009           | 9     | CB_ITEM         | 1              | NULL         |
-| 6110      | 6010     | Property `CB_PORTFOLIO` | 2010          | 10    | CB_PORTFOLIO    | 1              | NULL         |
-| 6117      | 6017     | Property `TIME_PERIOD` | NULL           | 17    | TIME_PERIOD     | 1              | NULL         |
-| 6118      | 6018     | Property `OBS_VALUE`   | NULL           | 18    | OBS_VALUE       | 1              | NULL         |
-| 6119      | 6019     | Property `OBS_STATUS`  | 2019           | 19    | OBS_STATUS      | 1              | NULL         |
-| 6120      | 6020     | Property `CONF_STATUS` | NULL           | 20    | CONF_STATUS     | 1              | NULL         |
+*HeaderVersion* (versioned definition — references already-mapped Properties and SubCategories)
+
+| HeaderVID | HeaderID | PropertyID → Property      | SubCategoryVID | Code            | StartReleaseID | EndReleaseID |
+| --------- | -------- | -------------------------- | -------------- | --------------- | -------------- | ------------ |
+| 6101      | 6001     | Property `FREQ`            | 2001           | FREQ            | 1              | NULL         |
+| 6102      | 6002     | Property `REF_AREA`        | 2002           | REF_AREA        | 1              | NULL         |
+| 6105      | 6005     | Property `BS_COUNT_SECTOR` | 2005           | BS_COUNT_SECTOR | 1              | NULL         |
+| 6108      | 6008     | Property `CB_REP_FRAMEWRK` | 2008           | CB_REP_FRAMEWRK | 1              | NULL         |
+| 6109      | 6009     | Property `CB_ITEM`         | 2009           | CB_ITEM         | 1              | NULL         |
+| 6110      | 6010     | Property `CB_PORTFOLIO`    | 2010           | CB_PORTFOLIO    | 1              | NULL         |
+| 6117      | 6017     | Property `TIME_PERIOD`     | NULL           | TIME_PERIOD     | 1              | NULL         |
+| 6118      | 6018     | Property `OBS_VALUE`       | NULL           | OBS_VALUE       | 1              | NULL         |
+| 6119      | 6019     | Property `OBS_STATUS`      | 2019           | OBS_STATUS      | 1              | NULL         |
+| 6120      | 6020     | Property `CONF_STATUS`     | NULL           | CONF_STATUS     | 1              | NULL         |
+
+*TableVersionHeader* (binds Headers to a specific TableVersion and carries the structural layout that may change between versions)
+
+| TableVID | HeaderID | HeaderVID | Order | IsAbstract | IsUnique |
+| -------- | -------- | --------- | ----- | ---------- | -------- |
+| 1101     | 6001     | 6101      | 1     | FALSE      | FALSE    |
+| 1101     | 6002     | 6102      | 2     | FALSE      | FALSE    |
+| 1101     | 6005     | 6105      | 5     | FALSE      | FALSE    |
+| 1101     | 6008     | 6108      | 8     | FALSE      | FALSE    |
+| 1101     | 6009     | 6109      | 9     | FALSE      | FALSE    |
+| 1101     | 6010     | 6110      | 10    | FALSE      | FALSE    |
+| 1101     | 6017     | 6117      | 17    | FALSE      | FALSE    |
+| 1101     | 6018     | 6118      | 18    | FALSE      | FALSE    |
+| 1101     | 6019     | 6119      | 19    | FALSE      | FALSE    |
+| 1101     | 6020     | 6120      | 20    | FALSE      | FALSE    |
 
 - `HeaderVersion.Code` = DSD component `id` (e.g., `FREQ`, `OBS_VALUE`).
-- `PropertyID` references the Property already mapped from the component's Concept (glossary prerequisite: Concept `FREQ` → Property `FREQ`, Concept `OBS_VALUE` → Property `OBS_VALUE`, etc.).
-- `SubCategoryVID` is populated when the ContentConstraint restricts the dimension values (see section 3.3).
-- `Order` corresponds to the Dimension `position` attribute.
+- `HeaderVersion.PropertyID` references the Property already mapped from the component's Concept (glossary prerequisite: Concept `FREQ` → Property `FREQ`, Concept `OBS_VALUE` → Property `OBS_VALUE`, etc.).
+- `HeaderVersion.SubCategoryVID` is populated when the ContentConstraint restricts the dimension values (see section 3.3).
+- `TableVersionHeader.Order` corresponds to the Dimension `position` attribute.
 - The Property's associated Category (already mapped from the Codelist, e.g., Codelist `CL_FREQ` → Category `CL_FREQ`) defines the value domain for enumerated dimensions.
 
-**Step 2 — Create Variables**
+**Step 2 — Create Variables, VariableVersions, and CompoundKey**
 
-Each Variable references the same Property already mapped from the corresponding Concept.
+Each DSD component also produces a Variable — the maintainable identity — together with a VariableVersion carrying the per-release definition. The Variable's `Type` declares its role (Key / Fact / Attribute / FilingIndicator per §5.3.2); that role is consistently reflected by how the VariableVersion is linked:
 
-*KeyVariable* (one per Dimension/TimeDimension)
+- **Key Variable**: referenced by `HeaderVersion.KeyVariableVID` of a Key Header (`IsKey = TRUE`) and gathered in the CompoundKey via KeyComposition.
+- **Fact Variable**: references the CompoundKey via `VariableVersion.KeyID`, and is reached from the table grid via `TableVersionCell.VariableVID` (see Step 3).
+- **Attribute Variable**: linked to its subject Variable via a `ConceptRelation` of type `variable_attribute`.
 
-| VariableID | TableVID | Code            | PropertyID → Property      | StartReleaseID | EndReleaseID |
-| ---------- | -------- | --------------- | -------------------------- | -------------- | ------------ |
-| 7001       | 1101     | FREQ            | Property `FREQ`            | 1              | NULL         |
-| 7002       | 1101     | REF_AREA        | Property `REF_AREA`        | 1              | NULL         |
-| 7005       | 1101     | BS_COUNT_SECTOR | Property `BS_COUNT_SECTOR` | 1              | NULL         |
-| 7008       | 1101     | CB_REP_FRAMEWRK | Property `CB_REP_FRAMEWRK` | 1              | NULL         |
-| 7009       | 1101     | CB_ITEM         | Property `CB_ITEM`         | 1              | NULL         |
-| 7010       | 1101     | CB_PORTFOLIO    | Property `CB_PORTFOLIO`    | 1              | NULL         |
-| 7017       | 1101     | TIME_PERIOD     | Property `TIME_PERIOD`     | 1              | NULL         |
+*Variable* (maintainable — one row per distinct Variable; `Type` identifies the Variable's role per §5.3.2 of the DPM metamodel, carried in practice via Concept → DPMClass → Type)
 
-*FactVariable* (one per Measure)
+| VariableID | Type      |
+| ---------- | --------- |
+| 7001       | Key       |
+| 7002       | Key       |
+| 7005       | Key       |
+| 7008       | Key       |
+| 7009       | Key       |
+| 7010       | Key       |
+| 7017       | Key       |
+| 7018       | Fact      |
+| 7019       | Attribute |
+| 7020       | Attribute |
 
-| VariableID | TableVID | Code      | PropertyID → Property | StartReleaseID | EndReleaseID |
-| ---------- | -------- | --------- | --------------------- | -------------- | ------------ |
-| 7018       | 1101     | OBS_VALUE | Property `OBS_VALUE`  | 1              | NULL         |
+*VariableVersion — Key role* (one per Dimension/TimeDimension)
 
-*AttributeVariable* (one per DataAttribute)
+| VariableVID | VariableID | Code            | PropertyID → Property      | SubCategoryVID | StartReleaseID | EndReleaseID |
+| ----------- | ---------- | --------------- | -------------------------- | -------------- | -------------- | ------------ |
+| 7101        | 7001       | FREQ            | Property `FREQ`            | 2001           | 1              | NULL         |
+| 7102        | 7002       | REF_AREA        | Property `REF_AREA`        | 2002           | 1              | NULL         |
+| 7105        | 7005       | BS_COUNT_SECTOR | Property `BS_COUNT_SECTOR` | 2005           | 1              | NULL         |
+| 7108        | 7008       | CB_REP_FRAMEWRK | Property `CB_REP_FRAMEWRK` | 2008           | 1              | NULL         |
+| 7109        | 7009       | CB_ITEM         | Property `CB_ITEM`         | 2009           | 1              | NULL         |
+| 7110        | 7010       | CB_PORTFOLIO    | Property `CB_PORTFOLIO`    | 2010           | 1              | NULL         |
+| 7117        | 7017       | TIME_PERIOD     | Property `TIME_PERIOD`     | NULL           | 1              | NULL         |
 
-| VariableID | TableVID | Code        | PropertyID → Property  | StartReleaseID | EndReleaseID |
-| ---------- | -------- | ----------- | ---------------------- | -------------- | ------------ |
-| 7019       | 1101     | OBS_STATUS  | Property `OBS_STATUS`  | 1              | NULL         |
-| 7020       | 1101     | CONF_STATUS | Property `CONF_STATUS` | 1              | NULL         |
-
-**Step 3 — Create CompoundKey**
+With the KeyVariableVersions in place, the CompoundKey can be created and populated:
 
 *CompoundKey*
 
-| KeyID | TableVID | Code     |
-| ----- | -------- | -------- |
-| 8001  | 1101     | KEY_CBD2 |
+| KeyID | Signature |
+| ----- | --------- |
+| 8001  | CBD2      |
 
-*CompoundKeyMember* (excerpt — all 17 key variables participate)
+*KeyComposition* (excerpt — all 17 KeyVariableVersions participate)
 
-| KeyID | VariableID | Order |
-| ----- | ---------- | ----- |
-| 8001  | 7001       | 1     |
-| 8001  | 7002       | 2     |
-| 8001  | 7005       | 5     |
-| 8001  | 7008       | 8     |
-| 8001  | 7009       | 9     |
-| 8001  | 7010       | 10    |
-| 8001  | 7017       | 17    |
+| KeyID | VariableVID |
+| ----- | ----------- |
+| 8001  | 7101        |
+| 8001  | 7102        |
+| 8001  | 7105        |
+| 8001  | 7108        |
+| 8001  | 7109        |
+| 8001  | 7110        |
+| 8001  | 7117        |
 
-The CompoundKey members mirror the DSD's DimensionDescriptor: each KeyVariable participates in the key, ordered by the Dimension `position`.
+The FactVariableVersion can now link to this CompoundKey through `VariableVersion.KeyID`:
+
+*VariableVersion — Fact role* (one per Measure)
+
+| VariableVID | VariableID | Code      | PropertyID → Property | KeyID → CompoundKey | StartReleaseID | EndReleaseID |
+| ----------- | ---------- | --------- | --------------------- | ------------------- | -------------- | ------------ |
+| 7118        | 7018       | OBS_VALUE | Property `OBS_VALUE`  | 8001                | 1              | NULL         |
+
+*VariableVersion — Attribute role* (one per DataAttribute)
+
+| VariableVID | VariableID | Code        | PropertyID → Property  | StartReleaseID | EndReleaseID |
+| ----------- | ---------- | ----------- | ---------------------- | -------------- | ------------ |
+| 7119        | 7019       | OBS_STATUS  | Property `OBS_STATUS`  | 1              | NULL         |
+| 7120        | 7020       | CONF_STATUS | Property `CONF_STATUS` | 1              | NULL         |
+
+- `VariableVersion.Code` = DSD component `id`.
+- `VariableVersion.PropertyID` references the Property already mapped from the component's Concept (same Property referenced by the corresponding HeaderVersion — the Header and its Variable share semantic identity).
+- `VariableVersion.SubCategoryVID` is populated for KeyVariables when the ContentConstraint restricts the dimension values.
+- `VariableVersion.KeyID` on FactVariableVersions points to the CompoundKey gathering the KeyVariableVersions required to identify each observation. The same CompoundKey is referenced at TableVersion level via `TableVersion.KeyID = 8001` (see §3.1.4) — this is the series-key dual pointed out in §3.3.
+- AttributeVariableVersions do not carry a CompoundKey; they attach to their subject Variable via ConceptRelation instead.
+- In this example, VariableVID values use the pattern 71xx where `xx` matches the corresponding VariableID suffix (e.g., VariableID 7018 → VariableVID 7118).
+
+**Step 3 — Create Cells and link them to VariableVersions**
+
+Non-key Headers result in Cells; the link from a Cell to its VariableVersion is established through `TableVersionCell.VariableVID`. Key Headers do not result in Cells (§5.2.1.3 of the DPM metamodel) — they define the series key via the CompoundKey instead.
+
+*Cell* (one per non-key Header)
+
+| CellID | TableID | ColumnID → Header |
+| ------ | ------- | ----------------- |
+| 9018   | 1001    | 6018              |
+| 9019   | 1001    | 6019              |
+| 9020   | 1001    | 6020              |
+
+*TableVersionCell* (links Cell to VariableVersion)
+
+| TableVID | CellID | CellCode    | IsNullable | VariableVID → VariableVersion |
+| -------- | ------ | ----------- | ---------- | ----------------------------- |
+| 1101     | 9018   | OBS_VALUE   | FALSE      | 7118 (Fact role)              |
+| 1101     | 9019   | OBS_STATUS  | TRUE       | 7119 (Attribute role)         |
+| 1101     | 9020   | CONF_STATUS | TRUE       | 7120 (Attribute role)         |
+
+- Each Cell references its originating non-key Header via `ColumnID` (here, HeaderIDs 6018–6020 for OBS_VALUE, OBS_STATUS, CONF_STATUS).
+- Since `HasOpenRows = TRUE`, `RowID` and `SheetID` are `NULL` — rows are instantiated at runtime from each submitted observation.
+- `TableVersionCell.VariableVID` references the VariableVersion rows created in Step 2 (71xx).
+- `IsNullable` reflects the SDMX `usage` of the originating component — mandatory measures/attributes map to `FALSE`, conditional ones to `TRUE`.
 
 ### 3.2.7 Example Mapping DPM ==> SDMX
 
-Starting from the F_04.04.1 non-flat table, the DSD must be reconstructed from the Variables' Context properties and metric Properties. The glossary mapping ([chapter 1](../01_glossary/03_detailed_mapping_rules.md)) has already produced an SDMX Concept for each DPM Property and a Codelist for each Category — this step references those artefacts, it does not create them.
+Starting from the [F_04.04.1 non-flat table](#315-example-mapping-dpm-sdmx), the DSD must be reconstructed from the Variables' Context properties and metric Properties. The glossary mapping ([chapter 1](../01_glossary/03_detailed_mapping_rules.md)) has already produced an SDMX Concept for each DPM Property and a Codelist for each Category — this step references those artefacts, it does not create them.
 
 **Step 1 — Extract dimensions from Context properties**
 
@@ -923,13 +991,22 @@ This section describes how the SDMX concept of *series and their constraints* ma
 
 ### 3.3.1 SDMX series and constraints
 
-In SDMX, a **series** is a set of observations sharing the same key values. The **series key** is the ordered combination of all dimension values:
+In SDMX, a **series** is a set of observations sharing the same key values, except for the Time Dimension. The **series key** is the ordered combination of all dimension values:
 
 ```
 Series key = (FREQ=Q, REF_AREA=ES, ..., CB_ITEM=A1200, CB_PORTFOLIO=HAC, ..., TIME_PERIOD=2024-Q4)
 ```
 
-A **ContentConstraint** restricts which series are valid within a Dataflow. The most common mechanism is the **CubeRegion**, which specifies allowed values per dimension:
+The DSD defines the full dimensional space (the Cartesian product of every dimension's codelist). A **ContentConstraint** then narrows that space to the subset that is actually valid — or actually reported — for a given Dataflow. Its `role` attribute captures this intent:
+
+- `role = "allowableContent"` — the set of series that *may* be reported (structural restriction).
+- `role = "actualContent"` — the set of series that *are* reported (data availability).
+
+A ContentConstraint offers two complementary mechanisms to define the subset: a **CubeRegion** and a **DataKeySet**. A single constraint may use one or both.
+
+#### 3.3.1.1 CubeRegion — dimension-wise value lists
+
+A CubeRegion lists the allowed (or excluded) values *per dimension*, independently. The valid series space is the Cartesian product of these per-dimension value sets: any series whose value for each dimension appears in the corresponding list is valid.
 
 ```xml
 <ContentConstraint agencyID="ECB" id="CBD2_CONSTRAINTS" version="1.0"
@@ -954,35 +1031,17 @@ A **ContentConstraint** restricts which series are valid within a Dataflow. The 
       <Value>S11</Value>
       <Value>S121</Value>
       <Value>S122Z</Value>
-      <Value>S12V</Value>
-      <Value>S13</Value>
-      <Value>S1M</Value>
-      <Value>S1Q</Value>
-      <Value>S1U</Value>
-      <Value>S1ZU</Value>
-      <Value>_Z</Value>
+      <!-- ... 7 more counterparty sector codes -->
     </KeyValue>
     <KeyValue id="CB_PORTFOLIO">
       <Value>HAC</Value>
       <Value>HFT</Value>
-      <Value>FVO</Value>
-      <Value>FVP</Value>
-      <Value>AFS</Value>
-      <Value>HTM</Value>
-      <Value>LAR</Value>
-      <Value>MAC</Value>
-      <Value>MFP</Value>
-      <Value>OTH</Value>
-      <Value>AST</Value>
-      <Value>LIB</Value>
-      <Value>_X</Value>
-      <Value>_Z</Value>
+      <!-- ... 12 more portfolio codes -->
     </KeyValue>
     <KeyValue id="CB_ITEM">
       <!-- 411 allowed values — excerpt -->
       <Value>A1200</Value>
       <Value>L5130</Value>
-      <Value>P2439</Value>
       <!-- ... -->
     </KeyValue>
     <!-- 11 additional KeyValue entries for remaining dimensions -->
@@ -990,9 +1049,61 @@ A **ContentConstraint** restricts which series are valid within a Dataflow. The 
 </ContentConstraint>
 ```
 
-A series constraint is essentially a set of (dimension, code) pairs defining the valid data space. Together with the measure, it identifies what data can be reported. In CBD2, the `CB_REP_FRAMEWRK=F` value specifically identifies FINREP data.
+In the CBD2 constraint, any series whose dimensions each pick a value from the corresponding `KeyValue` list is valid — e.g., `(FREQ=Q, CB_REP_FRAMEWRK=F, BS_COUNT_SECTOR=S121, CB_PORTFOLIO=HAC, ...)`. The value `CB_REP_FRAMEWRK=F` specifically identifies FINREP data within this constraint.
 
-### 3.3.2 Flat tables (`IsFlat = TRUE`): SubCategories as constraints
+CubeRegion is well suited when restrictions are naturally dimension-wise ("allow these currencies, these sectors, these portfolios"), but it cannot by itself express *cross-dimension* dependencies (for instance, "allow frequency `Q` only when the framework is `F`"): any combination drawn from the lists is permitted.
+
+#### 3.3.1.2 DataKeySet — explicit key combinations
+
+A DataKeySet enumerates specific valid (or excluded) series keys. Each `Key` pins a value for every dimension of the DSD; only the listed combinations form the valid set.
+
+```xml
+<ContentConstraint agencyID="ECB" id="CBD2_KEYSET" version="1.0"
+                   type="Allowed">
+  <ConstraintAttachment>
+    <Dataflow>
+      <Ref agencyID="ECB" id="CBD2" version="1.0" class="Dataflow"/>
+    </Dataflow>
+  </ConstraintAttachment>
+  <DataKeySet isIncluded="true">
+    <Key>
+      <KeyValue id="FREQ"><Value>Q</Value></KeyValue>
+      <KeyValue id="CB_REP_FRAMEWRK"><Value>F</Value></KeyValue>
+      <KeyValue id="BS_COUNT_SECTOR"><Value>S121</Value></KeyValue>
+      <KeyValue id="CB_PORTFOLIO"><Value>HAC</Value></KeyValue>
+      <!-- ... complete key per DSD dimensions -->
+    </Key>
+    <Key>
+      <KeyValue id="FREQ"><Value>A</Value></KeyValue>
+      <KeyValue id="CB_REP_FRAMEWRK"><Value>F</Value></KeyValue>
+      <KeyValue id="BS_COUNT_SECTOR"><Value>S13</Value></KeyValue>
+      <KeyValue id="CB_PORTFOLIO"><Value>HAC</Value></KeyValue>
+      <!-- ... -->
+    </Key>
+    <!-- additional Key entries -->
+  </DataKeySet>
+</ContentConstraint>
+```
+
+DataKeySet is more precise than CubeRegion: it can express "these specific series are valid" rather than "any combination from these lists". It is, however, verbose — one entry per series — and is therefore best suited for sparse or explicitly-enumerated constraint spaces, or as a complement to a broader CubeRegion.
+
+#### 3.3.1.3 CubeRegion vs DataKeySet at a glance
+
+| Aspect                        | CubeRegion                                | DataKeySet                                |
+|-------------------------------|-------------------------------------------|-------------------------------------------|
+| Granularity                   | Per-dimension value lists                 | Explicit per-series keys                  |
+| Valid set                     | Cartesian product of per-dimension lists  | Exactly the enumerated keys               |
+| Can express cross-dimension dependencies? | No                            | Yes                                       |
+| Typical use                   | Broad restriction of a large data space   | Sparse or case-by-case enumeration        |
+| Verbosity                     | Compact                                   | One entry per series                      |
+
+The following sections show how each of these maps to DPM: CubeRegion to SubCategories (flat case) or to Variable Contexts (non-flat case), and DataKeySet to explicit Variable definitions (primarily relevant in the non-flat case, where each Variable already represents one specific key combination).
+
+### 3.3.2 Conceptual mapping
+
+Mapping the SDMX constraint mechanisms (§3.3.1) to DPM differs significantly depending on the table type: flat tables carry constraints on their Headers via SubCategories, while non-flat tables express constraints implicitly through the set of Variables themselves. The following subsections describe each case.
+
+#### 3.3.2.1 Flat tables (`IsFlat = TRUE`): SubCategories as constraints
 
 In a flat DPM table, there are no Contexts. Instead:
 
@@ -1041,7 +1152,7 @@ Each CubeRegion Value references an Item that already exists in the Category map
 
 > **Note on `cascadeValues`**: The SDMX `cascadeValues` option includes child codes from hierarchies. In DPM, this maps to SubCategoryItem entries that include the specified Item and all its child Items (via `ParentItemID` in the Category's Item hierarchy). The expansion must be performed at mapping time — DPM SubCategoryItems are flat (each member is explicitly listed).
 
-### 3.3.3 Non-flat tables (`IsFlat = FALSE`): Variable = constrained series
+#### 3.3.2.2 Non-flat tables (`IsFlat = FALSE`): Variable = constrained series
 
 In a non-flat DPM table, each **FactVariable** is identified by its **Context** — a set of (Property, Item) pairs forming the variable's dimensional signature.
 
@@ -1074,7 +1185,7 @@ This means:
 - Each Value within a KeyValue is an Item that appears in at least one Variable's Context for that dimension.
 - The total set of Variables defines the complete "valid series" space — there is no need for a separate constraint artefact.
 
-### 3.3.4 Summary: the dual nature
+### 3.3.3 Summary: the dual nature
 
 The mapping between series constraints and variables reveals the fundamental architectural difference between SDMX and DPM:
 
@@ -1116,7 +1227,7 @@ flowchart TB
 
 > **Note on `CubeRegion.include = false`**: Exclusion-based constraints (specifying which values are *not* allowed) have no direct DPM equivalent. SubCategories are always inclusive (they list allowed values). Exclusion logic must be handled through conventions or external documentation.
 
-### 3.3.5 Mapping cardinality
+### 3.3.4 Mapping cardinality
 
 The constraint mapping cardinality depends on the table type:
 
@@ -1139,7 +1250,7 @@ classDiagram
 - **Non-flat tables**: One ContentConstraint (1:N) ↔ set of Variable Contexts. Each valid series combination from the constraint becomes an individual Variable with its Context. The number of Variables equals the Cartesian product of the constrained dimension values.
 - **DataKeySet**: No direct flat-table DPM equivalent. For non-flat tables, the set of Variables IS the key set (each Variable's Context is one key combination).
 
-### 3.3.6 Attributes equivalence
+### 3.3.5 Attributes equivalence
 
 | SDMX                                    | DPM (flat)                                                | DPM (non-flat)                                          |
 |-----------------------------------------|-----------------------------------------------------------|---------------------------------------------------------|
@@ -1153,7 +1264,7 @@ classDiagram
 
 > **Note on DataKeySet**: A DataKeySet enumerates specific key combinations (e.g., `(FREQ=Q, BS_COUNT_SECTOR=S121)` as a whole). In DPM flat tables, SubCategories restrict values per dimension independently — they cannot express that only *specific combinations* are valid. For non-flat tables, each Variable's Context IS a specific key combination, making it a natural equivalent. When converting a DataKeySet to a flat DPM table, the individual dimension values must be extracted and listed as SubCategoryItems, losing the combination-level precision.
 
-### 3.3.7 Example Mapping SDMX ==> DPM (flat table)
+### 3.3.6 Example Mapping SDMX ==> DPM (flat table)
 
 Starting from the CBD2 ContentConstraint (section 3.3.1), each KeyValue becomes a SubCategory attached to the corresponding Header.
 
@@ -1213,7 +1324,7 @@ The Headers are then linked to their SubCategories via `HeaderVersion.SubCategor
 - Each `KeyValue.Value` references the Item already mapped from the corresponding Code in the Codelist (glossary prerequisite).
 - Dimensions without a KeyValue in the CubeRegion have no SubCategory on their Header — all Items in the Category are valid.
 
-### 3.3.8 Example Mapping SDMX ==> DPM (non-flat table)
+### 3.3.7 Example Mapping SDMX ==> DPM (non-flat table)
 
 Using the CBD2 ContentConstraint, the non-flat mapping to F_04.04.1 works by expanding the constrained series space into explicit Variables with Contexts.
 
@@ -1244,9 +1355,9 @@ The mapping from `CB_ITEM=A1200` to the DPM Context is not a simple one-to-one c
 
 > **Note**: The 180 cells in F_04.04.1 represent 180 specific combinations of dimension values from the CBD2 data space. The ContentConstraint allows far more combinations (the Cartesian product of all allowed values across all dimensions), but only the 180 that correspond to the template's grid intersections are materialised as Variables.
 
-### 3.3.9 Example Mapping DPM ==> SDMX
+### 3.3.8 Example Mapping DPM ==> SDMX
 
-Starting from the F_04.04.1 FactVariables with Contexts (section 3.3.8), two SDMX constraint representations are possible:
+Starting from the F_04.04.1 FactVariables with Contexts (section 3.3.7), two SDMX constraint representations are possible:
 
 **Option A — CubeRegion (per-dimension value lists)**
 
