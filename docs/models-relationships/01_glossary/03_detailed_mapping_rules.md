@@ -1074,9 +1074,7 @@ When an SDMX Concept has a non-enumerated representation, the DPM DataType is se
 | SDMX `textType` | DPM DataType | Condition |
 |------------------|--------------|-----------|
 | `Integer` / `Long` / `Short` | Integer (`i`) | – |
-| `Decimal` / `Float` / `Double` | Decimal (`r`) | Default for numeric |
-| `Decimal` | Monetary (`m`) | Only if Concept is semantically monetary (e.g. amounts, balances) |
-| `Decimal` | Percentage (`p`) | Only if Concept is semantically a percentage or ratio |
+| `Decimal` / `Float` / `Double` | Decimal (`r`) | Always — see note for Monetary / Percentage upgrade |
 | `String` | String non empty (`s`) | Default for text |
 | `String` | String incl. empty (`es`) | Only if empty values are explicitly allowed |
 | `URI` | URI (`u`) | – |
@@ -1085,7 +1083,7 @@ When an SDMX Concept has a non-enumerated representation, the DPM DataType is se
 | `ObservationalTimePeriod` / `BasicTimePeriod` | Date (`d`) | – |
 | `ReportingTimePeriod` | Date (`d`) | Reporting periods normalised to dates |
 
-The disambiguation between `Decimal` → `Monetary` / `Percentage` / plain `Decimal` requires semantic analysis or explicit configuration, as SDMX does not distinguish these sub-types.
+> **Note — Monetary / Percentage upgrade**: SDMX has no `textType` value distinguishing monetary or percentage Decimals from plain Decimals. The default automatic mapping therefore selects DPM `Decimal` (`r`) for every `Decimal` / `Float` / `Double` SDMX representation. When a Property is known to be a monetary amount or a percentage/ratio, the `DataTypeID` should be **manually updated** to `Monetary` (`m`) or `Percentage` (`p`) respectively as a post-mapping step (a per-Concept configuration table can support this when bulk-processing). Concept name analysis is **not** used in the automatic mapping because it is unreliable.
 
 ### 3.5.4 Example Mapping SDMX ==> DPM
 
