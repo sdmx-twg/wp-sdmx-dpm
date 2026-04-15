@@ -910,6 +910,8 @@ Item (IsProperty = TRUE)
 
 > **Note**: The ItemCategory row shown here is the one linking the Property's counterpart Item to the `_PR` Category. The same Item may have additional ItemCategory rows if it belongs to other Categories, but the `_PR` association is the one that provides the Property's code and signature.
 
+> **Note — `IsMetric`**: SDMX Concepts carry no equivalent quantitative/qualitative marker. When mapping SDMX → DPM, the `IsMetric` value shown in the joined result is **derived**, not retrieved directly. The DataType of the SDMX Concept's representation is one of several heuristics used; the full derivation rules (annotation, DataType, naming convention, default) are detailed in [section 3.5.3.4](#3534-ismetric-flag-mapping).
+
 ### 3.5.2 Mapping cardinality
 
 ```mermaid
