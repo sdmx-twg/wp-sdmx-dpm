@@ -250,73 +250,64 @@ DPM supports different table patterns depending on how Headers define the axes:
 
 ### Variables
 
-Variables define the data points that can be collected, independent of their visual rendering in tables. Each Variable has **Dimensions** (from the glossary) that identify the data point.
+Variables define the data points that can be collected, independent of their visual rendering in tables. Each **VariableVersion** must indicate a **Property** (for its semantic meaning) and optionally a **SubCategory** (to constrain selectable Items) or a **Context** (Property–Item pairs that further describe the variable's meaning).
 
-- **Variable**
-  Abstract base for all variable types. Variables have a code, label, description, and zero or more Dimensions.
+- **Variable / VariableVersion**
+  Abstract base for all variable types. Variables are versioned (VariableVersion per Release). Each VariableVersion indicates a Property and optionally a SubCategory. Variables are related to one another via **ConceptRelations** (e.g. `factVariable_keyVariable`, `variable_attribute`).
 
 - **FactVariable**
-  Variable representing a measured value (the "fact" being reported). The data type (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) is determined by the Property's DataType. Additional characteristics such as unit of measure are modelled as AttributeVariables.
+  Variable representing a measured value (the "fact" being reported). The data type (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) is determined by the Property's DataType. A FactVariable may refer to a **Context** when the Property alone is insufficient to describe its meaning. Additional characteristics such as unit of measure are modelled as AttributeVariables.
   - *Example*: `FAIR_VALUE` as a Monetary FactVariable, or `NUMBER_OF_EMPLOYEES` as an Integer FactVariable.
 
 - **KeyVariable**
-  Variable serving as an identifier (part of the key) rather than a measured value. Used in SDMX-like patterns where certain variables identify the context of the fact.
-  - *Example*: `COUNTRY` and `INSTRUMENT_TYPE` as KeyVariables that, combined with a FactVariable, define a complete data point.
+  Variable that explicitly and uniquely identifies an exchanged observation. KeyVariables result from Key Headers in open tables and are gathered into a **CompoundKey** via **KeyComposition**. 
+  - *Example*: `COUNTRY` and `INSTRUMENT_TYPE` as KeyVariables gathered in a CompoundKey that identifies FactVariable observations.
 
 - **AttributeVariable**
-  Variable describing another variable (metadata about the data point). References a `subject` Variable.
-  - *Example*: `CONFIDENTIALITY_STATUS` as an AttributeVariable attached to a FactVariable.
+  Variable providing additional information about an observation (e.g. unit of measure, accuracy, confidentiality). Linked to a FactVariable or KeyVariable via a ConceptRelation of type `variable_attribute`.
+  - *Example*: `CONFIDENTIALITY_STATUS` as an AttributeVariable linked to a FactVariable.
 
 - **FilingIndicatorVariable**
-  Special variable indicating whether a table should be reported. Has `isOpenTable` flag for extensible reporting scope.
+  Special variable indicating whether a reporting unit (e.g. TableGroup or Table) should be reported. Has `isOpenTable` flag for extensible reporting scope.
+
+- **CompoundKey / KeyComposition**
+  A CompoundKey gathers all KeyVariables applicable to a TableVersion or ModuleVersion via KeyComposition entries. It is referenced by TableVersions, ModuleVersions, and individual FactVariableVersions that need those keys for identification.
 
 ```mermaid
 classDiagram
     class Variable {
       +code
     }
-    class FactVariable {
-      +dataType
+    class VariableVersion {
+      +versionCode
     }
+    class FactVariable
     class KeyVariable
-    class AttributeVariable {
-      +subject
-    }
+    class AttributeVariable
     class FilingIndicatorVariable {
       +isOpenTable
+    }
+    class CompoundKey {
+      +signature
     }
     Variable <|-- FactVariable
     Variable <|-- KeyVariable
     Variable <|-- AttributeVariable
     Variable <|-- FilingIndicatorVariable
-    Variable "1" --> "*" Dimension : dimensions
-```
-
-### Dimensions
-
-- **Dimension**
-  Links a Variable to the glossary. A Dimension references a **Property** and may be typed (free-form values) or enumerated (values from the Property's Categories).
-  - *Example*: A Dimension `DIM_COUNTRY` referencing Property `COUNTRY`, with values constrained to Items of the `COUNTRY` Category.
-
-```mermaid
-classDiagram
-    class Dimension {
-      +code
-      +isTyped
-    }
-    class Property
-    class Category
-    Dimension --> Property : property
-    Property --> Category : domain
-    Variable "1" --> "*" Dimension : dimensions
+    Variable "1" --> "*" VariableVersion : versions
+    VariableVersion --> Property : property
+    VariableVersion --> SubCategory : subCategory
+    FactVariable --> Context : context
+    CompoundKey "1" --> "*" KeyVariable : keyComposition
+    VariableVersion --> CompoundKey : key
 ```
 
 ### Relationship between tables and variables
 
 In DPM, the connection between rendering (Tables) and data model (Variables) is established through:
 
-1. **Header–Property alignment**: Headers reference Properties; Variables have Dimensions referencing the same Properties.
-2. **Coordinate derivation**: A Cell — the intersection of leaf-level Headers — inherits the Property–Item pairs from its constituent Headers, yielding a Variable's dimensional signature.
+1. **Header–Property alignment**: Headers reference Properties; VariableVersions indicate the same Properties.
+2. **Coordinate derivation**: A Cell — the intersection of leaf-level Headers — inherits the Property–Item pairs from its constituent Headers, yielding the VariableVersion's Context.
 3. **Filing indicators**: FilingIndicatorVariables control whether a table (or parts of it) should be reported.
 
 ```mermaid
@@ -327,15 +318,15 @@ flowchart LR
         Table --> Cell
     end
     subgraph Variables
-        Variable --> Dimension
+        VariableVersion
     end
     subgraph Glossary
         Property
         Category
     end
     HeaderVersion --> Property
-    Cell --> Variable
-    Dimension --> Property
+    Cell --> VariableVersion
+    VariableVersion --> Property
     Property --> Category
 ```
 
