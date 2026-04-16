@@ -20,7 +20,7 @@ The table below summarises the main correspondences at data definition level. It
 | DataConstraint / CubeRegion | SubCategory (on Dimensions) | SDMX constraints restrict allowable values; DPM uses SubCategories to define allowed Items for a Dimension's Property. |
 | Series / Observation | Variable instance (data point) | An SDMX series key maps to a DPM Variable's dimensional signature; observations map to reported values for that Variable. |
 | – | Table / TableVersion | DPM Tables define visual/logical rendering; SDMX has no equivalent (presentation is outside the information model). |
-| – | Header / Cell | DPM cell structure for table axes; no SDMX counterpart. |
+| – | Header / Cell | DPM Headers define table axis positions (with glossary-term links); Cells are their intersections resulting in Variables. No SDMX counterpart. |
 | – | FilingIndicatorVariable | DPM-specific artefact indicating whether a table should be reported; no direct SDMX equivalent. |
 | – | Framework / Release | DPM packaging and temporal publication; SDMX uses ProvisionAgreements and versioning but lacks explicit release milestones. |
 

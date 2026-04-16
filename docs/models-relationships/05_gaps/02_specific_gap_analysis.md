@@ -26,7 +26,7 @@ Both SDMX and DPM support the notion of "default" or "implicit" values, but with
 | Dimension with single allowed value | Can be omitted (anchor) | Must be explicit or use defaultItem | Implicit vs explicit handling differs |
 | "All values" wildcard | `*` in constraints | No wildcard; enumerate or use full Category | Wildcard semantics not directly mappable |
 | Hierarchical inclusion | cascadeValues on MemberValue | SubCategory membership | Different mechanisms; may not align exactly |
-| Fixed constant value | FixedValueMap in StructureMap | Cell with category type | StructureMap context vs rendering context |
+| Fixed constant value | FixedValueMap in StructureMap | Header with fixed Context | StructureMap context vs rendering context |
 
 ### 2.1.3 Recommendations
 

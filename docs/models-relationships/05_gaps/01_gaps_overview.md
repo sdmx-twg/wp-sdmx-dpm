@@ -34,7 +34,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Key enumeration | DataKeySet (explicit series) | No equivalent | DPM constraints operate at value-domain level, not key-combination level |
 | Rendering / presentation | Not modelled | Table / Header / Cell | SDMX excludes presentation; DPM has a complete rendering layer |
 | Filing indicator | No equivalent | FilingIndicatorVariable | DPM-specific artefact for table-level reporting control |
-| Open/closed table patterns | Not modelled | Cell types (category/property/typed) | DPM distinguishes cell behaviour; SDMX has no equivalent |
+| Open/closed table patterns | Not modelled | Headers with fixed Context vs Key Headers on open axes | DPM distinguishes open and closed axes; SDMX has no equivalent |
 
 ### Organisational layer gaps
 

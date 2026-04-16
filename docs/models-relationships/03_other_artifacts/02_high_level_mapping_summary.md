@@ -85,8 +85,8 @@ The lines indicate "primary" correspondences; they do not exclude alternative mo
 - **Header / HeaderVersion / Cell**
   DPM's rendering layer defines table axes and cell structure for data collection forms. SDMX intentionally excludes presentation concerns; how data is displayed is left to implementations.
 
-- **Cell types (category / property / typed)**
-  DPM distinguishes cell behaviour: fixed categories, open property selections, and typed inputs. This rendering-level distinction has no SDMX equivalent.
+- **Cell semantics**
+  DPM Cells are intersections of leaf-level Headers; their semantic meaning is inherited from the glossary terms (Property, Context, SubCategory) on the constituent Headers. This rendering-level structure has no SDMX equivalent.
 
 - **Release**
   DPM Releases bundle ModuleVersions with explicit `releaseDate` and `applicationDate`. SDMX uses artefact versioning with optional `validFrom`/`validTo` but lacks a dedicated "release" artefact that groups multiple structures for a reporting period.

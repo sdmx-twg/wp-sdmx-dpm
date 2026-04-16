@@ -208,15 +208,10 @@ classDiagram
 ### Headers and cells
 
 - **Header / HeaderVersion**
-  Defines an axis of a table (rows, columns, or Z-axis for 3D tables). Headers contain an ordered tree of **Cells** that define the structure of that axis.
+  Individual position within a table axis (row, column, or sheet). Each HeaderVersion links to glossary terms that give it meaning: always a **Property**, and optionally **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) to form grouped structures (e.g. a "Total" header with "Male" and "Female" children). A Header flagged `IsKey` defines an open-axis key (e.g. reporting entity, time period).
 
 - **Cell**
-  Structural element within a header. Cells can represent:
-  - **Category cell**: References a specific Category (fixed value from the glossary).
-  - **Property cell**: References a Property, making the cell "open" for enumerated or typed values.
-  - **Typed cell**: Free-form input with a specified data type (e.g. date, string).
-
-  Cells can be hierarchical (parent–child) to represent grouped headers (e.g. a "Total" cell with "Male" and "Female" children).
+  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet) and, via **TableVersionCell**, links to a **VariableVersion**. The Cell's semantic meaning is inherited from the glossary terms on its constituent Headers. Key Headers do not result in Cells.
 
 ```mermaid
 classDiagram
@@ -225,30 +220,33 @@ classDiagram
     }
     class HeaderVersion {
       +versionCode
+      +isKey
     }
     class Cell {
       +code
-      +dataType: category|property|typed
-      +isOpen
     }
     Header "1" --> "*" HeaderVersion : versions
-    HeaderVersion "1" --> "*" Cell : cells
-    Cell --> Cell : hierarchy (children)
-    Cell --> Category : category
-    Cell --> Property : property
+    HeaderVersion --> HeaderVersion : hierarchy (children)
+    HeaderVersion --> Property : property
+    HeaderVersion --> SubCategory : subCategory
+    Table "1" --> "*" Cell
+    Cell --> HeaderVersion : column
+    Cell --> HeaderVersion : row
+    Cell --> HeaderVersion : sheet
+    Cell --> Variable : via TableVersionCell
 ```
 
 ### Table patterns
 
-DPM supports different table patterns depending on how cells map to variables:
+DPM supports different table patterns depending on how Headers define the axes:
 
-| Pattern | Description | Cell types | Interoperability |
-|---------|-------------|------------|------------------|
-| **Closed table** | All data points are pre-defined; each cell intersection corresponds to exactly one variable. | Category cells only | High (direct cell-to-variable mapping) |
-| **Open table** | Some axes allow user-selected values from a Property's domain (e.g. pick countries from a list). | Property cells with `isOpen=true` | Medium (variable determined at runtime) |
-| **SDMX-like table** | Headers represent dimension breakdowns; cells are similar to SDMX series keys. | Property cells referencing enumerated Categories | High (maps naturally to SDMX DSDs) |
+| Pattern | Description | Header characteristics | Interoperability |
+|---------|-------------|------------------------|------------------|
+| **Closed table** | All data points are pre-defined; each Cell corresponds to exactly one Variable. | Headers carry fixed Context (Property–Item pairs) | High (direct cell-to-variable mapping) |
+| **Open table** | Some axes allow user-selected values from a Property's domain (e.g. pick countries from a list). | Key Headers on open axes (`HasOpenRows`, `HasOpenColumns`) | Medium (variable determined at runtime) |
+| **SDMX-like table** | Headers represent dimension breakdowns; similar to SDMX series keys. | Headers reference enumerated Properties with SubCategories | High (maps naturally to SDMX DSDs) |
 
-- *Example*: A closed table where rows are fixed asset types and columns are fixed time periods—each cell is a known variable. An open table where rows are selected countries (from a Property referencing a Country Category) and columns are indicators.
+- *Example*: A closed table where row Headers are fixed asset types (each with a Context pinning one Item) and column Headers are fixed time periods — each Cell is a known Variable. An open table where rows are selected countries (Key Header with Property "Residence" and a SubCategory listing EU members) and columns are indicators.
 
 ### Variables
 
@@ -317,15 +315,16 @@ classDiagram
 
 In DPM, the connection between rendering (Tables) and data model (Variables) is established through:
 
-1. **Cell–Property alignment**: Cells reference Properties; Variables have Dimensions referencing the same Properties.
-2. **Coordinate derivation**: A cell intersection in a table yields a set of Property–Item pairs that match a Variable's dimensional signature.
+1. **Header–Property alignment**: Headers reference Properties; Variables have Dimensions referencing the same Properties.
+2. **Coordinate derivation**: A Cell — the intersection of leaf-level Headers — inherits the Property–Item pairs from its constituent Headers, yielding a Variable's dimensional signature.
 3. **Filing indicators**: FilingIndicatorVariables control whether a table (or parts of it) should be reported.
 
 ```mermaid
 flowchart LR
     subgraph Rendering
         Table --> TableVersion
-        TableVersion --> Cell
+        TableVersion --> HeaderVersion
+        Table --> Cell
     end
     subgraph Variables
         Variable --> Dimension
@@ -334,7 +333,8 @@ flowchart LR
         Property
         Category
     end
-    Cell --> Property
+    HeaderVersion --> Property
+    Cell --> Variable
     Dimension --> Property
     Property --> Category
 ```

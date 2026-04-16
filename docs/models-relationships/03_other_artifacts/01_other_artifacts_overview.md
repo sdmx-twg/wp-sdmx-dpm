@@ -230,25 +230,12 @@ classDiagram
 DPM's rendering component defines how tables are visually structured. This has no direct SDMX equivalent.
 
 - **Header / HeaderVersion**
-  Defines an axis of a table (X = columns, Y = rows, Z = sheets/pages). Headers are versioned independently and contain an ordered tree of Cells.
+  Individual position within a table axis (X = columns, Y = rows, Z = sheets/pages). Each HeaderVersion links to glossary terms: always a **Property**, and optionally a **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) for grouped structures. A Header flagged `IsKey` defines an open-axis key.
 
 - **Cell**
-  Structural element within a header. Cells define what appears in table headers and how data entry points are identified. Cell attributes:
-  - `code`: Unique identifier within the header.
-  - `label`: Display text.
-  - `dataType`: One of `category`, `property`, or `typed`.
-  - `isOpen`: Whether the cell allows user-selected values.
-  - `hierarchy`: Child cells for grouped headers.
+  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet) and, via **TableVersionCell**, links to a **VariableVersion**. The Cell's semantics are inherited from its constituent Headers. Key Headers do not result in Cells.
 
-#### Cell types
-
-| CellDataType | Description | Key attributes |
-|--------------|-------------|----------------|
-| `category` | References a specific Category (fixed value) | `category` → Category |
-| `property` | References a Property (open selection) | `property` → Property, `isOpen = true` |
-| `typed` | Free-form input with data type constraint | `typedDomain` (e.g. `String`, `Date`) |
-
-- *Example*: A column header with a `category` cell for "2024-Q1" (fixed period) vs a `property` cell for "Reference period" (reporter selects from allowed periods).
+- *Example*: A column Header referencing the "Reference period" Property with a Context fixing Item "2024-Q1", vs a Key Header on the same Property where the reporter selects from allowed periods.
 
 ```mermaid
 classDiagram
@@ -257,18 +244,19 @@ classDiagram
     }
     class HeaderVersion {
       +versionCode
+      +isKey
     }
     class Cell {
       +code
-      +label
-      +dataType: category|property|typed
-      +isOpen
     }
     Header "1" --> "*" HeaderVersion
-    HeaderVersion "1" --> "*" Cell : cells
-    Cell --> Cell : hierarchy
-    Cell --> Category : category
-    Cell --> Property : property
+    HeaderVersion --> HeaderVersion : hierarchy
+    HeaderVersion --> Property : property
+    HeaderVersion --> SubCategory : subCategory
+    Table "1" --> "*" Cell
+    Cell --> HeaderVersion : column
+    Cell --> HeaderVersion : row
+    Cell --> Variable : via TableVersionCell
 ```
 
 ### Lifecycle management
