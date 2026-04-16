@@ -256,7 +256,7 @@ Variables define the data points that can be collected, independent of their vis
   Abstract base for all variable types. Variables have a code, label, description, and zero or more Dimensions.
 
 - **FactVariable**
-  Variable representing a measured value (the "fact" being reported). Has a `dataType` (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) and optional unit reference.
+  Variable representing a measured value (the "fact" being reported). The data type (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) is determined by the Property's DataType. Additional characteristics such as unit of measure are modelled as AttributeVariables.
   - *Example*: `FAIR_VALUE` as a Monetary FactVariable, or `NUMBER_OF_EMPLOYEES` as an Integer FactVariable.
 
 - **KeyVariable**
