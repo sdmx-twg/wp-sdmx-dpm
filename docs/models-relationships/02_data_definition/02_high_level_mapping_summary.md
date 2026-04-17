@@ -8,8 +8,6 @@ The table below summarises the main correspondences at data definition level. It
 
 | SDMX data definition artefact | DPM data definition artefact | Mapping notes |
 | --- | --- | --- |
-| DataStructureDefinition (DSD) | Module | Both define the structural metadata for a reporting domain. A DSD specifies components; a Module is the structural container — it is **ModuleVersion** that groups the concrete Variables, Tables, and Operations. |
-| Dataflow | ModuleVersion | Both represent structure usage in a specific context. A Dataflow applies a DSD; a ModuleVersion is a deployable version of a Module with concrete artefacts. |
 | Dataflow + DSD (convention) | Table | One SDMX Dataflow plus its DSD can correspond to one DPM Table. This is a practical convention, not a strict equivalence. |
 | Dimension | KeyVariable | SDMX Dimensions identify observations; DPM KeyVariables serve the same role. For enumerated Properties the allowed values come from the Category; for non-enumerated Properties the Property's DataType (e.g. Date, String) constrains the values directly. |
 | TimeDimension | KeyVariable with time-related Property | SDMX has a dedicated TimeDimension type; DPM uses a regular KeyVariable referencing a time-related Property (e.g. `REFERENCE_PERIOD`) whose DataType carries the time semantics. |
@@ -43,7 +41,6 @@ flowchart LR
   end
 
   subgraph DPM
-    dModule["Module / ModuleVersion"]
     dTable["Table / TableVersion"]
     dKeyVar["KeyVariable"]
     dFactVar["FactVariable"]
@@ -52,8 +49,6 @@ flowchart LR
     dFiling["FilingIndicatorVariable"]
   end
 
-  sDSD --- dModule
-  sDataflow --- dModule
   sDSD -.- dTable
   sDataflow -.- dTable
   sDim --- dKeyVar
@@ -87,6 +82,9 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
   SDMX DataKeySet enumerates explicit key combinations (specific series). DPM constraints operate at the value-domain level (SubCategories) rather than at the key-combination level; enumerating specific variable instances requires different mechanisms.
 
 ### 2.3.2 DPM-only (at data definition level)
+
+- **Module / ModuleVersion**
+  DPM Modules group related Tables, Variables, and Operations into a named, versioned reporting package (e.g. a regulation annex or statistical domain). Module itself has no direct SDMX equivalent. ModuleVersion — the deployable version that reporters work against — has a partial correspondence to SDMX **ReportingTaxonomy**: both are the unit that defines what reporters must submit for a given reporting context. The difference is that a ReportingTaxonomy is a navigation wrapper over existing Dataflows, whereas a ModuleVersion contains the structural definitions themselves. See the other-artefacts mapping chapter for the ReportingTaxonomy row.
 
 - **Table / TableVersion / Header / Cell**
   DPM has a complete rendering layer defining how data collection forms are visually structured. SDMX intentionally excludes presentation concerns from the information model; table layouts are left to implementations or external specifications.

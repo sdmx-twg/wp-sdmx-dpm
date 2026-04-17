@@ -13,7 +13,7 @@ The table below summarises the main correspondences. It is intentionally high le
 | AgencyScheme | – | SDMX groups Agencies into schemes; DPM Organisations are not grouped into schemes. |
 | CategoryScheme / Category | Framework / Module | Both provide subject-domain grouping. SDMX Categories classify artefacts; DPM Frameworks/Modules organise reporting domains. |
 | Categorisation | (implicit in Module membership) | SDMX explicitly links artefacts to Categories; DPM membership is implicit via ModuleVersion contents. |
-| ReportingTaxonomy / ReportingCategory | Framework / Module / TableGroup | Both organise reporting obligations. SDMX ReportingCategories link to Dataflows; DPM uses Frameworks, Modules, and TableGroups. |
+| ReportingTaxonomy / ReportingCategory | ModuleVersion | Both are the deployable unit for reporting obligations — SDMX ReportingCategories link to the Dataflows reporters submit against; DPM ModuleVersions contain the Tables and Variables reporters submit against. The correspondence is partial: ReportingTaxonomy is a navigation wrapper over existing Dataflows, while ModuleVersion contains the structural definitions themselves. |
 | ProvisionAgreement | (external to DPM) | SDMX formalises data supply contracts; DPM focuses on requirements, not provisioning. |
 | Datasource | (external to DPM) | SDMX specifies data retrieval endpoints; DPM does not model data sources. |
 | Process | (external to DPM) | SDMX models workflows and lineage; DPM focuses on reporting requirements, not production processes. |
@@ -42,6 +42,7 @@ flowchart LR
     dOrg["Organisation"]
     dFramework["Framework"]
     dModule["Module"]
+    dModuleVersion["ModuleVersion"]
     dTableGroup["TableGroup"]
     dRelease["Release"]
     dDeact["Deactivation"]
@@ -52,8 +53,7 @@ flowchart LR
   sProvider --- dOrg
   sCatScheme --- dFramework
   sCatScheme --- dModule
-  sRepTax --- dFramework
-  sRepTax --- dTableGroup
+  sRepTax --- dModuleVersion
 ```
 
 The lines indicate "primary" correspondences; they do not exclude alternative modelling choices.
