@@ -8,7 +8,7 @@ The table below summarises the main correspondences at data definition level. It
 
 | SDMX data definition artefact | DPM data definition artefact | Mapping notes |
 | --- | --- | --- |
-| DataStructureDefinition (DSD) | Module | Both define the structural metadata for a reporting domain. A DSD specifies components; a Module groups Variables, Tables, and Operations. |
+| DataStructureDefinition (DSD) | Module | Both define the structural metadata for a reporting domain. A DSD specifies components; a Module is the structural container — it is **ModuleVersion** that groups the concrete Variables, Tables, and Operations. |
 | Dataflow | ModuleVersion | Both represent structure usage in a specific context. A Dataflow applies a DSD; a ModuleVersion is a deployable version of a Module with concrete artefacts. |
 | Dataflow + DSD (convention) | Table | One SDMX Dataflow plus its DSD can correspond to one DPM Table. This is a practical convention, not a strict equivalence. |
 | Dimension | Dimension (on Variable) / KeyVariable | SDMX Dimensions identify observations; DPM Dimensions on Variables serve the same role. KeyVariables are variables that act as identifiers. |
