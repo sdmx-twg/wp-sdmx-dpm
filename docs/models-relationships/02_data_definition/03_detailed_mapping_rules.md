@@ -529,7 +529,7 @@ In non-flat tables, dimensions are not discrete components but emerge from two s
 In both cases, the mapping follows the same two-level pattern:
 
 1. **Semantic level**: The SDMX Concept has already been mapped to the DPM Property ([glossary 3.5](../01_glossary/03_detailed_mapping_rules.md#35-concept-property))
-2. **Value domain level**: The SDMX Codelist/Facet has already been mapped to the DPM Category/DataType ([glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category))
+2. **Value domain level**: The SDMX `LocalRepresentation` has been mapped to the DPM value domain — these are mutually exclusive alternatives: a **Codelist** maps to a Category (with optional SubCategory for value subsets); a **Facet** (TextFormat) maps to Property.DataType ([glossary 3.1](../01_glossary/03_detailed_mapping_rules.md#31-codelist-category))
 
 > **Note on TimeDimension**: DPM has no dedicated time dimension type. SDMX distinguishes multiple time FacetValueTypes (`ObservationalTimePeriod`, `ReportingTimePeriod`, etc.); DPM collapses these into `Property.DataType = Date`. The DPM `Property.PeriodType` attribute (`stock`/`flow`) captures whether the time represents a point-in-time snapshot or a period aggregate — a distinction not modelled in SDMX at the component level. In non-flat tables, time is typically absent from Variable Contexts and has no DPM structural source; it must be added by convention when generating the DSD (see §3.2.7).
 
