@@ -208,7 +208,9 @@ classDiagram
 ### Headers and cells
 
 - **Header / HeaderVersion**
-  Individual position within a table axis (row, column, or sheet). Each HeaderVersion links to glossary terms that give it meaning: always a **Property**, and optionally **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) to form grouped structures (e.g. a "Total" header with "Male" and "Female" children). A Header flagged `IsKey` defines an open-axis key (e.g. reporting entity, time period).
+  Individual position within a table axis (row, column, or sheet). Each HeaderVersion optionally links to: a **Property** (the semantic property inherited by the derived Variable — at most one header per Cell may carry this), a **Context** (Property–Item pairs for fixed dimensional values), or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) to form grouped structures (e.g. a "Total" header with "Male" and "Female" children). A Header flagged `IsKey` defines an open-axis key (e.g. reporting entity, time period).
+
+  VariableVersions are the **derived** result of these header intersections (Cells): the Cartesian product of leaf-level non-key headers. The VariableVersion's `PropertyID` comes from the one constituent header that carries a PropertyID; the other headers provide dimensional context.
 
 - **Cell**
   Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet). Via **TableVersionCell**, it optionally links to a **VariableVersion** — the link is absent when `IsVoid=TRUE` (the intersection is illogical). The Cell's semantic meaning is inherited from the glossary terms on its constituent Headers. Key Headers do not result in Cells.

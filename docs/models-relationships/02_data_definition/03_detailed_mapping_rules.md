@@ -771,10 +771,13 @@ Each DSD component becomes a Header. The Header itself is linked to the Table (n
 | 1101     | 6020     | 6120      | 20    | FALSE      | FALSE    |
 
 - `HeaderVersion.Code` = DSD component `id` (e.g., `FREQ`, `OBS_VALUE`).
-- `HeaderVersion.PropertyID` references the Property already mapped from the component's Concept (glossary prerequisite: Concept `FREQ` → Property `FREQ`, Concept `OBS_VALUE` → Property `OBS_VALUE`, etc.).
+- `HeaderVersion.PropertyID` (optional) references the Property already mapped from the component's Concept. **Not all HeaderVersions carry a PropertyID** — see the two-layer modelling note below.
+- `HeaderVersion.KeyVariableVID` (optional) is populated for Key Headers (`IsKey = TRUE`); it links directly to the KeyVariable for that open axis.
 - `HeaderVersion.SubCategoryVID` is populated when the ContentConstraint restricts the dimension values (see section 3.3).
 - `TableVersionHeader.Order` corresponds to the Dimension `position` attribute.
 - The Property's associated Category (already mapped from the Codelist, e.g., Codelist `CL_FREQ` → Category `CL_FREQ`) defines the value domain for enumerated dimensions.
+
+> **Two-layer modelling — headers and derived variables.** DPM separates the *modelling layer* (Headers) from the *derived layer* (Variables). Headers define the axes of the table; VariableVersions are the Cartesian product of the leaf-level header intersections (Cells) — they are calculated results, not independently authored. The key constraint: **exactly one header per Cell must carry a PropertyID**, and that PropertyID is inherited by the derived VariableVersion. If more than one header in a Cell carried a PropertyID, the variable's semantic identity would be ambiguous. The other constituent headers provide dimensional context (via Context/ContextComposition) or value constraints (via SubCategoryVID) but not a PropertyID. This is why `PropertyID` appears on both HeaderVersions and VariableVersions — it originates in the header and is propagated to the variable at derivation time.
 
 **Step 2 — Create Variables, VariableVersions, and CompoundKey**
 

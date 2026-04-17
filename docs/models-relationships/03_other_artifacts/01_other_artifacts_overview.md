@@ -230,7 +230,7 @@ classDiagram
 DPM's rendering component defines how tables are visually structured. This has no direct SDMX equivalent.
 
 - **Header / HeaderVersion**
-  Individual position within a table axis (X = columns, Y = rows, Z = sheets/pages). Each HeaderVersion links to glossary terms: always a **Property**, and optionally a **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) for grouped structures. A Header flagged `IsKey` defines an open-axis key.
+  Individual position within a table axis (X = columns, Y = rows, Z = sheets/pages). Each HeaderVersion optionally carries: a **Property** (at most one header per Cell may carry this — it becomes the derived Variable's PropertyID), a **Context** (Property–Item pairs for fixed dimensional values), or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) for grouped structures. A Header flagged `IsKey` defines an open-axis key and carries a `KeyVariableVID` rather than a PropertyID. VariableVersions are the derived Cartesian product of leaf-level header intersections.
 
 - **Cell**
   Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet). Via **TableVersionCell**, it optionally links to a **VariableVersion** — the link is absent when `IsVoid=TRUE`. The Cell's semantics are inherited from its constituent Headers. Key Headers do not result in Cells.
