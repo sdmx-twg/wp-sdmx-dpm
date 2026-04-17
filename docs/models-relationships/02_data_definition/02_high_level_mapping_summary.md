@@ -11,9 +11,9 @@ The table below summarises the main correspondences at data definition level. It
 | DataStructureDefinition (DSD) | Module | Both define the structural metadata for a reporting domain. A DSD specifies components; a Module is the structural container — it is **ModuleVersion** that groups the concrete Variables, Tables, and Operations. |
 | Dataflow | ModuleVersion | Both represent structure usage in a specific context. A Dataflow applies a DSD; a ModuleVersion is a deployable version of a Module with concrete artefacts. |
 | Dataflow + DSD (convention) | Table | One SDMX Dataflow plus its DSD can correspond to one DPM Table. This is a practical convention, not a strict equivalence. |
-| Dimension | Dimension (on Variable) / KeyVariable | SDMX Dimensions identify observations; DPM Dimensions on Variables serve the same role. KeyVariables are variables that act as identifiers. |
-| TimeDimension | Dimension with time-related Property | SDMX has a dedicated TimeDimension type; DPM uses a regular Dimension referencing a time-related Property (e.g. `REFERENCE_PERIOD`). |
-| Measure | FactVariable | Both represent the observed/measured value. SDMX Measures have cardinality controls; DPM FactVariables have a `dataType`. |
+| Dimension | KeyVariable | SDMX Dimensions identify observations; DPM KeyVariables serve the same role. For enumerated Properties the allowed values come from the Category; for non-enumerated Properties the Property's DataType (e.g. Date, String) constrains the values directly. |
+| TimeDimension | KeyVariable with time-related Property | SDMX has a dedicated TimeDimension type; DPM uses a regular KeyVariable referencing a time-related Property (e.g. `REFERENCE_PERIOD`) whose DataType carries the time semantics. |
+| Measure | FactVariable | Both represent the observed/measured value. SDMX Measures have cardinality controls; DPM FactVariable data types are determined by the referenced Property's DataType. |
 | DataAttribute | AttributeVariable | Both provide metadata about observations. DPM AttributeVariables explicitly reference a `subject` Variable. |
 | AttributeRelationship | (implicit in Variable scope) | SDMX explicitly defines attachment levels; DPM attachment is implicit in how AttributeVariables reference their subject. |
 | GroupDimensionDescriptor | – | SDMX partial-key groups have no direct DPM equivalent. Similar semantics may be achieved via Variable scoping or Operations. |
@@ -45,7 +45,6 @@ flowchart LR
   subgraph DPM
     dModule["Module / ModuleVersion"]
     dTable["Table / TableVersion"]
-    dDim["Dimension (on Variable)"]
     dKeyVar["KeyVariable"]
     dFactVar["FactVariable"]
     dAttrVar["AttributeVariable"]
@@ -55,9 +54,8 @@ flowchart LR
 
   sDSD --- dModule
   sDataflow --- dModule
-  sDim --- dDim
   sDim --- dKeyVar
-  sTimeDim --- dDim
+  sTimeDim --- dKeyVar
   sMeasure --- dFactVar
   sAttr --- dAttrVar
   sConstraint --- dSubCat
