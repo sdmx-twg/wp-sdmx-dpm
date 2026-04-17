@@ -54,6 +54,8 @@ flowchart LR
 
   sDSD --- dModule
   sDataflow --- dModule
+  sDSD -.- dTable
+  sDataflow -.- dTable
   sDim --- dKeyVar
   sTimeDim --- dKeyVar
   sMeasure --- dFactVar
@@ -61,7 +63,7 @@ flowchart LR
   sConstraint --- dSubCat
 ```
 
-The lines indicate "primary" correspondences used throughout this document; they do not exclude alternative modelling choices in specific implementations.
+Solid lines indicate primary structural correspondences; dotted lines indicate convention-based correspondences (e.g. one Dataflow + its DSD conventionally maps to one DPM Table). These do not exclude alternative modelling choices in specific implementations.
 
 ## 2.3 Artefacts without a direct counterpart
 
