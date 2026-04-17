@@ -369,53 +369,32 @@ classDiagram
 Modules are organised into Frameworks and published via Releases.
 
 - **Framework**
-  Top-level container for a reporting domain. A Framework groups related Modules and is owned by an Organisation.
+  Top-level container for a reporting domain. A Framework typically corresponds to a piece of legislation and groups related Modules. It has no direct SDMX equivalent — SDMX has no artefact that binds a set of reporting structures to a specific legislative act.
   - *Example*: Framework `EBA_REPORTING` containing Modules `FINREP`, `COREP`, `LIQUIDITY`.
 
 - **Release**
-  Publication milestone that bundles specific ModuleVersions for a reporting period. Releases have:
-  - **releaseDate**: When the release is published.
-  - **applicationDate**: When reporting obligations begin (the "as-of" date for data collection).
-
-  Releases enable temporal management: reporters know which ModuleVersions apply for a given reference date.
-  - *Example*: Release `2024-Q1` with `applicationDate = 2024-01-01`, including `FINREP v3.2` and `COREP v3.1`.
+  Publication milestone identified by a code and date. The `isCurrent` flag marks the most recent release in a given model publication. Releases are referenced by versioned entities (TableVersions, HeaderVersions, VariableVersions, ModuleVersions, etc.) via `StartRelease`/`EndRelease` to track their lifecycle. The application dates for reporting obligations are carried by **ModuleVersion** (`FromReferenceDate`, `ToReferenceDate`), not by Release.
+  - *Example*: Release `2024Q1` marked as `isCurrent`, with ModuleVersion `FINREP v3.2` having `FromReferenceDate = 2024-01-01`.
 
 ```mermaid
 classDiagram
     class Framework {
       +code
-      +owner
+      +name
     }
     class Module
     class ModuleVersion {
       +code
       +name
+      +fromReferenceDate
+      +toReferenceDate
     }
     class Release {
       +code
-      +releaseDate
-      +applicationDate
+      +date
+      +isCurrent
     }
     Framework "1" --> "*" Module : modules
     Module "1" --> "*" ModuleVersion : versions
     Release "1" --> "*" ModuleVersion : moduleVersions
-```
-
-### Module dependencies and glossary sharing
-
-A key feature of DPM Modules is explicit dependency management. A ModuleVersion can declare dependencies on other ModuleVersions, enabling:
-
-1. **Glossary sharing**: A common glossary module defines Categories and Properties reused across multiple reporting modules.
-2. **Layered definitions**: Base modules define core variables; extension modules add domain-specific variables.
-3. **Version alignment**: Dependencies specify exact versions, ensuring consistency across a release.
-
-```mermaid
-flowchart TD
-    subgraph Framework
-        COMMON["COMMON_GLOSSARY v2.0"]
-        FINREP["FINREP v3.2"]
-        COREP["COREP v3.1"]
-    end
-    FINREP --> COMMON
-    COREP --> COMMON
 ```

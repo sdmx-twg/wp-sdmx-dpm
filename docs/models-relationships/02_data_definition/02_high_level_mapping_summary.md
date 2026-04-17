@@ -22,7 +22,8 @@ The table below summarises the main correspondences at data definition level. It
 | – | Table / TableVersion | DPM Tables define visual/logical rendering; SDMX has no equivalent (presentation is outside the information model). |
 | – | Header / Cell | DPM Headers define table axis positions (with glossary-term links); Cells are their intersections resulting in Variables. No SDMX counterpart. |
 | – | FilingIndicatorVariable | DPM-specific artefact indicating whether a table should be reported; no direct SDMX equivalent. |
-| – | Framework / Release | DPM packaging and temporal publication; SDMX uses ProvisionAgreements and versioning but lacks explicit release milestones. |
+| – | Framework | DPM top-level container binding a set of Modules to a legislative/regulatory domain. SDMX has no equivalent; ProvisionAgreements (a common first guess) serve a different purpose — they model data-supply contracts, not regulatory groupings. |
+| – | Release | DPM publication milestone (code, date, isCurrent) that bundles ModuleVersions. SDMX uses versioning and validity periods but has no dedicated release artefact that ties multiple structures to a reporting period. |
 
 ## 2.2 Graphical mapping overview
 
@@ -96,10 +97,10 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 - **Open table / Closed table patterns**
   DPM explicitly supports different table patterns (closed, open, SDMX-like) with distinct cell types and rendering rules. SDMX does not model table patterns; the concept of "open" vs "closed" cells is specific to DPM's rendering layer.
 
-- **Framework / Release**
-  DPM Frameworks group Modules into reporting domains; Releases bundle ModuleVersions with explicit `applicationDate` for temporal management. SDMX uses Agency ownership and versioning but lacks a dedicated "release" artefact that ties multiple structures to a reporting period.
+- **Framework**
+  DPM Frameworks bind a set of Modules to a legislative or regulatory domain (e.g. a specific regulation or directive). SDMX has no equivalent; ProvisionAgreements (a common first guess) are not analogous — they model data-supply contracts between providers and dataflows, not legislative groupings of structures.
 
-- **Module dependencies**
-  DPM ModuleVersions can explicitly declare dependencies on other ModuleVersions (e.g. for glossary sharing). SDMX structures reference shared artefacts (ConceptSchemes, Codelists) but do not have a formal "module dependency" mechanism at the structure level.
+- **Release**
+  DPM publication milestones that bundle ModuleVersions with a code, date, and `isCurrent` flag. SDMX uses version validity periods (`validFrom`/`validTo`) but has no dedicated release artefact that ties multiple structures to a single reporting period.
 
 These asymmetries are important when designing transformations between the two models. Later chapters discuss how to handle these cases in practice.
