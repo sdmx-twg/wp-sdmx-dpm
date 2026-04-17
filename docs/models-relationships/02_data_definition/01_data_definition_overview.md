@@ -211,7 +211,7 @@ classDiagram
   Individual position within a table axis (row, column, or sheet). Each HeaderVersion links to glossary terms that give it meaning: always a **Property**, and optionally **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) to form grouped structures (e.g. a "Total" header with "Male" and "Female" children). A Header flagged `IsKey` defines an open-axis key (e.g. reporting entity, time period).
 
 - **Cell**
-  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet) and, via **TableVersionCell**, links to a **VariableVersion**. The Cell's semantic meaning is inherited from the glossary terms on its constituent Headers. Key Headers do not result in Cells.
+  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet). Via **TableVersionCell**, it optionally links to a **VariableVersion** — the link is absent when `IsVoid=TRUE` (the intersection is illogical). The Cell's semantic meaning is inherited from the glossary terms on its constituent Headers. Key Headers do not result in Cells.
 
 ```mermaid
 classDiagram
@@ -233,7 +233,7 @@ classDiagram
     Cell --> HeaderVersion : column
     Cell --> HeaderVersion : row
     Cell --> HeaderVersion : sheet
-    Cell --> Variable : via TableVersionCell
+    Cell --> "0..1" VariableVersion : via TableVersionCell
 ```
 
 ### Table patterns

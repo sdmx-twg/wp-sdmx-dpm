@@ -233,7 +233,7 @@ DPM's rendering component defines how tables are visually structured. This has n
   Individual position within a table axis (X = columns, Y = rows, Z = sheets/pages). Each HeaderVersion links to glossary terms: always a **Property**, and optionally a **Context** (Property–Item pairs for fixed values) or a **SubCategory** (to narrow selectable Items). Headers can be nested (parent–child) for grouped structures. A Header flagged `IsKey` defines an open-axis key.
 
 - **Cell**
-  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet) and, via **TableVersionCell**, links to a **VariableVersion**. The Cell's semantics are inherited from its constituent Headers. Key Headers do not result in Cells.
+  Intersection of leaf-level Headers from different axes within a **Table**. A Cell references its constituent Headers (column, row, and optionally sheet). Via **TableVersionCell**, it optionally links to a **VariableVersion** — the link is absent when `IsVoid=TRUE`. The Cell's semantics are inherited from its constituent Headers. Key Headers do not result in Cells.
 
 - *Example*: A column Header referencing the "Reference period" Property with a Context fixing Item "2024-Q1", vs a Key Header on the same Property where the reporter selects from allowed periods.
 
@@ -256,7 +256,7 @@ classDiagram
     Table "1" --> "*" Cell
     Cell --> HeaderVersion : column
     Cell --> HeaderVersion : row
-    Cell --> Variable : via TableVersionCell
+    Cell --> "0..1" VariableVersion : via TableVersionCell
 ```
 
 ### Lifecycle management
