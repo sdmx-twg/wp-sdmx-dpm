@@ -502,6 +502,8 @@ classDiagram
 
 Each Header references a **Property** (semantic meaning) and optionally restricts values via a **SubCategory** (`SubCategoryVID`); Variables inherit their semantic meaning from the same Property. The correspondence with DSD components is 1:1 — see §3.2.3.
 
+> **Dual purpose of Tables.** DPM Tables are not purely a rendering artefact — they define the reporting obligation (which Variables reporters must submit). For flat tables the structural and rendering layers coincide almost perfectly: each Header IS a structural component, and the table grid directly reflects the data structure. This is why flat tables map so naturally to SDMX DSDs. See §3.2.6 for a step-by-step SDMX→DPM conversion including a rendered-form illustration.
+
 ### 3.2.3 Component type correspondence
 
 The correspondence between DSD components and Table components depends on the `IsFlat` flag.
@@ -880,6 +882,20 @@ Non-key Headers result in Cells; the link from a Cell to its VariableVersion is 
 - Since `HasOpenRows = TRUE`, `RowID` and `SheetID` are `NULL` — rows are instantiated at runtime from each submitted observation.
 - `TableVersionCell.VariableVID` references the VariableVersion rows created in Step 2 (71xx).
 - `IsNullable` reflects the SDMX `usage` of the originating component — mandatory measures/attributes map to `FALSE`, conditional ones to `TRUE`.
+
+**Step 4 — Rendered form**
+
+Because `HasOpenRows = TRUE`, the flat CBD2 table renders as a grid where each **row is one observation** and reporters fill in all columns. The key columns identify the observation (forming the series key), the measure column holds the reported value, and the attribute columns carry observation-level metadata.
+
+| FREQ | REF_AREA | BS_COUNT_SECTOR | CB_REP_FRAMEWRK | CB_ITEM | CB_PORTFOLIO | TIME_PERIOD | OBS_VALUE | OBS_STATUS | CONF_STATUS |
+|------|----------|-----------------|-----------------|---------|--------------|-------------|-----------|------------|-------------|
+| A    | ES       | S1              | FINREP          | A_LOANS | ON_B_S       | 2023        | 1 234 567 | A          | F           |
+| A    | ES       | S12             | FINREP          | A_LOANS | ON_B_S       | 2023        |   876 543 | A          | F           |
+| A    | DE       | S1              | FINREP          | A_LOANS | ON_B_S       | 2023        | 9 876 543 | P          | C           |
+
+*(Only 6 of the 16 key dimensions are shown; a real CBD2 submission includes all 16.)*
+
+This is structurally identical to an SDMX flat dataset for `ECB:CBD2`: each row maps 1:1 to an SDMX Observation, the key columns map to DimensionValues in the SeriesKey, OBS_VALUE maps to the ObservationValue, and OBS_STATUS / CONF_STATUS map to AttributeValues. The DPM Table is not merely a rendering template — it IS the reporting structure that drives both the collection form and the data exchange.
 
 ### 3.2.7 Example Mapping DPM ==> SDMX
 
