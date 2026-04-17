@@ -351,13 +351,10 @@ Modules are the primary unit of organisation for DPM data definitions. They grou
 
 ```mermaid
 classDiagram
-    class Module {
-      +code
-      +label
-    }
+    class Module
     class ModuleVersion {
-      +versionCode
-      +label
+      +code
+      +name
     }
     Module "1" --> "*" ModuleVersion : versions
     ModuleVersion --> Variable : variables
@@ -389,11 +386,10 @@ classDiagram
       +code
       +owner
     }
-    class Module {
-      +code
-    }
+    class Module
     class ModuleVersion {
-      +versionCode
+      +code
+      +name
     }
     class Release {
       +code
