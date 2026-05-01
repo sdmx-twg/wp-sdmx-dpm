@@ -200,6 +200,37 @@ classDiagram
     Framework "1" --> "*" Module : modules
 ```
 
+### Modules and ModuleVersions
+
+- **Module**
+  Coherent package of artefacts within a Framework — typically a reporting taxonomy such as `FINREP` or `COREP`. A Module is itself a stable identifier; its content evolves through ModuleVersions. Tables, Variables, Operations, and the glossary roots in scope for a reporting obligation are attached to a *ModuleVersion*, not directly to the Module.
+
+- **ModuleVersion**
+  Versioned, deployable bundle of artefacts. A ModuleVersion is the unit reporters submit against: it lists the Variables, Operations, Tables, and glossary roots that are in scope for a particular release of the Module. ModuleVersions can declare dependencies on other ModuleVersions (e.g. a national-extension module depending on a base module). ModuleVersions are pinned to one or more Releases through the Release artefact (see [Lifecycle management](#lifecycle-management) below).
+  - *Example*: ModuleVersion `FINREP:3.2` containing the Tables, Variables, and Operations active in the FINREP 3.2 reporting cycle, depending on `EBA_GLOSSARY:2024-Q1`.
+
+This Module / ModuleVersion split is the structural counterpart to SDMX `ReportingTaxonomy` (the deployable bundle reporters submit against). The detailed correspondence is documented in [Detailed mapping rules §3.4](03_detailed_mapping_rules.md). Versioning behaviour for Module/ModuleVersion is covered in [§04 Versioning](../04_versioning_and_extensibility/01_versioning_overview.md).
+
+```mermaid
+classDiagram
+    class Module {
+      +code
+      +label
+    }
+    class ModuleVersion {
+      +versionCode
+      +label
+    }
+    class Release {
+      +releaseDate
+      +applicationDate
+    }
+    Framework "1" --> "*" Module : modules
+    Module "1" --> "*" ModuleVersion : versions
+    ModuleVersion --> ModuleVersion : dependencies
+    Release "1" --> "*" ModuleVersion : moduleVersions
+```
+
 ### Table grouping
 
 - **TableGroup**

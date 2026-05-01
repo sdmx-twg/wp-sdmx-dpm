@@ -89,6 +89,7 @@ nav:
           - models-relationships/03_other_artifacts/index.md
           - 1. Other Artefacts Overview: models-relationships/03_other_artifacts/01_other_artifacts_overview.md
           - 2. High-Level Mapping Summary: models-relationships/03_other_artifacts/02_high_level_mapping_summary.md
+          - 3. Detailed Mapping Rules: models-relationships/03_other_artifacts/03_detailed_mapping_rules.md
       - Versioning and Extensibility:
           - models-relationships/04_versioning_and_extensibility/index.md
           - 1. Versioning Overview: models-relationships/04_versioning_and_extensibility/01_versioning_overview.md

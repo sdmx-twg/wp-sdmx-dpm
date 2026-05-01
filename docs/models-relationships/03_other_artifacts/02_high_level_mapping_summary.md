@@ -11,9 +11,10 @@ The table below summarises the main correspondences. It is intentionally high le
 | Agency | Organisation (role=owner) | Both represent maintaining/owning entities. SDMX Agencies are hierarchical; DPM uses flat Organisations with roles. |
 | DataProvider | Organisation (role=entry_point) | Both represent data suppliers. SDMX has dedicated schemes; DPM uses role differentiation. |
 | AgencyScheme | – | SDMX groups Agencies into schemes; DPM Organisations are not grouped into schemes. |
-| CategoryScheme / Category | Framework / Module | Both provide subject-domain grouping. SDMX Categories classify artefacts; DPM Frameworks/Modules organise reporting domains. |
+| CategoryScheme / Category | Framework / Module | Both provide subject-domain grouping. SDMX Categories classify artefacts; DPM Frameworks/Modules organise reporting domains. Module is the **stable identifier** for a reporting taxonomy; the versioned content sits in ModuleVersion (next row). |
 | Categorisation | (implicit in Module membership) | SDMX explicitly links artefacts to Categories; DPM membership is implicit via ModuleVersion contents. |
-| ReportingTaxonomy / ReportingCategory | ModuleVersion | Both are the deployable unit for reporting obligations — SDMX ReportingCategories link to the Dataflows reporters submit against; DPM ModuleVersions contain the Tables and Variables reporters submit against. The correspondence is partial: ReportingTaxonomy is a navigation wrapper over existing Dataflows, while ModuleVersion contains the structural definitions themselves. |
+| ReportingTaxonomy / ReportingCategory | ModuleVersion | Both are the **deployable unit** for reporting obligations — SDMX ReportingCategories link to the Dataflows reporters submit against; DPM ModuleVersions contain the Tables and Variables reporters submit against. The correspondence is partial: ReportingTaxonomy is a navigation wrapper over existing Dataflows, while ModuleVersion contains the structural definitions themselves. ReportingCategory hierarchy → optional TableGroup hierarchy inside the ModuleVersion. |
+| ReportingTaxonomyMap | ModuleVersion ↔ ModuleVersion correspondence | SDMX ReportingTaxonomyMap maps a ReportingTaxonomy onto another (e.g. a version bump). DPM expresses the same intent through the relationship between two ModuleVersions of the same Module. |
 | ProvisionAgreement | (external to DPM) | SDMX formalises data supply contracts; DPM focuses on requirements, not provisioning. |
 | Datasource | (external to DPM) | SDMX specifies data retrieval endpoints; DPM does not model data sources. |
 | Process | (external to DPM) | SDMX models workflows and lineage; DPM focuses on reporting requirements, not production processes. |
@@ -54,6 +55,9 @@ flowchart LR
   sCatScheme --- dFramework
   sCatScheme --- dModule
   sRepTax --- dModuleVersion
+  dFramework --- dModule
+  dModule --- dModuleVersion
+  dRelease --- dModuleVersion
 ```
 
 The lines indicate "primary" correspondences; they do not exclude alternative modelling choices.
