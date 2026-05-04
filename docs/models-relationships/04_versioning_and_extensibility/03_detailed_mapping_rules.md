@@ -10,7 +10,7 @@ This chapter provides the artefact-level mapping rules for the cross-cutting fou
 >     - General identification and multilingual rules from [Basics — Detailed Mapping Rules](../00_basics/02_detailed_mapping_rules.md).
 >     - The conceptual treatment of versioning and Releases lives in chapter 1 of this same section: [Versioning overview](01_versioning_overview.md). The detailed rules here are the artefact-level companion.
 >     - The extensibility patterns (Codelist extensions, structural extension, compatibility) live in chapter 2: [Extensibility patterns](02_extensibility_patterns.md).
-> - **Scope**: real cross-model correspondences only. Artefacts without a counterpart in the other model (ProvisionAgreement, Process, TableGroup) are documented in [§05 Gaps](../05_gaps/02_specific_gap_analysis.md). Classification artefacts that do have a counterpart (CategoryScheme/Framework, ReportingTaxonomy/ModuleVersion) live in [§03 Other Artefacts](../03_other_artifacts/03_detailed_mapping_rules.md).
+> - **Scope**: real cross-model correspondences only. Artefacts without a counterpart in the other model (ProvisionAgreement, Process, TableGroup, Framework) are documented in [§05 Gaps](../05_gaps/02_specific_gap_analysis.md). The deployable bundle (ReportingTaxonomy / ReportingCategory ↔ Module / ModuleVersion, including Categorisation and ReportingTaxonomyMap) lives in [§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion).
 
 ## 3.1 Agency ↔ Organisation (role = owner)
 

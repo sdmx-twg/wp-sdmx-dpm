@@ -1,8 +1,7 @@
 # Model Relationships
 - [Basics](00_basics/index.md)
 - [Glossary](01_glossary/index.md): Concepts/Codelists ↔ Properties/Categories, naming conventions.
-- [Data Definition](02_data_definition/index.md): Dataflows/DSDs ↔ Report Tables and variables; common table patterns.
-- [Other Artifacts](03_other_artifacts/index.md): Reporting taxonomies ↔ Report Modules; rendering artefacts and related constructs.
+- [Data Definition](02_data_definition/index.md): Dataflows/DSDs ↔ Report Tables and variables; ReportingTaxonomy ↔ Module/ModuleVersion as the deployable bundle; common table patterns.
 - [Versioning and Extensibility](04_versioning_and_extensibility/index.md): How the models evolve, how extensions are handled, and serialisation/version constraints.
 - [Gaps](05_gaps/index.md): Known loss points and mitigation/open questions.
 

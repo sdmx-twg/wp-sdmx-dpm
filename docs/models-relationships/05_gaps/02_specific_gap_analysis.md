@@ -346,7 +346,7 @@ SDMX **CategorySchemeMap** maps Categories between two CategorySchemes. It is ra
 </CategorySchemeMap>
 ```
 
-DPM has no direct counterpart. The closest expression is the generic `ConceptRelation` artefact (4.1.4 of the DPM metamodel), which records relationships between Concepts but is not specialised for cross-scheme migration. The mapping is therefore a *workaround* rather than a structural correspondence — which is why CategorySchemeMap is recorded here as a gap rather than alongside the real classification correspondences in [§03](../03_other_artifacts/03_detailed_mapping_rules.md).
+DPM has no direct counterpart. The closest expression is the generic `ConceptRelation` artefact (4.1.4 of the DPM metamodel), which records relationships between Concepts but is not specialised for cross-scheme migration. The mapping is therefore a *workaround* rather than a structural correspondence — which is why CategorySchemeMap is recorded here as a gap rather than alongside the deployable-bundle correspondences in [§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion).
 
 ### 2.9.2 DPM workaround via ConceptRelation
 

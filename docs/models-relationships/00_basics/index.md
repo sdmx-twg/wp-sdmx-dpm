@@ -57,5 +57,4 @@ No prior knowledge of the detailed SDMX Information Model or DPM metamodel speci
 After completing this section, proceed to:
 
 - **[Glossary](../01_glossary/index.md)**: Detailed mappings of glossary artefacts (concepts, codelists, categories, hierarchies).
-- **[Data Definition](../02_data_definition/index.md)**: Mappings of data structures (DSDs, Dataflows, Report Tables, Variables).
-- **[Other Artifacts](../03_other_artifacts/index.md)**: Additional constructs including reporting taxonomies, modules, and rendering artefacts.
+- **[Data Definition](../02_data_definition/index.md)**: Mappings of data structures (DSDs, Dataflows, Report Tables, Variables, ReportingTaxonomy ↔ Module/ModuleVersion).

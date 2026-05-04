@@ -10,15 +10,14 @@ This file is generated/maintained by hand and is the canonical reference for the
 |---------|-------|
 | **§00 Basics** | Foundational identification, multilingual, and common conventions shared by all artefacts |
 | **§01 Glossary** | Semantic-layer artefacts (codelists, concepts, items, properties, hierarchies, subsets, compound items) |
-| **§02 Data Definition** | Data-structure artefacts (DSDs, dataflows, tables, headers, cells, variables, constraints) |
-| **§03 Other Artefacts** | Real cross-model correspondences for classification and reporting taxonomy (CategoryScheme/Framework, ReportingTaxonomy/ModuleVersion, related maps) |
+| **§02 Data Definition** | Data-structure artefacts (DSDs, dataflows, tables, headers, cells, variables, constraints) — including Module/ModuleVersion ↔ ReportingTaxonomy as the deployable bundle (§02 §3.4) |
 | **§04 Versioning & Extensibility** | Ownership/identity, lifecycle (Release, Deactivation), generic Annotation extension mechanism, version evolution rules |
 | **§05 Gaps** | Artefacts that have no counterpart in the other model, plus representation/precision gaps and proposals |
 
 ## How to read the tables
 
 - **Counterpart**: name of the matching class in the other model. `—` means no direct counterpart.
-- **Section(s)**: where the class is documented. A class may appear in more than one section when it is used in multiple roles (e.g. `Annotation` is the SDMX extension mechanism — covered in §04 — but also appears as a recognised marker in §00, §01, §02, §03 cross-references).
+- **Section(s)**: where the class is documented. A class may appear in more than one section when it is used in multiple roles (e.g. `Annotation` is the SDMX extension mechanism — covered in §04 — but also appears as a recognised marker in §00, §01, §02 cross-references).
 - **Direction notes**: a one-line summary of any asymmetry, partiality, or convention used.
 
 ## SDMX 3.1 classes
@@ -82,13 +81,13 @@ This file is generated/maintained by hand and is the canonical reference for the
 
 | SDMX class | Counterpart in DPM | Section(s) | Direction notes |
 |------------|--------------------|------------|-----------------|
-| CategoryScheme | Framework | §03 §3.1 | 1:1 mapping; scheme `agencyID` → Framework `Owner` |
-| Category | Module | §03 §3.1 | Hierarchy flattened; encoded by Module `Code` convention |
-| Categorisation | implicit Module membership (via ModuleVersionComposition) | §03 §3.1.5 | Lossy round-trip |
+| CategoryScheme | Framework | §05 §2.11 | 1:1 mapping; scheme `agencyID` → Framework `Owner` |
+| Category | Module | §05 §2.11 | Hierarchy flattened; encoded by Module `Code` convention |
+| Categorisation | implicit Module membership (via ModuleVersionComposition) | §02 §3.4.4 | Lossy round-trip |
 | CategorySchemeMap | ConceptRelation (workaround, not a structural counterpart) | §05 §2.9 | Treated as a gap: rebrand/merge expressed via ConceptRelation rather than a dedicated artefact |
-| ReportingTaxonomy | ModuleVersion | §03 §3.2 | Deployable-unit alignment |
-| ReportingCategory | TableGroup (optional image inside ModuleVersion) | §03 §3.2 | Partial: only inside the matching ModuleVersion |
-| ReportingTaxonomyMap | Module-versions relationship | §03 §3.3 | Cross-version map between ModuleVersions of the same Module |
+| ReportingTaxonomy | ModuleVersion | §02 §3.4 | Deployable-unit alignment |
+| ReportingCategory | TableGroup (optional image inside ModuleVersion) | §02 §3.4 | Partial: only inside the matching ModuleVersion |
+| ReportingTaxonomyMap | Module-versions relationship | §02 §3.4.7 | Cross-version map between ModuleVersions of the same Module |
 
 ### Organisations and ownership
 
@@ -149,7 +148,7 @@ This file is generated/maintained by hand and is the canonical reference for the
 | DPMAttribute | — | §00 | Metamodel reflection |
 | Translation | InternationalString (`xml:lang`) | §00 §2.3 | One Translation row per language |
 | Language | (xml:lang) | §00 | Foundation |
-| ConceptRelation | ItemSchemeMap / RepresentationMap (partial) | §01 + §03 + §04 | Used at glossary, classification, and organisational layers |
+| ConceptRelation | ItemSchemeMap / RepresentationMap (partial) | §01 + §04 | Used at glossary, classification, and organisational layers |
 | Reference / Document / DocumentVersion / Subdivision | Annotation `url` (partial) | §00 + §04 | Documentation infrastructure |
 | ChangeLog (non-normative) | — | §04 | Implementation log; not part of the DPM standard |
 
@@ -205,10 +204,10 @@ This file is generated/maintained by hand and is the canonical reference for the
 
 | DPM class | Counterpart in SDMX | Section(s) | Direction notes |
 |-----------|---------------------|------------|-----------------|
-| Framework | CategoryScheme | §03 §3.1 | Top-level container for a reporting domain |
-| Module | Category | §03 §3.1 | Modules are siblings; hierarchy encoded in `Code` |
-| ModuleVersion | ReportingTaxonomy | §03 §3.2 | Deployable unit |
-| ModuleVersionComposition | ReportingCategory.dataflows | §03 §3.2 | Linkage to TableVersions |
+| Framework | CategoryScheme | §05 §2.11 | Top-level container for a reporting domain |
+| Module | Category | §05 §2.11 | Modules are siblings; hierarchy encoded in `Code` |
+| ModuleVersion | ReportingTaxonomy | §02 §3.4 | Deployable unit |
+| ModuleVersionComposition | ReportingCategory.dataflows | §02 §3.4 | Linkage to TableVersions |
 | ModuleParameters | — | §05 (deferred) | DPM-only |
 
 ### Organisations
@@ -234,7 +233,7 @@ This file is generated/maintained by hand and is the canonical reference for the
 | Identification (DPM IDs vs SDMX URNs) | §00 §2.2 | Used by every artefact |
 | Multilingual (InternationalString vs Translation) | §00 §2.3 | Used by every nameable artefact |
 | Boolean encoding (-1/0) | §00 §2.5.1 | DPM physical convention |
-| Recognised SDMX annotation markers (`DPM_SIGNATURE`, `DPM_DEFAULT_ITEM`, `DPM_COMPOUND_COMPONENTS`, `DPM_RELEASE_CODE`, `DPM_FROM_REFERENCE_DATE`, `DPM_DEACTIVATION_REASON`, `DPM_PROVISION_AGREEMENT`, `DPM_PROCESS`, `DPM_TABLEGROUP`, `DPM_AGENCY_PARENT`, `DPM_ID_PREFIX`, `DPM_AGENCY_SCHEME`, `DPM_CATEGORISATION_ID`) | §04 §3.6 (canonical table); cross-references from §00, §01, §02, §03, §05 | One canonical list; sections that need a marker reference §04 §3.6 |
+| Recognised SDMX annotation markers (`DPM_SIGNATURE`, `DPM_DEFAULT_ITEM`, `DPM_COMPOUND_COMPONENTS`, `DPM_RELEASE_CODE`, `DPM_FROM_REFERENCE_DATE`, `DPM_DEACTIVATION_REASON`, `DPM_PROVISION_AGREEMENT`, `DPM_PROCESS`, `DPM_TABLEGROUP`, `DPM_AGENCY_PARENT`, `DPM_ID_PREFIX`, `DPM_AGENCY_SCHEME`, `DPM_CATEGORISATION_ID`) | §04 §3.6 (canonical table); cross-references from §00, §01, §02, §05 | One canonical list; sections that need a marker reference §04 §3.6 |
 
 ## Deferred topics
 
