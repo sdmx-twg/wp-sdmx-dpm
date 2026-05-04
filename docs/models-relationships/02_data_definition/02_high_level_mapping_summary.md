@@ -25,7 +25,7 @@ The table below summarises the main correspondences at data definition level. It
 | – | Table / TableVersion | DPM Tables define visual/logical rendering; SDMX has no equivalent (presentation is outside the information model). |
 | – | Header / Cell | DPM Headers define table axis positions (with glossary-term links); Cells are their intersections resulting in Variables. No SDMX counterpart. |
 | – | FilingIndicatorVariable | DPM-specific artefact indicating whether a table should be reported; no direct SDMX equivalent. |
-| – | Framework | DPM top-level container binding a set of Modules to a legislative/regulatory domain. SDMX has no equivalent; ProvisionAgreements (a common first guess) serve a different purpose — they model data-supply contracts, not regulatory groupings. |
+| – | Framework | DPM top-level container binding a set of Modules to a legislative/regulatory domain. SDMX has no equivalent; the CategoryScheme convention is the workaround — see [§05 §2.11](../05_gaps/02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent). |
 | – | Release | DPM publication milestone (code, date, isCurrent) that bundles ModuleVersions. SDMX uses versioning and validity periods but has no dedicated release artefact that ties multiple structures to a reporting period. |
 
 ## 2.2 Graphical mapping overview
@@ -93,8 +93,8 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 - **AttributeRelationship (explicit attachment levels)**
   SDMX explicitly models where attributes attach (dataset, dimension, group, observation, measure). DPM attachment is implicit: an AttributeVariable references its subject Variable, but the "level" is not formally specified in the same way.
 
-- **CategoryScheme / Categorisation**
-  SDMX CategorySchemes organise subject domains and Categorisations link Categories to structural artefacts such as Dataflows. DPM achieves similar grouping via Frameworks and Modules, but has no direct counterpart to the Categorisation mechanism that explicitly links a subject-domain category to a data exchange definition.
+- **CategoryScheme**
+  SDMX CategorySchemes are generic classification artefacts that can be retrofitted to organise any structural metadata. DPM partitions classification across Framework, Module, Category, and SuperCategory and has no direct generic counterpart. CategoryScheme is therefore used as a **backdoor** for DPM-only navigation artefacts — see [§05 §2.12](../05_gaps/02_specific_gap_analysis.md#212-categoryscheme-sdmx-backdoor-for-dpm-only-classification). Categorisation handling (the explicit Dataflow → Category link) is documented at [§3.4.4](03_detailed_mapping_rules.md#344-categorisation-implicit-in-module-membership).
 
 - **DataConstraint with DataKeySet**
   SDMX DataKeySet enumerates explicit key combinations (specific series). DPM constraints operate at the value-domain level (SubCategories) rather than at the key-combination level; enumerating specific variable instances requires different mechanisms.
@@ -114,7 +114,7 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
   DPM explicitly supports different table patterns (closed, open, SDMX-like) with distinct cell types and rendering rules. SDMX does not model table patterns; the concept of "open" vs "closed" cells is specific to DPM's rendering layer.
 
 - **Framework**
-  DPM Frameworks bind a set of Modules to a legislative or regulatory domain (e.g. a specific regulation or directive). SDMX has no equivalent; ProvisionAgreements (a common first guess) are not analogous — they model data-supply contracts between providers and dataflows, not legislative groupings of structures.
+  DPM Frameworks bind a set of Modules to a legislative or regulatory domain (e.g. a specific regulation or directive). SDMX has no equivalent; the CategoryScheme convention is the workaround — see [§05 §2.11](../05_gaps/02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent).
 
 - **Release**
   DPM publication milestones that bundle ModuleVersions with a code, date, and `isCurrent` flag. SDMX uses version validity periods (`validFrom`/`validTo`) but has no dedicated release artefact that ties multiple structures to a single reporting period.

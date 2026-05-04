@@ -371,7 +371,7 @@ classDiagram
 Modules are organised into Frameworks and published via Releases.
 
 - **Framework**
-  Top-level container for a reporting domain. A Framework typically corresponds to a piece of legislation and groups related Modules. It has no direct SDMX equivalent — SDMX has no artefact that binds a set of reporting structures to a specific legislative act.
+  Top-level container for a reporting domain. A Framework typically corresponds to a piece of legislation and groups related Modules. It has no direct SDMX equivalent — SDMX has no artefact that binds a set of reporting structures to a specific legislative act. The CategoryScheme-based convention used as a workaround is documented in [§05 §2.11](../05_gaps/02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent).
   - *Example*: Framework `EBA_REPORTING` containing Modules `FINREP`, `COREP`, `LIQUIDITY`.
 
 - **Release**

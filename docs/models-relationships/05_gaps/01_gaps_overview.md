@@ -22,7 +22,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Compound values | No dedicated artefact | CompoundItem | SDMX must use multiple dimensions or structured codes to represent compound values |
 | Cross-codelist hierarchy | Hierarchy (multi-parent, cross-codelist) | SubCategory (single Category) | DPM SubCategories are limited to one Category; complex SDMX Hierarchies may not map exactly |
 | Super category | Extended Codelist (approximation) | SuperCategory (explicit) | DPM SuperCategories explicitly unite Categories; SDMX Extended Codelists have different semantics |
-| Subject-domain taxonomy | CategoryScheme / Category | Framework / Module (packaging layer) | SDMX subject categories are glossary-level; DPM uses packaging artefacts |
+| Generic subject classification | CategoryScheme / Category | No direct counterpart | SDMX CategoryScheme is generic and retrofittable; DPM partitions classification across Framework/Module/Category/SuperCategory. Used as a backdoor for DPM-only navigation — see [§2.12](02_specific_gap_analysis.md#212-categoryscheme-sdmx-backdoor-for-dpm-only-classification) |
 
 ### Data definition layer gaps
 
@@ -41,6 +41,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Gap | SDMX | DPM | Notes |
 |-----|------|-----|-------|
 | Organisation schemes | Dedicated schemes per role | Single Organisation with role attribute | Different modelling approaches for the same concept |
+| Domain wrapper | No direct counterpart | Framework | DPM Framework groups Modules under one regulatory/statistical domain; SDMX bridges via CategoryScheme convention — see [§2.11](02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent) |
 | Provisioning | ProvisionAgreement / Datasource | Not modelled | DPM focuses on requirements; provisioning is external |
 | Process / lineage | Process / ProcessStep | Not modelled | DPM does not model data production workflows |
 | Generic annotation | Annotation (key-value) | Typed description fields | SDMX is more flexible; DPM is more structured |

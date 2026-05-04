@@ -366,6 +366,155 @@ ConceptRelation is generic — the rename intent is not encoded in the artefact 
 
 > **Note — proposal**: a future refinement could be a dedicated DPM entity for cross-Framework migration, or an extension of ConceptRelation with a `category_scheme_map` discriminator. This is not part of the current bidirectional mapping; recorded here for future consideration.
 
+## 2.11 Framework — DPM feature without SDMX equivalent
+
+### 2.11.1 The gap
+
+DPM **Framework** is the top-level container that groups related Modules under one regulatory or statistical domain (e.g. `EBA_REPORTING` containing `FINREP`, `COREP`, `LIQUIDITY`). SDMX has no equivalent: ProvisionAgreements (a common first guess) model data-supply contracts, not legislative groupings of structures, and ReportingTaxonomy is the per-cycle deployable bundle, not a multi-Module domain wrapper.
+
+Framework was originally treated as a regular cross-model correspondence in §03; the meeting on 2026-05-04 reclassified it as a gap because the SDMX side is a **convention** layered on top of CategoryScheme, not a structural counterpart.
+
+### 2.11.2 SDMX-side bridge: CategoryScheme convention
+
+The closest SDMX construct is **CategoryScheme** — a generic classification scheme that can be used as a "backdoor" to represent DPM-only navigation artefacts. The convention is:
+
+- Emit one **CategoryScheme** per Framework, owned by the same Agency that owns the Framework.
+- Each Module under the Framework becomes a **Category** under the scheme.
+- Cross-link to the deployable bundle: when a ReportingTaxonomy is also emitted (the primary Module mapping in [§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)), the same Module ↔ Category alignment carries over.
+- Heuristic for the reverse path: if a CategoryScheme contains Categories whose target artefacts are ReportingTaxonomies, treat the CategoryScheme as a Framework.
+
+Limitations:
+
+- SDMX consumers will not recognise the CategoryScheme as a Framework without out-of-band agreement; the convention has to be advertised to be useful.
+- CategoryScheme has no `Owner` field analogous to Framework (the SDMX `agencyID` is the closest); see [§04 §3.1](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#31-agency-organisation-role-owner) for the Agency↔Organisation mapping.
+
+```mermaid
+flowchart LR
+    subgraph SDMX
+        CS["CategoryScheme"]
+        C1["Category"]
+        C2["Category (child)"]
+        CS -->|items| C1
+        C1 -->|parent| C2
+    end
+    subgraph DPM
+        F["Framework"]
+        M["Module"]
+        F --> M
+    end
+    CS ---|"convention"| F
+    C1 ---|"convention"| M
+```
+
+### 2.11.3 Mapping cardinality
+
+```mermaid
+classDiagram
+    direction LR
+    SDMX_CATEGORYSCHEME "1" -- "1" DPM_FRAMEWORK
+    SDMX_CATEGORY "1" -- "1" DPM_MODULE
+```
+
+- **From SDMX to DPM**: one CategoryScheme maps to one Framework; each Category in the scheme maps to one Module under that Framework. The Category hierarchy is **flattened** — DPM Modules are not nested. Where the SDMX hierarchy is meaningful (e.g. a top-level "COREP" with sub-Categories "COREP_OF", "COREP_LR"), each level becomes a separate Module; the parent–child relationship is encoded only in the Module `Code` naming convention (e.g. `COREP_OF` carries the parent's prefix).
+- **From DPM to SDMX**: one Framework maps to one CategoryScheme; each Module maps to one Category. DPM Modules have no hierarchy, so the resulting SDMX Categories are siblings under the scheme — unless naming conventions encode a hierarchy that the mapping can re-materialise.
+
+### 2.11.4 Attributes equivalence
+
+| SDMX                              | DPM                              | Notes                                                                                                              |
+|-----------------------------------|----------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| CategoryScheme.`id`               | Framework.`Code`                 |                                                                                                                    |
+| CategoryScheme.`agencyID`         | Framework.`OwnerID` (lookup)     | Lookup the Organisation whose `Acronym` equals the `agencyID`. The Agency↔Organisation mapping is in [§04 §3.1](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#31-agency-organisation-role-owner). |
+| CategoryScheme.`version`          | — (Framework is unversioned)     | Framework has no version slot. Use ModuleVersion ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)) and Release ([§04 §3.4](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#34-release-version-validity)) for temporal evolution. |
+| CategoryScheme.`Name`             | Framework.`Name`                 | Multilingual.                                                                                                     |
+| CategoryScheme.`Description`      | Framework.`Description`          | Multilingual.                                                                                                     |
+| CategoryScheme.`isPartial`        | — (no equivalent)                | DPM does not model partial schemes at the Framework level.                                                        |
+| Category.`id`                     | Module.`Code`                    |                                                                                                                    |
+| Category.`Name`                   | Module.`Name`                    | Multilingual.                                                                                                     |
+| Category.`Description`            | Module.`Description`             | Multilingual.                                                                                                     |
+| Category.`parent` (hierarchy)     | — (Modules are siblings)         | Hierarchy is flattened; parent encoded only in `Module.Code` by convention (e.g. `COREP_OF` under `COREP`).        |
+| — (not applicable)                | Module.`FrameworkID`             | All Modules ingested from one CategoryScheme share the same Framework.                                            |
+
+### 2.11.5 Example — DPM ⇒ SDMX
+
+Starting from:
+
+| FrameworkID | Code           | Name                       | OwnerID |
+| ----------- | -------------- | -------------------------- | ------- |
+| 100100001   | EBA_REPORTING  | EBA reporting domains      | 1 (EBA) |
+
+| ModuleID    | FrameworkID  | Code      | Name                  |
+| ----------- | ------------ | --------- | --------------------- |
+| 100200001   | 100100001    | FINREP    | Financial reporting   |
+| 100200002   | 100100001    | COREP     | Common reporting      |
+| 100200003   | 100100001    | COREP_OF  | Own funds             |
+| 100200004   | 100100001    | COREP_LR  | Leverage ratio        |
+
+Produces:
+
+```xml
+<CategoryScheme agencyID="EBA" id="EBA_REPORTING" version="1.0" isPartial="false">
+  <Name xml:lang="en">EBA reporting domains</Name>
+  <Category id="FINREP">
+    <Name xml:lang="en">Financial reporting</Name>
+  </Category>
+  <Category id="COREP">
+    <Name xml:lang="en">Common reporting</Name>
+    <Category id="COREP_OF">
+      <Name xml:lang="en">Own funds</Name>
+    </Category>
+    <Category id="COREP_LR">
+      <Name xml:lang="en">Leverage ratio</Name>
+    </Category>
+  </Category>
+</CategoryScheme>
+```
+
+The mapper rematerialises the parent–child relationship from the `Module.Code` prefix when a hierarchy convention is documented at project level.
+
+### 2.11.6 Recommendations
+
+1. **Advertise the convention**: when emitting CategoryScheme + Categories as the SDMX side of a Framework, document the convention so consumers know to interpret it as a Framework.
+2. **Pair with ReportingTaxonomy**: do not rely on CategoryScheme alone — emit ReportingTaxonomies for the deployable bundles too (§02 §3.4). The CategoryScheme is for navigation; the ReportingTaxonomy is for submission.
+3. **Push for a first-class Framework artefact**: a future SDMX evolution could introduce a Framework-equivalent artefact that explicitly groups ReportingTaxonomies under a domain.
+
+## 2.12 CategoryScheme — SDMX backdoor for DPM-only classification
+
+### 2.12.1 The gap
+
+SDMX **CategoryScheme** is a generic classification artefact that can be used to organise any IdentifiableArtefact under a hierarchy of Categories. DPM has **no direct counterpart**: classification responsibilities are partitioned across Framework (top-level domain), Module (coherent reporting package), Category (glossary value-domain), and SuperCategory (cross-Category union). None of these is a generic, retrofittable hierarchy in the way CategoryScheme is.
+
+### 2.12.2 CategoryScheme as a backdoor
+
+CategoryScheme's generality makes it the natural SDMX **backdoor** for DPM-only artefacts that need an SDMX-side image. Three established or proposed uses:
+
+| DPM-only artefact                  | CategoryScheme convention                                              | Documented at |
+|------------------------------------|------------------------------------------------------------------------|---------------|
+| **Framework**                      | One CategoryScheme per Framework; each Module ↔ Category               | §2.11 above |
+| **TableGroup / TableAssociation**  | Proposal: one CategoryScheme per Framework with TableGroup categories  | [§2.8.4](#284-proposal-a-categoryscheme-based-extension) |
+| **CategorySchemeMap workaround**   | DPM ConceptRelation between Frameworks — CategorySchemeMap is the SDMX side, but the round-trip is lossy | [§2.9](#29-categoryschememap-sdmx-feature-without-dpm-equivalent) |
+
+The pattern is the same in each case: SDMX CategoryScheme is the "low-ceremony" container for navigation that DPM models with multiple specialised artefacts.
+
+### 2.12.3 Heuristics for SDMX → DPM
+
+When ingesting an unfamiliar CategoryScheme, the inverse mapping is ambiguous. Heuristics in priority order:
+
+1. **Categories reference ReportingTaxonomies** → treat the CategoryScheme as a **Framework**. The Categories become Modules.
+2. **Categories reference Dataflows directly (Categorisations)** → treat each Category as a **TableGroup** and the parent CategoryScheme as a navigation grouping inside an existing Module/Framework.
+3. **No structural artefacts referenced** (pure subject-domain taxonomy) → annotate the CategoryScheme on the receiving DPM artefact (e.g. via an annotation marker) and do not materialise a Framework. A future evolution could give DPM a generic "subject taxonomy" artefact.
+
+### 2.12.4 Limitations
+
+- The conventions are **not enforced** by SDMX — different agencies may use CategoryScheme differently. Mapping rules must inspect the references inside each Category to decide intent.
+- CategoryScheme **versioning** (a first-class concept in SDMX) does not always survive round-trips; DPM Frameworks have no version, so a non-trivial CategoryScheme version requires materialisation as a new Framework or as ConceptRelation history (see [§2.9](#29-categoryschememap-sdmx-feature-without-dpm-equivalent)).
+- **Owner** semantics differ: CategoryScheme has only `agencyID`; DPM Framework has an explicit `OwnerID` (Organisation FK). The SDMX → DPM lookup uses the Agency↔Organisation mapping ([§04 §3.1](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#31-agency-organisation-role-owner)).
+
+### 2.12.5 Recommendations
+
+1. **Document the intended use** of every CategoryScheme that will be exchanged across SDMX/DPM boundaries — annotate whether it represents a Framework, a TableGroup tree, or pure subject-domain navigation.
+2. **Prefer specialised artefacts where they exist**: emit a ReportingTaxonomy for deployable bundles, not a CategoryScheme.
+3. **Use CategoryScheme only when nothing better exists** in SDMX. The temptation to use it for everything is what makes the inverse mapping ambiguous.
+
 ## 2.10 Summary of mitigation strategies
 
 | Gap area | Primary mitigation | Secondary mitigation |
@@ -382,3 +531,5 @@ ConceptRelation is generic — the rename intent is not encoded in the artefact 
 | Process / ProcessStep (§2.7) | External to DPM | Annotations (`DPM_PROCESS`) |
 | TableGroup / TableAssociation (§2.8) | ReportingCategory image inside ReportingTaxonomy | Annotations (`DPM_TABLEGROUP`); proposal: dedicated CategoryScheme per Framework |
 | CategorySchemeMap (§2.9) | ConceptRelation (`version_new` / `version_fix`) | Documented naming convention on Module `Code` |
+| Framework — DPM feature without SDMX equivalent (§2.11) | CategoryScheme convention (one CategoryScheme per Framework; Modules → Categories) | Pair with ReportingTaxonomy ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)) |
+| CategoryScheme — SDMX backdoor for DPM-only classification (§2.12) | Use for Framework, TableGroup tree, or subject-domain navigation depending on contained references | Annotate intended use; inspect references for inverse mapping |
