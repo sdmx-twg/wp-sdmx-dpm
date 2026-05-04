@@ -655,3 +655,136 @@ DPM:
 On the reverse path, the `[RELEASE_NOTES_URL] …` line is split off the Description and emitted as a `RELEASE_NOTES_URL` Annotation on the ReportingTaxonomy.
 
 > **Tip — Annotation `url` field**: SDMX Annotation has a separate `url` attribute. When the recognised type implies a URL payload, prefer emitting it as `Annotation.url` rather than `Annotation.text`. The mapping implementation should be consistent.
+
+## 3.7 Virtual versions for glossary artefacts
+
+### 3.7.1 The problem
+
+DPM glossary artefacts — Categories (and their Items), SubCategories of Categories, Properties — do not carry an explicit `version` attribute. SDMX requires one: every Codelist, ConceptScheme, and Hierarchy is versioned. Mapping DPM → SDMX therefore needs a way to *materialise* a version for each glossary slice that is exported.
+
+The naive approach — emit one Codelist version per Release — is too coarse. Many Releases include no glossary changes for a given Category; emitting redundant versions clutters the SDMX repository. The opposite naive approach — emit one Codelist with all Items ever recorded, ignoring release windows — loses the temporal semantics that consumers need.
+
+### 3.7.2 Concept: virtual version
+
+A **virtual version** of a glossary artefact is a synthetic version computed by snapshotting the artefact's state at the Release window of a given ModuleVersion.
+
+- The version is *virtual* because it does not exist in the DPM database; it is inferred at export time.
+- The version is *anchored to a ModuleVersion* because that is the only artefact with reference-date validity (see [§1.2](01_versioning_overview.md#12-dpm-versioning-model)).
+- Two ModuleVersions that produce the same item set yield the **same** virtual version (deduplicated).
+
+This is the recommended approach for SDMX-DPM mapping. It can be implemented today against the existing DPM 2.0 database with no schema changes.
+
+> **Note — alternative under consideration by the DPM Alliance.** The Alliance is discussing adding a BLOB JSON snapshot field to the `ModuleVersion` table that pre-computes the glossary slice for each ModuleVersion. The two approaches converge on the same per-ModuleVersion snapshot semantics; the BLOB approach trades a database change for cheaper consumption-time access, while inference avoids the database change at the cost of computing the snapshot at export time. This work-stream recommends the inference approach as the documented mapping; the BLOB approach can be adopted later as an optimisation if the Alliance accepts it.
+
+### 3.7.3 Algorithm (DPM → SDMX)
+
+For each ModuleVersion `mv` being exported:
+
+1. **Determine the Release window** of `mv`:
+    - `mv_start = mv.StartReleaseID` (the Release at which `mv` becomes active in the DPM publication timeline)
+    - `mv_end   = mv.EndReleaseID` (or "open" if NULL)
+
+2. **For each Category `C` referenced by `mv`** (via `mv.glossaryRoots` or transitively through Headers/Variables in `mv`'s Tables):
+    - Materialise the virtual Category version `C@mv` as the set of Items where:
+      ```
+      ItemCategory.startRelease ≤ mv_end
+      AND (ItemCategory.endRelease IS NULL OR ItemCategory.endRelease > mv_start)
+      ```
+    - For each included Item, the **code** to use is the `Code` recorded on the latest `ItemCategory` row whose release window overlaps `mv`'s window. (Item codes can change over time; this captures the current-at-`mv` code.)
+    - Record the result as one virtual Codelist version.
+
+3. **For each SubCategory `S` referenced by `mv`** (via Headers' `SubCategoryVID` or Variables' SubCategory references):
+    - Locate the SubCategory version (`SubCategoryVersion.StartReleaseID` ≤ `mv_end` AND (end is NULL OR > `mv_start`)) — at most one applies.
+    - Materialise its included Items in the virtual representation; this becomes a Hierarchy or a constraint cube depending on the SubCategory shape.
+
+4. **For each Property `P` referenced by `mv`**:
+    - Properties themselves do not change over time, but their `Code` (when used as an Item under the Property root) can. Apply the same `ItemCategory`-driven snapshot rule as for Categories.
+
+5. **Deduplicate**:
+    - Compute a hash of each (Category, item-set, code-mapping) tuple.
+    - Two ModuleVersions that produce the same hash share a single virtual version. Assign a stable version code (e.g. derived from the earliest ModuleVersion that materialised this snapshot, or an incrementing counter).
+
+6. **Assign SDMX version codes**:
+    - `MAJOR.MINOR.PATCH` derived from the cumulative changes since the previous deduplicated virtual version.
+    - When a virtual version diverges from its predecessor in a backwards-compatible way (only additions), bump MINOR; for code renames or removals bump MAJOR; for typo fixes that don't change semantics bump PATCH.
+
+The materialised SDMX artefacts (`Codelist`, `ConceptScheme`, `Hierarchy` versions) reference the virtual version codes; ReportingTaxonomy version emitted for `mv` (per [§02 §3.4.6](../02_data_definition/03_detailed_mapping_rules.md#346-example-mapping-dpm--sdmx)) references the virtual versions of all glossary artefacts in scope.
+
+### 3.7.4 Algorithm (SDMX → DPM)
+
+This direction is simpler: SDMX already has explicit versions, which become inputs to DPM's release-based change log.
+
+For each SDMX Codelist version `v`:
+
+1. Locate or create the corresponding DPM Category `C`.
+2. For each Code in `v` that is not yet recorded in `C`:
+    - Insert an `ItemCategory` row with `startRelease = R(v)` where `R(v)` is the Release that maps to the SDMX validFrom of `v`.
+3. For each Code that was in the previous Codelist version but is absent from `v`:
+    - Set the existing `ItemCategory.endRelease = R(v)`.
+4. For each Code whose `id` changed (rename) between versions:
+    - This requires explicit human/automated decision; record the rename via two `ItemCategory` rows (one closed, one opened) with a ConceptRelation linking them.
+
+No virtual-version step is needed — the SDMX version is the authoritative input.
+
+### 3.7.5 Worked example — Brexit
+
+**Setup:**
+
+- Category `EU_COUNTRIES`, owner EBA.
+- Items include `UK` (United Kingdom) with `ItemCategory.startRelease = R_2010Q1`, `endRelease = R_2020Q4` (UK formally left on 2020-12-31).
+- ModuleVersion `M v1.0`: `StartReleaseID = R_2018Q1`, `EndReleaseID = R_2020Q4`.
+- ModuleVersion `M v2.0`: `StartReleaseID = R_2021Q1`, `EndReleaseID = NULL`.
+
+**Mapping `M v1.0` to SDMX:**
+- Apply the virtual version algorithm with `mv_start = R_2018Q1`, `mv_end = R_2020Q4`.
+- `UK` qualifies: `startRelease ≤ R_2020Q4` AND `endRelease (R_2020Q4) > R_2018Q1`. ✓
+- Virtual Category version includes `UK`. Emit as `CL_EU_COUNTRIES(1.0)`.
+
+**Mapping `M v2.0` to SDMX:**
+- `mv_start = R_2021Q1`, `mv_end = NULL`.
+- `UK`: `endRelease (R_2020Q4)` is *not* `> mv_start (R_2021Q1)`. Excluded.
+- Virtual Category version omits `UK`. Emit as `CL_EU_COUNTRIES(2.0)`.
+
+A consumer reading the FINREP reporting taxonomy for `M v1.0` sees `CL_EU_COUNTRIES(1.0)` (with UK); for `M v2.0` sees `CL_EU_COUNTRIES(2.0)` (without UK). The Brexit change is faithfully represented without ever materialising "version 1.0" or "version 2.0" in the DPM database.
+
+### 3.7.6 Worked example — code change
+
+**Setup:**
+
+- Property `INSTRUMENT_TYPE` with sub-Items in Category `INSTRUMENT_TYPES`.
+- Item formerly known as `X1` is renamed to `X10` at Release `R_2024Q1`. The DPM model records this as two `ItemCategory` rows linked by a `ConceptRelation` of type `version_new`:
+    - Row A: `Item = X1_old`, `Code = X1`, `startRelease = R_2020Q1`, `endRelease = R_2023Q4`.
+    - Row B: `Item = X1_old` (same logical Item — DPM allows the underlying Item to retain its identity), `Code = X10`, `startRelease = R_2024Q1`, `endRelease = NULL`.
+- ModuleVersion `M v1.0`: window `R_2022Q1` – `R_2023Q4`.
+- ModuleVersion `M v2.0`: window `R_2024Q1` – open.
+
+**Mapping `M v1.0` to SDMX:**
+- For the `INSTRUMENT_TYPE` Items, the active `ItemCategory` row in the window is Row A.
+- The virtual Property version uses `Code = X1`. Emit as `CS_INSTRUMENT_TYPE(1.0)` containing Concept with `id = X1`.
+
+**Mapping `M v2.0` to SDMX:**
+- The active `ItemCategory` row is Row B.
+- The virtual Property version uses `Code = X10`. Emit as `CS_INSTRUMENT_TYPE(2.0)` containing Concept with `id = X10`.
+
+Round-trip preservation: a `DPM_ITEM_CONTINUITY_ID` annotation on the renamed Concept can carry the underlying DPM Item identity so that SDMX → DPM ingestion can recognise the rename rather than treating it as a delete + create.
+
+### 3.7.7 Implementation notes
+
+- **Performance.** Computing virtual versions touches `ModuleVersion`, `ItemCategory`, `SubCategoryVersion`, and `Release` tables. The query is simple but should be cached per `(ModuleVersion, Category)` pair to avoid recomputation when exporting multi-table bundles.
+- **Stable version codes.** Two consecutive runs of the algorithm against an unchanged DPM database **must** produce the same virtual version codes. Anchor the version code on the deduplication hash, not on a counter that depends on processing order.
+- **Cross-Category SubCategories and SuperCategories.** When a SubCategory unites Items from multiple Categories or a SuperCategory unites multiple Categories, the virtual version is the union of the constituent virtual versions. Bump MAJOR if any constituent had a MAJOR bump.
+- **Empty result.** If a Category referenced by `mv` resolves to an empty Item set (no `ItemCategory` row overlaps the window), do not emit an empty Codelist — log a warning. This usually indicates a modelling error.
+- **Reverse-engineering existing snapshots.** When a target SDMX repository already contains versioned Codelists, the inference algorithm should reuse the existing version code if the materialised item set matches; only invent a new version code when the materialised set diverges.
+
+### 3.7.8 Comparison with the BLOB-JSON proposal
+
+| Aspect | Virtual-version inference (this work-stream) | DPM Alliance BLOB JSON proposal |
+|---|---|---|
+| Database change required | None | Yes — new BLOB column on ModuleVersion |
+| Cost at export time | Small per-export query | Zero (snapshot already stored) |
+| Cost at write time | Zero | Must regenerate BLOB whenever any glossary change touches a ModuleVersion's scope |
+| Versioning of the snapshot | Implicit (computed) | Explicit (stored) |
+| Available today | Yes | No — pending Alliance discussion |
+| Round-trip stability | Depends on stable version-code derivation | Depends on stable JSON serialisation |
+
+Recommendation: adopt the virtual-version inference approach as the documented mapping rule. If the Alliance later accepts the BLOB approach, treat it as a performance optimisation that produces the same per-ModuleVersion snapshots.

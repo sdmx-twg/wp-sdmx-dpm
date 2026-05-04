@@ -72,6 +72,12 @@ DPM's versioning model is more complex because it distinguishes between:
 2. **Glossary change tracking**: Release-based logs on Categories, Items, Properties—not true versions.
 3. **Applicability context**: Glossary item validity depends on which ModuleVersion references it.
 
+> **Critical: ModuleVersion is the only artefact with reference-date validity.**
+> In DPM 2.0, only ModuleVersion carries `FromReferenceDate` / `ToReferenceDate` — the calendar window during which the reporting bundle applies. All other "true-versioned" artefacts (Tables/TableVersion, SubCategories, Operations) use only `StartReleaseID` / `EndReleaseID` markers, which point to publication releases rather than calendar dates. This means the answer to "which version of glossary item X applies on date D?" can only be resolved through the ModuleVersion that references X and is valid for date D.
+
+> **Everything starts from ModuleVersion.**
+> The practical consequence of the previous point: any consumer needing to resolve the version of a Table, SubCategory, Item, or Property for a reporting context **must** start from a ModuleVersion. The ModuleVersion fixes the Release window, which fixes which release-tagged glossary entries are in scope, which in turn determines the codes and item membership the reporter must use. There is no shorter path — querying the glossary directly without a ModuleVersion produces ambiguous answers.
+
 ### True versioning: Modules, Tables, SubCategories
 
 These artefacts have explicit version semantics with `versionCode` attributes.
