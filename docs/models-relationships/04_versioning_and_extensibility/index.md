@@ -12,3 +12,4 @@ It aims to:
 
 - [1. Versioning overview](01_versioning_overview.md)
 - [2. Extensibility patterns](02_extensibility_patterns.md)
+- [3. Detailed mapping rules](03_detailed_mapping_rules.md) — Organisations, Releases, Deactivation, and the Annotation extension mechanism (the artefacts that constitute the foundation for ownership and extensibility).

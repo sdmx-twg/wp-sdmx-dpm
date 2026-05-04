@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(python3:*)",
+      "Bash(pip --version:*)",
+      "Bash(mkdocs build:*)",
+      "Bash(tree:*)",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Bash(git -C /home/aolle/wp-sdmx-dpm remote get-url:*)",
+      "Bash(gh issue edit:*)",
+      "mcp__plugin_github_github__issue_read",
+      "Bash(git add:*)",
+      "Bash(/home/aolle/wp-sdmx-dpm/.venv/bin/python:*)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(curl:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(git push)",
+      "Bash(gh issue *)",
+      "mcp__plugin_github_github__list_issues",
+      "Bash(sqlite3 *)",
+      "WebSearch",
+      "Bash(sqlite3:*)",
+      "WebFetch(domain:*)",
+      "Bash(grep *)",
+      "Bash(git push *)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

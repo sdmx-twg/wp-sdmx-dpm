@@ -164,7 +164,209 @@ The DPM compound item pattern provides a concrete, well-specified use case that 
 - **Interoperability**: Without native compound item support, DPM→SDMX conversion is necessarily lossy for these structures.
 - **Reuse**: Explicit composition at the codelist level enables automated validation and aggregation that SDMX currently cannot perform without out-of-band knowledge.
 
-## 2.5 Summary of mitigation strategies
+## 2.6 ProvisionAgreement / Datasource — SDMX feature without DPM equivalent
+
+### 2.6.1 The gap
+
+SDMX **ProvisionAgreement** is a maintainable artefact that formalises a *data supply contract* between a DataProvider and a Dataflow:
+
+```xml
+<ProvisionAgreement agencyID="ECB" id="PA_BDE_CBD2" version="1.0">
+  <DataProvider>
+    <Ref agencyID="ECB" id="DATA_PROVIDERS" class="DataProvider" containedID="BDE"/>
+  </DataProvider>
+  <Dataflow>
+    <Ref agencyID="ECB" id="CBD2" version="1.0"/>
+  </Dataflow>
+  <Datasource>
+    <SimpleDatasource>
+      <DataURL>https://bde.example/cbd2.xml</DataURL>
+    </SimpleDatasource>
+  </Datasource>
+</ProvisionAgreement>
+```
+
+DPM does not model this contract. DPM expresses *what is required* (the ModuleVersion: which Tables, which Variables, which Operations) but **not** *who supplies it from where* (the agreement and endpoint).
+
+### 2.6.2 Why DPM does not model provisioning
+
+DPM is a metamodel for reporting *requirements*, not for data exchange logistics. Provisioning concerns — the contractual relationship, the URL where data is fetched, authentication and scheduling — are handled by the implementing platform (e.g. EBA's regulatory reporting infrastructure) outside the DPM database. This is consistent with the design principle that DPM "focuses on the what, not the how" (see [§00 Basics §1.3](../00_basics/01_base_comparison.md)).
+
+### 2.6.3 Recommendations
+
+| Direction       | Recommendation                                                                                                                                                                                          |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | Do not materialise ProvisionAgreement in DPM. If round-trip preservation is required, attach a `DPM_PROVISION_AGREEMENT` annotation to the matching ModuleVersion containing the original ProvisionAgreement URN(s). See the marker registry in [§04 §3.6.2](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#362-recognised-dpm-markers-tier-a-canonical-registry). |
+| DPM → SDMX      | Do not emit ProvisionAgreement during the DPM → SDMX mapping. ProvisionAgreements must be authored separately by the operating platform (or recovered from the `DPM_PROVISION_AGREEMENT` annotation if present). |
+
+> **Note — Datasource follows ProvisionAgreement**: SDMX `SimpleDatasource` and `RESTDatasource` are nested inside the ProvisionAgreement. They are not separable artefacts; the rule above covers them implicitly.
+
+> **Note — DPM Organisation `URI`**: The DPM Organisation `URI` field is a contact URI for the organisation, **not** a data submission endpoint. It must not be conflated with `Datasource.DataURL`.
+
+### 2.6.4 Future SDMX / DPM consideration
+
+The DataProvider ↔ Organisation(entry_point) mapping ([§04 §3.2](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#32-dataprovider-organisation-role-entry_point)) preserves *who* submits data, but the *where* and *under what contract* are intentionally outside DPM. There is no proposal to extend DPM with a ProvisionAgreement-equivalent; the platform layer is the right home for this concern.
+
+## 2.7 Process / ProcessStep — SDMX feature without DPM equivalent
+
+### 2.7.1 The gap
+
+SDMX **Process** is a maintainable artefact describing a workflow or data-processing pipeline. **ProcessStep** items reference input and output artefacts and document transformations. Process is the SDMX construct for capturing data lineage and production workflow.
+
+DPM does not model production workflows. The DPM database documents *what* is to be reported and *how to validate it*, not the operational pipeline that produces or consumes it.
+
+### 2.7.2 What this is *not*
+
+DPM Operations and Validation rules (5.4 of the metamodel) are *not* equivalent to SDMX Process: DPM Operations are validation/calculation rules over the data, not workflow steps. The two concepts must not be conflated. Operation/OperationVersion may map (partially) to SDMX VTL artefacts (TransformationScheme, RulesetScheme); that family is currently deferred — see the artefact index.
+
+### 2.7.3 Recommendations
+
+| Direction       | Recommendation                                                                                                                                                          |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | Do not materialise Process / ProcessStep in DPM. Optional preservation via a `DPM_PROCESS` annotation on the most-relevant DPM artefact (Framework or ModuleVersion).   |
+| DPM → SDMX      | Do not emit Process / ProcessStep during the DPM → SDMX mapping. Processes must be authored separately by the operating platform.                                       |
+
+## 2.8 TableGroup / TableAssociation — DPM feature without SDMX equivalent
+
+### 2.8.1 The gap
+
+DPM provides explicit grouping for Tables within a Module:
+
+- **TableGroup** organises Tables into hierarchical, navigable bundles (e.g. *Balance sheet*, *Income statement* under FINREP).
+- **TableAssociation** allows the same Table to participate in multiple groupings (e.g. by subject *and* by reporting frequency).
+
+Neither has a direct SDMX counterpart at the same conceptual level. SDMX has no first-class artefact for grouping Dataflows by subject inside a single reporting cycle.
+
+### 2.8.2 Closest SDMX analogue: ReportingCategory
+
+The closest SDMX analogue is a **ReportingCategory** subtree inside a ReportingTaxonomy ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)). ReportingCategories may be nested and reference Dataflows. They are not, however, the same artefact:
+
+- ReportingCategories are scoped to one ReportingTaxonomy version. DPM TableGroups are independent Concepts that exist *outside* any single ModuleVersion.
+- The same DPM TableGroup can become *different* ReportingCategory items in different ReportingTaxonomies (one per ModuleVersion that uses the group). The TableGroup's identity does not survive into SDMX.
+
+```mermaid
+flowchart LR
+    subgraph SDMX
+        RT["ReportingTaxonomy"]
+        RC1["ReportingCategory"]
+        RC2["ReportingCategory (child)"]
+        DF["Dataflow"]
+        RT --> RC1
+        RC1 --> RC2
+        RC1 --> DF
+    end
+    subgraph DPM
+        TG["TableGroup"]
+        TG2["TableGroup (child)"]
+        T["Table"]
+        TGC["TableGroupComposition"]
+        TA["TableAssociation"]
+        TG --> TG2
+        TG --> TGC
+        TGC --> T
+        TA --> T
+    end
+    RC1 ---|"image (only inside ReportingTaxonomy)"| TG
+```
+
+### 2.8.3 Mapping recipe (current best practice)
+
+| Direction       | Recipe                                                                                                                                                                  |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | If the source provides ReportingCategories with hierarchy, the ReportingTaxonomy mapping ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)) materialises a TableGroup tree. Otherwise no TableGroups are created. |
+| DPM → SDMX      | TableGroups become ReportingCategories *only inside the ReportingTaxonomy* generated for the matching ModuleVersion. Outside that scope, TableGroups are not emitted.   |
+
+| Asymmetry                                            | Recommendation                                                                                                                                                  |
+|------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TableGroup `Code` and `Description` should round-trip | Emit them as `ReportingCategory.id` and `Description`. On the reverse path, the same `Code` is reconstructed.                                                  |
+| TableAssociation may put one Table in multiple groups | Emit each association as a separate `ReportingCategory.Dataflow` reference. Reverse: each Dataflow that appears under multiple ReportingCategories produces multiple TableAssociations. |
+| Hierarchical TableGroup nesting                      | Mirror the parent–child relationship via `ReportingCategory.parent`.                                                                                            |
+| Pure DPM TableGroup outside any ModuleVersion        | Lossy on the SDMX side. The TableGroup will only be emitted when a ModuleVersion that uses it is also being emitted. Standalone TableGroups should be flagged or preserved as a `DPM_TABLEGROUP` annotation on the Framework's CategoryScheme. |
+
+### 2.8.4 Proposal: a CategoryScheme-based extension
+
+A clean way to fill this gap on the SDMX side without changing the SDMX standard is to use a **dedicated CategoryScheme per Framework that mirrors the TableGroup tree**, with a Categorisation per Table:
+
+- One CategoryScheme `<framework-id>_TABLEGROUPS` whose Categories mirror the TableGroup hierarchy.
+- One Categorisation per (Dataflow, TableGroup) pair encoding the TableAssociation.
+- The TableGroup identity then survives outside any ReportingTaxonomy (each ReportingCategory still references the matching Categories where useful).
+
+This proposal is *not* part of the current bidirectional mapping; it is recorded here as a candidate refinement for future versions. The trade-off is duplication of navigation (CategoryScheme + ReportingTaxonomy) on the SDMX side, which is acceptable when TableGroup identity must round-trip independently of ReportingTaxonomy versions.
+
+### 2.8.5 Example DPM ==> SDMX (current recipe)
+
+Starting from:
+
+*TableGroup*
+
+| TableGroupID | Code             | Name              | StartReleaseID |
+| ------------ | ---------------- | ----------------- | -------------- |
+| 200          | BALANCE_SHEET    | Balance sheet     | 5              |
+
+*TableAssociation* (Table appears in two groups)
+
+| TableID | TableGroupID |
+| ------- | ------------ |
+| 6101    | 200          |
+| 6101    | 250          |
+
+(Where `200 = BALANCE_SHEET` and `250 = QUARTERLY_REPORTING` are different navigation views of the same Table.)
+
+The mapping produces a ReportingCategory under the ReportingTaxonomy generated for the matching ModuleVersion ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)):
+
+```xml
+<ReportingTaxonomy …>
+  <ReportingCategory id="BALANCE_SHEET">
+    <Name xml:lang="en">Balance sheet</Name>
+    <Dataflow><Ref agencyID="EBA" id="DF_FINREP_F_01.01" version="1.0"/></Dataflow>
+  </ReportingCategory>
+  <ReportingCategory id="QUARTERLY_REPORTING">
+    <Name xml:lang="en">Quarterly reporting</Name>
+    <Dataflow><Ref agencyID="EBA" id="DF_FINREP_F_01.01" version="1.0"/></Dataflow>
+  </ReportingCategory>
+</ReportingTaxonomy>
+```
+
+The Dataflow `DF_FINREP_F_01.01` appears under both ReportingCategories — preserving the multi-grouping intent of the DPM TableAssociation.
+
+## 2.9 CategorySchemeMap — SDMX feature without DPM equivalent
+
+### 2.9.1 The gap
+
+SDMX **CategorySchemeMap** maps Categories between two CategorySchemes. It is rarely needed for round-trip; typical use is Framework rebranding or merging:
+
+```xml
+<CategorySchemeMap agencyID="EBA" id="MAP_OLD_TO_NEW" version="1.0">
+  <Source><Ref agencyID="EBA" id="OLD_DOMAINS" version="1.0"/></Source>
+  <Target><Ref agencyID="EBA" id="EBA_REPORTING" version="1.0"/></Target>
+  <CategoryMap>
+    <Source>FIN_REP</Source>
+    <Target>FINREP</Target>
+  </CategoryMap>
+</CategorySchemeMap>
+```
+
+DPM has no direct counterpart. The closest expression is the generic `ConceptRelation` artefact (4.1.4 of the DPM metamodel), which records relationships between Concepts but is not specialised for cross-scheme migration. The mapping is therefore a *workaround* rather than a structural correspondence — which is why CategorySchemeMap is recorded here as a gap rather than alongside the real classification correspondences in [§03](../03_other_artifacts/03_detailed_mapping_rules.md).
+
+### 2.9.2 DPM workaround via ConceptRelation
+
+In DPM, the equivalent intent is expressed by:
+
+- **Framework merge** → a `version_new` ConceptRelation linking the two Frameworks, *or* a complete migration where Modules from the old Framework are reassigned (`Module.FrameworkID`) to the new one.
+- **Module rename** → a `version_fix` ConceptRelation linking the renamed Modules, plus the new `Module.Code`.
+
+ConceptRelation is generic — the rename intent is not encoded in the artefact name; it lives in the relation `type` and in any annotation/description attached to the relation. This is workable but loses the explicit "category-to-category mapping" framing that SDMX provides.
+
+### 2.9.3 Recommendations
+
+| Direction       | Recipe                                                                                                                                                                   |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | Apply the CategoryMap entries as a renaming/migration step on the matching Modules. If both Frameworks already exist in the DPM model, record ConceptRelations of type `version_new` between matching Module pairs. The CategorySchemeMap itself is not materialised. |
+| DPM → SDMX      | Emit a CategorySchemeMap when two Frameworks coexist in the export and there is a documented correspondence (via ConceptRelation or naming convention). The map is optional — if not emitted, downstream consumers can recover the relationship from the Module-rename trail in the source. |
+
+> **Note — proposal**: a future refinement could be a dedicated DPM entity for cross-Framework migration, or an extension of ConceptRelation with a `category_scheme_map` discriminator. This is not part of the current bidirectional mapping; recorded here for future consideration.
+
+## 2.10 Summary of mitigation strategies
 
 | Gap area | Primary mitigation | Secondary mitigation |
 |----------|-------------------|---------------------|
@@ -176,3 +378,7 @@ The DPM compound item pattern provides a concrete, well-specified use case that 
 | Cross-codelist hierarchies | SuperCategory + flattening | Accept partial loss |
 | Attribute attachment | Convention-based mapping | Flatten to observation |
 | Rendering | External specification | Accept loss for SDMX |
+| ProvisionAgreement / Datasource (§2.6) | External to DPM | Annotations (`DPM_PROVISION_AGREEMENT`) |
+| Process / ProcessStep (§2.7) | External to DPM | Annotations (`DPM_PROCESS`) |
+| TableGroup / TableAssociation (§2.8) | ReportingCategory image inside ReportingTaxonomy | Annotations (`DPM_TABLEGROUP`); proposal: dedicated CategoryScheme per Framework |
+| CategorySchemeMap (§2.9) | ConceptRelation (`version_new` / `version_fix`) | Documented naming convention on Module `Code` |
