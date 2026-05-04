@@ -8,6 +8,11 @@ The table below summarises the main correspondences at data definition level. It
 
 | SDMX data definition artefact | DPM data definition artefact | Mapping notes |
 | --- | --- | --- |
+| ReportingTaxonomy | Module | The SDMX maintainable identity of the deployable bundle maps to the DPM Module. Module is **mandatory** in DPM — every Table must belong to a Module — so this row is always materialised, even when the source SDMX repository does not contain a ReportingTaxonomy. See [§3.4](03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion). |
+| ReportingTaxonomy version | ModuleVersion | The versioned bundle reporters submit against. Carries `validFrom`/`validTo` ↔ `FromReferenceDate`/`ToReferenceDate`. |
+| ReportingCategory | TableGroup (optional) | Navigation grouping inside the bundle. ReportingCategory.dataflows ↔ ModuleVersionComposition rows. |
+| ReportingTaxonomyMap | ModuleVersion ↔ ModuleVersion correspondence | Cross-version map; expressed in DPM through shared Module identity. |
+| Categorisation | (implicit in Module membership) | SDMX explicitly links Dataflows to Categories; DPM membership is implicit via ModuleVersion contents. Lossy round-trip — see [§3.4.4](03_detailed_mapping_rules.md#344-categorisation-implicit-in-module-membership). |
 | Dataflow + DSD (convention) | Table | One SDMX Dataflow plus its DSD can correspond to one DPM Table. This is a practical convention, not a strict equivalence. |
 | Dimension | KeyVariable | SDMX Dimensions identify observations; DPM KeyVariables serve the same role. For enumerated Properties the allowed values come from the Category; for non-enumerated Properties the Property's DataType (e.g. Date, String) constrains the values directly. |
 | TimeDimension | KeyVariable with time-related Property | SDMX has a dedicated TimeDimension type; DPM uses a regular KeyVariable referencing a time-related Property (e.g. `REFERENCE_PERIOD`) whose DataType carries the time semantics. |
@@ -30,6 +35,8 @@ The diagram below shows the main data definition artefacts on each side and thei
 ```mermaid
 flowchart LR
   subgraph SDMX
+    sRT["ReportingTaxonomy"]
+    sRC["ReportingCategory"]
     sDSD["DataStructureDefinition"]
     sDataflow["Dataflow"]
     sDim["Dimension"]
@@ -38,17 +45,28 @@ flowchart LR
     sAttr["DataAttribute"]
     sGroup["GroupDimensionDescriptor"]
     sConstraint["DataConstraint"]
+    sRT --> sRC
+    sRC --> sDataflow
   end
 
   subgraph DPM
+    dModule["Module"]
+    dMV["ModuleVersion"]
+    dTG["TableGroup"]
     dTable["Table / TableVersion"]
     dKeyVar["KeyVariable"]
     dFactVar["FactVariable"]
     dAttrVar["AttributeVariable"]
     dSubCat["SubCategory (constraints)"]
     dFiling["FilingIndicatorVariable"]
+    dModule --> dMV
+    dMV --> dTG
+    dMV --> dTable
   end
 
+  sRT --- dModule
+  sRT --- dMV
+  sRC --- dTG
   sDSD -.- dTable
   sDataflow -.- dTable
   sDim --- dKeyVar
@@ -83,8 +101,8 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 
 ### 2.3.2 DPM-only (at data definition level)
 
-- **Module / ModuleVersion**
-  DPM Modules group related Tables, Variables, and Operations into a named, versioned reporting package (e.g. a regulation annex or statistical domain). Module itself has no direct SDMX equivalent. ModuleVersion — the deployable version that reporters work against — has a partial correspondence to SDMX **ReportingTaxonomy**: both are the unit that defines what reporters must submit for a given reporting context. The difference is that a ReportingTaxonomy is a navigation wrapper over existing Dataflows, whereas a ModuleVersion contains the structural definitions themselves. See the other-artefacts mapping chapter for the ReportingTaxonomy row.
+- **Module / ModuleVersion** *(now has a primary counterpart)*
+  DPM Modules group related Tables, Variables, and Operations into a named, versioned reporting package. The primary SDMX counterpart is **ReportingTaxonomy / ReportingCategory** — the deployable unit reporters submit against. The mapping rules live in [§3.4](03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion). The pairing is partial because a ReportingTaxonomy is a navigation wrapper over existing Dataflows, whereas a ModuleVersion contains the structural definitions themselves through `ModuleVersionComposition`. ReportingTaxonomy is currently underused by SDMX implementations (not yet supported by FMR) but the work-stream's recommendation is that it be adopted as a first-class artefact.
 
 - **Table / TableVersion / Header / Cell**
   DPM has a complete rendering layer defining how data collection forms are visually structured. SDMX intentionally excludes presentation concerns from the information model; table layouts are left to implementations or external specifications.

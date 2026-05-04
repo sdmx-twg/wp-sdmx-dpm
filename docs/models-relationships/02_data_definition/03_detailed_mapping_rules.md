@@ -1489,3 +1489,315 @@ To preserve the exact set of valid combinations, use a DataKeySet:
 - Use **CubeRegion** (Option A) when the set of Variables represents the full Cartesian product of constrained dimension values, or when per-dimension restrictions are sufficient.
 - Use **DataKeySet** (Option B) when the set of Variables represents a sparse subset of the Cartesian product and combination-level precision is required.
 - In practice, for non-flat tables like F_04.04.1, the DataKeySet is the more faithful representation since the 180 cells represent specific combinations, not the full cross-product. However, the CubeRegion is more compact and widely supported.
+
+## 3.4 Reporting bundle: ReportingTaxonomy / ReportingCategory ↔ ModuleVersion
+
+Sections 3.1–3.3 define how a single SDMX Dataflow + DSD pair maps to a single DPM Table. In real reporting, several Tables are typically bundled together for a regulatory cycle. DPM uses **Module / ModuleVersion** for this; SDMX uses **ReportingTaxonomy / ReportingCategory**.
+
+In DPM the Module/ModuleVersion split is **mandatory**: every Table belongs to exactly one ModuleVersion via `ModuleVersionComposition`. There is no DPM Table outside a Module. Mapping in either direction therefore must produce (or consume) a Module + ModuleVersion alongside the Tables themselves.
+
+In SDMX the ReportingTaxonomy is the corresponding artefact, but its use is currently uneven across implementations (it is not yet supported by FMR). The mapping rules below treat the ReportingTaxonomy as the canonical SDMX side of the bundle even when the source repository does not materialise one — a default bundle is reconstructed where needed.
+
+> **Why this section sits in §02**: The Module/ModuleVersion split is core to the DPM data-definition layer, not an "other artefact". A DPM Table cannot exist without a ModuleVersion to carry it; an SDMX-to-DPM conversion that produces only a Table is incomplete. This is the main consequence of the meeting decision to treat Module as a first-class data-definition concern. The Framework concept (which has no SDMX equivalent) is documented separately in [§05 Gaps](../05_gaps/02_specific_gap_analysis.md).
+
+```mermaid
+flowchart LR
+    subgraph SDMX
+        RT["ReportingTaxonomy"]
+        RC1["ReportingCategory"]
+        RC2["ReportingCategory (child)"]
+        DF["Dataflow"]
+        RT -->|items| RC1
+        RC1 -->|parent| RC2
+        RC1 -->|references| DF
+    end
+    subgraph DPM
+        M["Module"]
+        MV["ModuleVersion"]
+        MVC["ModuleVersionComposition"]
+        TV["TableVersion"]
+        TG["TableGroup (optional)"]
+        M --> MV
+        MV --> MVC
+        MVC --> TV
+        TG -.->|optional grouping| TV
+    end
+    RT ---|"maps to (maintainable identity)"| M
+    RT ---|"maps to (specific version)"| MV
+    RC1 ---|"image"| TG
+```
+
+**Example ReportingTaxonomy**
+
+```xml
+<ReportingTaxonomy agencyID="EBA" id="FINREP_3.2" version="1.0" isPartial="false">
+  <Name xml:lang="en">FINREP reporting taxonomy 3.2</Name>
+  <ReportingCategory id="BALANCE_SHEET">
+    <Name xml:lang="en">Balance sheet</Name>
+    <Dataflow>
+      <Ref agencyID="EBA" id="DF_FINREP_F_01.01" version="1.0"/>
+    </Dataflow>
+    <Dataflow>
+      <Ref agencyID="EBA" id="DF_FINREP_F_01.02" version="1.0"/>
+    </Dataflow>
+  </ReportingCategory>
+  <ReportingCategory id="INCOME_STATEMENT">
+    <Name xml:lang="en">Income statement</Name>
+    <Dataflow>
+      <Ref agencyID="EBA" id="DF_FINREP_F_02.00" version="1.0"/>
+    </Dataflow>
+  </ReportingCategory>
+</ReportingTaxonomy>
+```
+
+**Example Module + ModuleVersion**
+
+*Module*
+
+| ModuleID    | FrameworkID  | Code      | Name                  |
+| ----------- | ------------ | --------- | --------------------- |
+| 100200001   | 100100001    | FINREP    | Financial reporting   |
+
+*ModuleVersion*
+
+| ModuleVID   | ModuleID    | Code   | Name           | FromReferenceDate | ToReferenceDate | StartReleaseID | EndReleaseID |
+| ----------- | ----------- | ------ | -------------- | ----------------- | --------------- | -------------- | ------------ |
+| 100300001   | 100200001   | 3.2    | FINREP 3.2     | 2024-01-01        | NULL            | 5              | NULL         |
+
+*ModuleVersionComposition* (linkage to TableVersions)
+
+| ModuleVID   | TableVID   | TableGroupID |
+| ----------- | ---------- | ------------ |
+| 100300001   | 6101       | 200          |
+| 100300001   | 6102       | 200          |
+| 100300001   | 6200       | 201          |
+
+*TableGroup* (DPM-only — see [§05 §2.8](../05_gaps/02_specific_gap_analysis.md#28-tablegroup-tableassociation-dpm-feature-without-sdmx-equivalent))
+
+| TableGroupID | Code             | Name              | StartReleaseID |
+| ------------ | ---------------- | ----------------- | -------------- |
+| 200          | BALANCE_SHEET    | Balance sheet     | 5              |
+| 201          | INCOME_STATEMENT | Income statement  | 5              |
+
+### 3.4.1 The deployable-unit alignment
+
+The reasoning behind the ReportingTaxonomy ↔ Module/ModuleVersion pairing:
+
+1. **Versioning unit**. SDMX ReportingTaxonomy carries the version of the *reporting cycle* (e.g. FINREP 3.2). DPM ModuleVersion carries the version of the *reporting package*. Both bump together when a regulator publishes a new reporting cycle. DSDs and Dataflows can change independently, just as TableVersions can — they are not the deployable unit.
+2. **Membership**. Both ReportingCategory and ModuleVersion list the structural artefacts in scope (`ReportingCategory.dataflows`; `ModuleVersionComposition.tableVID`). Neither is the structural definition itself.
+3. **Reference date**. SDMX uses `validFrom` / `validTo` on the MaintainableArtefact (the ReportingTaxonomy). DPM uses `FromReferenceDate` / `ToReferenceDate` directly on ModuleVersion (4.2.2). The pair aligns at the same level.
+4. **Reporter contract**. Reporters submit against the ReportingTaxonomy version (or, transitively, against the Dataflows it lists). They submit DPM data against a specific ModuleVersion. The "what is required this cycle" question lands at this level.
+
+### 3.4.2 Mapping cardinality
+
+```mermaid
+classDiagram
+    direction LR
+    SDMX_REPORTINGTAXONOMY "1" -- "1" DPM_MODULEVERSION
+    SDMX_REPORTINGCATEGORY "1" -- "0..1" DPM_TABLEGROUP
+```
+
+- **From SDMX to DPM**: every Dataflow + DSD conversion must place its resulting Table inside a ModuleVersion. The default rule is **one Module per DSD**: each Dataflow produces a Module containing one Table. Multiple Dataflows can be reused under a single Module when they share reporting context (same reporting agent, same reference date, conceptual coherence). The Anacredit precedent — where T1M, T2M, T2Q are bundled in one regulatory cycle — is the canonical example of multi-table Modules under SDMX.
+  - When the source SDMX repository contains a ReportingTaxonomy, materialise it directly: one ReportingTaxonomy → one ModuleVersion; each ReportingCategory → one TableGroup; each `Dataflow` reference → one ModuleVersionComposition row pointing to the TableVersion that maps to that Dataflow.
+  - When the source SDMX repository does **not** contain a ReportingTaxonomy (the common case today since FMR has not yet adopted ReportingTaxonomy), apply the default rule and synthesise a Module per Dataflow, with ModuleVersion `Code` derived from the Dataflow `version`.
+- **From DPM to SDMX**: every ModuleVersion produces a ReportingTaxonomy. TableGroups (if present and used for navigation) map to ReportingCategories; each ReportingCategory references the Dataflows that map to the TableGroup's TableVersions. ModuleVersions whose TableVersion list is not partitioned by TableGroup emit a single (default) ReportingCategory containing all Dataflows.
+  - Because FMR does not yet support ReportingTaxonomy, an interoperability convention may also emit a CategoryScheme + Categorisations as a fallback navigation tree; see [§05 Gaps](../05_gaps/02_specific_gap_analysis.md) for that workaround and the open recommendation that FMR adopt ReportingTaxonomy as a first-class artefact.
+
+#### One-Module-per-DSD vs multi-table Modules — when to bundle
+
+| Trigger to bundle multiple Tables in one Module | Example |
+|-----|---------|
+| Same regulatory cycle, same reference date, coherent business domain | Anacredit T1M + T2M + T2Q under one credit-reporting Module |
+| Cross-table dependencies (operations reference cells across tables; tables share a CompoundKey) | FINREP balance-sheet + income-statement tables that share Variables |
+| Same reporting agent and submission window with no business reason to separate | A national survey released as a set of forms in one quarterly cycle |
+
+| Trigger to keep one Module per Table (default) | Example |
+|-----|---------|
+| Independent versioning lifecycles for the source Dataflows | Two Dataflows that are versioned independently in their source SDMX registry |
+| No shared reporting agent, no business coupling | Two unrelated statistical Dataflows that happen to live under the same Framework |
+| Mapping pipeline operates one Dataflow at a time without bundle metadata | Streaming SDMX → DPM ingestion where bundle context is unavailable |
+
+The default is **one Module per DSD**. Bundling is opt-in and requires a deliberate decision based on the triggers above.
+
+### 3.4.3 Attributes equivalence
+
+#### 3.4.3.1 SDMX ReportingTaxonomy attributes
+- maintainable artefact attributes
+    - `id`, `agencyID`, `version`
+    - `validFrom`, `validTo`
+- `Name` (multilingual)
+- `Description` (multilingual)
+- `isPartial`
+
+#### 3.4.3.2 SDMX ReportingCategory attributes
+- itemScheme `ReportingCategory` attributes
+    - `id`, `urn`
+- `Name` (multilingual)
+- `Description` (multilingual)
+- `parent` ReportingCategory
+- references to Dataflows / Metadataflows
+
+#### 3.4.3.3 DPM Module attributes
+- `ModuleID` (system-generated PK)
+- `FrameworkID` (FK)
+- `Code`
+- `Name`
+- `Description`
+- inherits Owner from Framework (4.1.2)
+
+#### 3.4.3.4 DPM ModuleVersion attributes
+- `ModuleVID` (system-generated PK)
+- `ModuleID` (FK to Module)
+- `Code` (the version code)
+- `Name`
+- `Description`
+- `FromReferenceDate`, `ToReferenceDate` (4.2.2) — see [§04 §1.2](../04_versioning_and_extensibility/01_versioning_overview.md#12-dpm-versioning-model); ModuleVersion is the only DPM artefact with reference-date validity
+- `StartReleaseID`, `EndReleaseID` (4.2.1)
+- inherits Owner from Module → Framework
+
+#### 3.4.3.5 DPM TableGroup attributes
+- `TableGroupID` (system-generated PK)
+- `Code`
+- `Name`
+- `Description`
+- `StartReleaseID` (informational only — see [§04 Versioning](../04_versioning_and_extensibility/01_versioning_overview.md))
+- nested via `TableGroupComposition`
+
+#### 3.4.3.6 Mapping details
+
+| SDMX                                       | DPM                                            | Notes                                                                                                            |
+|--------------------------------------------|------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| ReportingTaxonomy.`id`                     | Module.`Code` + ModuleVersion.`Code`           | The ReportingTaxonomy `id` typically encodes both, e.g. `FINREP_3.2` → Module `FINREP`, ModuleVersion `3.2`.    |
+| ReportingTaxonomy.`agencyID`               | Module.Owner (via Framework)                   | The ReportingTaxonomy is owned by the Agency that maps to the Framework's Owner; see [§04 §3.1](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#31-agency-organisation-role-owner). |
+| ReportingTaxonomy.`version`                | Release identification                         | The version corresponds to the Release pin (see [§04 §3.4](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#34-release-version-validity)), not directly to ModuleVersion.`Code`. |
+| ReportingTaxonomy.`validFrom`              | ModuleVersion.`FromReferenceDate`              | Application date.                                                                                                |
+| ReportingTaxonomy.`validTo`                | ModuleVersion.`ToReferenceDate`                |                                                                                                                  |
+| ReportingTaxonomy.`Name`                   | ModuleVersion.`Name`                           | Multilingual.                                                                                                    |
+| ReportingTaxonomy.`Description`            | ModuleVersion.`Description`                    | Multilingual.                                                                                                    |
+| ReportingTaxonomy.`isPartial`              | — (no equivalent)                              |                                                                                                                  |
+| ReportingCategory.`id`                     | TableGroup.`Code`                              | When ReportingCategory is materialised as TableGroup. TableGroup itself has no SDMX equivalent at the artefact level — see [§05 §2.8](../05_gaps/02_specific_gap_analysis.md#28-tablegroup-tableassociation-dpm-feature-without-sdmx-equivalent). |
+| ReportingCategory.`Name`                   | TableGroup.`Name`                              |                                                                                                                  |
+| ReportingCategory.`parent`                 | TableGroupComposition (parent–child)           | TableGroup nesting captures the hierarchy.                                                                       |
+| ReportingCategory.`Dataflow` (references)  | ModuleVersionComposition rows                  | Each referenced Dataflow becomes a ModuleVersionComposition row pointing to the TableVersion that maps to that Dataflow (§3.1). |
+| — (not applicable)                         | ModuleVersion.`StartReleaseID` / `EndReleaseID`| Bound by the Release pin, not by SDMX. See [§04 §3.4](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#34-release-version-validity). |
+
+> **Note — Dataflows live in the Tables layer**: ReportingCategory.dataflows references *existing* SDMX Dataflows. Those Dataflows must be mapped to DPM Tables (per §3.1) **before** the ModuleVersionComposition rows can be emitted. The taxonomy mapping is therefore a *post-pass* over the per-Table mapping.
+
+> **Note — partial taxonomies**: If a ReportingTaxonomy lists Dataflows that are not in the DPM model, the mapping must either (a) skip those Dataflows with a warning, or (b) trigger the Table mapping for each missing Dataflow first. Implementations should choose (b) when the source repository is authoritative for the structure.
+
+### 3.4.4 Categorisation — implicit in Module membership
+
+SDMX **Categorisation** is a maintainable artefact that links an IdentifiableArtefact (typically a Dataflow) to a Category, e.g.:
+
+```xml
+<Categorisation agencyID="EBA" id="CAT_DF_FINREP_F0101" version="1.0">
+  <Source>
+    <Ref agencyID="EBA" id="DF_FINREP_F_01.01" version="1.0" class="Dataflow"/>
+  </Source>
+  <Target>
+    <Ref agencyID="EBA" id="FINREP" version="1.0" class="Category" maintainableParentID="EBA_REPORTING"/>
+  </Target>
+</Categorisation>
+```
+
+In DPM there is no `Categorisation` artefact. The same statement is encoded by the membership of the corresponding TableVersion in a Module's ModuleVersion (via `ModuleVersionComposition`).
+
+| Direction       | Rule                                                                                                                                                                                                                                                  |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | For each Categorisation linking a Dataflow to a Category: locate the DPM Table that maps to that Dataflow (per §3.1) and add it (its TableVersion) to the ModuleVersion of the Module that maps to that Category (the Category↔Module workaround mapping is documented in [§05 Gaps](../05_gaps/02_specific_gap_analysis.md)). The Categorisation itself is not materialised. |
+| DPM → SDMX      | For each TableVersion that appears in a ModuleVersion's composition: emit a Categorisation linking the corresponding Dataflow to the Category that maps to the Module. Categorisation `id` is generated (e.g. `CAT_<dataflow-id>_<category-id>`).     |
+
+> **Lossy round-trip**: SDMX Categorisations are first-class, versioned artefacts with their own `id`, `agencyID`, `version`. None of these survive into DPM. On the reverse path, the regenerated Categorisation receives a new identity. If round-trip identity matters, preserve the original Categorisation `id` and `version` via a `DPM_CATEGORISATION_ID` annotation on the Categorisation (see the marker registry in [§04 §3.6.2](../04_versioning_and_extensibility/03_detailed_mapping_rules.md#362-recognised-dpm-markers-tier-a-canonical-registry)). See also [§05 Gaps](../05_gaps/01_gaps_overview.md) for the canonical statement of this loss.
+
+> **Multiple Categorisations of one artefact**: SDMX allows a single Dataflow to be Categorised under multiple Categories (e.g. by subject *and* by frequency). DPM allows a single Table to belong to multiple Modules — but only as separate TableVersion entries in each Module's ModuleVersion. The 1:N relationship is preserved; the *reasoning* (multi-criteria classification vs multi-Module reporting) is not.
+
+### 3.4.5 Example Mapping SDMX ==> DPM
+
+Starting from the ReportingTaxonomy in §3.4 (introductory example) and assuming Dataflows `DF_FINREP_F_01.01`, `DF_FINREP_F_01.02`, and `DF_FINREP_F_02.00` have already been mapped to TableVersions `6101`, `6102`, `6200` (per §3.1):
+
+*Module* (created if not yet present)
+
+| ModuleID    | FrameworkID  | Code      | Name                  |
+| ----------- | ------------ | --------- | --------------------- |
+| 100200001   | 100100001    | FINREP    | Financial reporting   |
+
+*ModuleVersion*
+
+| ModuleVID   | ModuleID    | Code   | Name                                | FromReferenceDate | ToReferenceDate | StartReleaseID | EndReleaseID |
+| ----------- | ----------- | ------ | ----------------------------------- | ----------------- | --------------- | -------------- | ------------ |
+| 100300001   | 100200001   | 3.2    | FINREP reporting taxonomy 3.2       | 2024-01-01        | NULL            | 5              | NULL         |
+
+- `ModuleID = 100200001` — the FINREP Module (created on the first SDMX→DPM run; reused on subsequent runs).
+- `Code = 3.2` — derived from the ReportingTaxonomy `id` suffix.
+- `FromReferenceDate = 2024-01-01` ← `validFrom`.
+
+*TableGroups* (one per ReportingCategory)
+
+| TableGroupID | Code             | Name              | StartReleaseID |
+| ------------ | ---------------- | ----------------- | -------------- |
+| 200          | BALANCE_SHEET    | Balance sheet     | 5              |
+| 201          | INCOME_STATEMENT | Income statement  | 5              |
+
+*ModuleVersionComposition*
+
+| ModuleVID   | TableVID   | TableGroupID |
+| ----------- | ---------- | ------------ |
+| 100300001   | 6101       | 200          |
+| 100300001   | 6102       | 200          |
+| 100300001   | 6200       | 201          |
+
+### 3.4.6 Example Mapping DPM ==> SDMX
+
+Starting from the Module + ModuleVersion + TableGroup tables above, the mapping produces:
+
+```xml
+<ReportingTaxonomy agencyID="EBA" id="FINREP_3.2" version="1.0" isPartial="false"
+                   validFrom="2024-01-01">
+  <Name xml:lang="en">FINREP reporting taxonomy 3.2</Name>
+  <ReportingCategory id="BALANCE_SHEET">
+    <Name xml:lang="en">Balance sheet</Name>
+    <Dataflow><Ref agencyID="EBA" id="DF_FINREP_F_01.01" version="1.0"/></Dataflow>
+    <Dataflow><Ref agencyID="EBA" id="DF_FINREP_F_01.02" version="1.0"/></Dataflow>
+  </ReportingCategory>
+  <ReportingCategory id="INCOME_STATEMENT">
+    <Name xml:lang="en">Income statement</Name>
+    <Dataflow><Ref agencyID="EBA" id="DF_FINREP_F_02.00" version="1.0"/></Dataflow>
+  </ReportingCategory>
+</ReportingTaxonomy>
+```
+
+- The ReportingTaxonomy `id` combines `Module.Code` and `ModuleVersion.Code`: `FINREP_3.2`.
+- ReportingCategories are emitted in `TableGroup.Code` order, each containing the Dataflows that map to the TableVersions in the group.
+- If the ModuleVersionComposition has TableVersion rows with no `TableGroupID`, the mapping emits a single default ReportingCategory (e.g. `id="DEFAULT"`) containing them — or, alternatively, lists those Dataflows directly under the ReportingTaxonomy if the SDMX target supports it.
+
+### 3.4.7 ReportingTaxonomyMap
+
+SDMX **ReportingTaxonomyMap** maps a source ReportingTaxonomy onto a target ReportingTaxonomy, e.g. across versions of the same reporting cycle (`FINREP_3.1` → `FINREP_3.2`). It contains **ReportingCategoryMap** items that pair source ReportingCategories with target ReportingCategories.
+
+```xml
+<ReportingTaxonomyMap agencyID="EBA" id="MAP_FINREP_3_1_TO_3_2" version="1.0">
+  <Source><Ref agencyID="EBA" id="FINREP_3.1" version="1.0"/></Source>
+  <Target><Ref agencyID="EBA" id="FINREP_3.2" version="1.0"/></Target>
+  <ReportingCategoryMap>
+    <Source>BALANCE_SHEET</Source>
+    <Target>BALANCE_SHEET</Target>
+  </ReportingCategoryMap>
+  <ReportingCategoryMap>
+    <Source>INCOME</Source>
+    <Target>INCOME_STATEMENT</Target>
+  </ReportingCategoryMap>
+</ReportingTaxonomyMap>
+```
+
+In DPM, the equivalent intent is expressed by:
+
+- The two ModuleVersions (`100300000` for FINREP 3.1, `100300001` for FINREP 3.2) being versions of the **same** Module.
+- The TableGroups (`BALANCE_SHEET`, `INCOME_STATEMENT`) used in both ModuleVersions retain the same `Code` when they are the same logical group; renames are recorded by the differing `Code` between ModuleVersions.
+- ConceptRelation (4.1.4) with type `version_new`/`version_fix` may explicitly link ModuleVersions and TableGroups across versions when needed.
+
+| Direction       | Recipe                                                                                                                                                           |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SDMX → DPM      | Materialise the source and target ReportingTaxonomies as two ModuleVersions of the same Module (per §3.4.5). Each ReportingCategoryMap pair becomes a TableGroup correspondence: same `Code` if unchanged, ConceptRelation if renamed. |
+| DPM → SDMX      | Emit a ReportingTaxonomyMap whenever two consecutive ModuleVersions of the same Module are both being exported. ReportingCategoryMaps reflect the TableGroup mapping (identity by `Code` plus any explicit ConceptRelations). |
+
+> **Cross-reference to §04**: the version-bump semantics (when does a ModuleVersion change require a new ReportingTaxonomy version vs a backwards-compatible update) are covered in [§04 Versioning](../04_versioning_and_extensibility/01_versioning_overview.md).

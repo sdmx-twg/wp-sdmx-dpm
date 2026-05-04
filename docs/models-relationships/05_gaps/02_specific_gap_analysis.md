@@ -239,7 +239,7 @@ Neither has a direct SDMX counterpart at the same conceptual level. SDMX has no 
 
 ### 2.8.2 Closest SDMX analogue: ReportingCategory
 
-The closest SDMX analogue is a **ReportingCategory** subtree inside a ReportingTaxonomy ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)). ReportingCategories may be nested and reference Dataflows. They are not, however, the same artefact:
+The closest SDMX analogue is a **ReportingCategory** subtree inside a ReportingTaxonomy ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)). ReportingCategories may be nested and reference Dataflows. They are not, however, the same artefact:
 
 - ReportingCategories are scoped to one ReportingTaxonomy version. DPM TableGroups are independent Concepts that exist *outside* any single ModuleVersion.
 - The same DPM TableGroup can become *different* ReportingCategory items in different ReportingTaxonomies (one per ModuleVersion that uses the group). The TableGroup's identity does not survive into SDMX.
@@ -273,7 +273,7 @@ flowchart LR
 
 | Direction       | Recipe                                                                                                                                                                  |
 |-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SDMX → DPM      | If the source provides ReportingCategories with hierarchy, the ReportingTaxonomy mapping ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)) materialises a TableGroup tree. Otherwise no TableGroups are created. |
+| SDMX → DPM      | If the source provides ReportingCategories with hierarchy, the ReportingTaxonomy mapping ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)) materialises a TableGroup tree. Otherwise no TableGroups are created. |
 | DPM → SDMX      | TableGroups become ReportingCategories *only inside the ReportingTaxonomy* generated for the matching ModuleVersion. Outside that scope, TableGroups are not emitted.   |
 
 | Asymmetry                                            | Recommendation                                                                                                                                                  |
@@ -312,7 +312,7 @@ Starting from:
 
 (Where `200 = BALANCE_SHEET` and `250 = QUARTERLY_REPORTING` are different navigation views of the same Table.)
 
-The mapping produces a ReportingCategory under the ReportingTaxonomy generated for the matching ModuleVersion ([§03 §3.2](../03_other_artifacts/03_detailed_mapping_rules.md#32-reportingtaxonomy-reportingcategory-moduleversion)):
+The mapping produces a ReportingCategory under the ReportingTaxonomy generated for the matching ModuleVersion ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)):
 
 ```xml
 <ReportingTaxonomy …>
