@@ -466,7 +466,7 @@ Attributes are identified separately via AttributeVariables (`IsAttribute = TRUE
 
 Flat tables *are* organised as a collection of typed components, mirroring the DSD directly. There are no Contexts: each Header declares its role through flags (`IsKey`, `IsAttribute`) and references a Property via `PropertyID`:
 
-> *Conceptual diagram — versioning (Table/TableVersion, Header/HeaderVersion) is omitted for simplicity.*
+> *Conceptual diagram — versioning (Table/TableVersion, Header/HeaderVersion) is omitted for simplicity. Cells and TableVersionCell are shown to make the rendering layer explicit; see §3.2.6 for the full picture.*
 
 ```mermaid
 classDiagram
@@ -479,6 +479,13 @@ classDiagram
       IsAttribute
       PropertyID → Property
       SubCategoryVID
+    }
+    class Cell {
+      ColumnID → Header
+    }
+    class TableVersionCell {
+      VariableVID → VariableVersion
+      IsNullable
     }
     class Variable {
       Code
@@ -498,11 +505,27 @@ classDiagram
     Variable "*" --> "1" Property
     Variable "*" --> "0..1" SubCategory
     AttributeVariable "*" --> "1" Variable : subject
+    Header "1" --> "0..1" Cell : non-key Headers only
+    Cell "1" --> "1" TableVersionCell
+    TableVersionCell --> Variable : VariableVID
 ```
 
 Each Header references a **Property** (semantic meaning) and optionally restricts values via a **SubCategory** (`SubCategoryVID`); Variables inherit their semantic meaning from the same Property. The correspondence with DSD components is 1:1 — see §3.2.3.
 
+In flat tables the **Cell layer is structurally redundant**: each non-key Header produces exactly one Cell (rows are not used; the orientation is column-only), and the Cell's link to a VariableVersion via `TableVersionCell.VariableVID` mirrors information already carried by the Header → Variable association. Cells are still required by the current DPM 2.0 model and must be created during SDMX → DPM conversion (see §3.2.6, step 3); the redundancy is a known asymmetry between flat-table structure and DPM rendering.
+
 > **Dual purpose of Tables.** DPM Tables are not purely a rendering artefact — they define the reporting obligation (which Variables reporters must submit). For flat tables the structural and rendering layers coincide almost perfectly: each Header IS a structural component, and the table grid directly reflects the data structure. This is why flat tables map so naturally to SDMX DSDs. See §3.2.6 for a step-by-step SDMX→DPM conversion including a rendered-form illustration.
+
+!!! note "Proposal to the DPM Alliance — eliminate Cells in flat tables"
+    The Cell layer in flat tables is structurally derivable from the Header layer: one non-key Header → one Cell, in a column-only orientation. This work-stream proposes that the DPM Alliance consider evolving the metamodel so that **flat tables (`IsFlat = TRUE`) do not require a Cell layer**, with the Header → VariableVersion association being sufficient.
+
+    **Why this matters.** The redundant Cell layer makes flat tables look more complex than they are and adds friction to bidirectional SDMX ↔ DPM mapping. Removing it would simplify the conversion and reduce storage with no information loss for flat-only use cases.
+
+    **Pre-requisite.** Before the proposal can be adopted, the DPM Alliance must confirm that no Cell-level attribute is required for flat tables that cannot be carried at the Header (or HeaderVersion) level. The `IsNullable` flag is the main candidate to relocate.
+
+    **Scope.** This proposal applies *only* to `IsFlat = TRUE` tables. Non-flat tables retain Cells as a first-class rendering artefact, as documented in §3.2.2.1.
+
+    Tracked at: *(GitHub issue link to be added once filed.)*
 
 ### 3.2.3 Component type correspondence
 
