@@ -219,3 +219,110 @@ Convention: Lowercase prefix + domain name
 4. **Change documentation**: Publish change logs describing what changed between versions/releases.
 
 5. **Validation tolerance**: Consider validating against both old and new versions during transition periods.
+
+## 2.7 Ownership rules
+
+Ownership governs **who can extend what** in each model. The Organisation/Agency mapping that grounds ownership lives in [§3.1 of the detailed mapping rules](03_detailed_mapping_rules.md#31-agency-organisation-role-owner). This section documents the extension boundaries that derive from ownership.
+
+### 2.7.1 SDMX ownership rules
+
+- **Codelist extension across agencies.** An organisation may not add Codes directly to a Codelist owned by another agency. The mechanism is **CodelistExtension** (§2.1) — a separate maintainable artefact owned by the extending agency that pulls in codes from the base Codelist (with prefix handling to avoid collisions) and adds new codes under its own ownership.
+- **Cross-ownership references.** A DSD owned by agency A may reference a Codelist owned by agency B without ownership transfer; the referencing artefact does not modify the referenced artefact.
+- **Versioning by owner.** Each maintainable artefact's version is owned by its agency. Two agencies cannot publish overlapping versions of the same artefact identity (`agencyID:id`).
+- **CategoryScheme.** Codes (Items) within a Category cannot have a different owner from the CategoryScheme as far as SDMX 3.x is concerned; the closest mechanism for shared classification is to model the Items in separate Codelists owned by their respective agencies and unite them via Categorisations or Hierarchies.
+
+### 2.7.2 DPM ownership rules — confirmed and pending
+
+The following rules are derived from current DPM 2.0 practice. Items marked **(pending DPM Alliance)** are not yet documented in the official metamodel and need confirmation; this work-stream raises them as questions to the Alliance.
+
+| Rule | Status | Source |
+|---|---|---|
+| An organisation **may not** add Items to a Category owned by another organisation directly. | Confirmed | DPM 2.0 metamodel ownership constraints |
+| An organisation **may not** add Tables to a Module owned by another organisation. | Confirmed (meeting 2026-05-04) | Bank of Spain example: cannot add a Table to an EBA Module |
+| An organisation **may** create its own Module that references Tables owned by another organisation. | **Pending DPM Alliance** | Discussed but not yet formalised |
+| An organisation **may** create its own ReportingTaxonomy/Module that references Dataflows/Tables owned by another organisation. | **Pending DPM Alliance** | Symmetric to the previous row |
+| Items in a Category may have a different owner from the Category itself. | **Pending DPM Alliance** | Driven by the multi-owner shared-Category case (§2.8) |
+| Releases owned by different organisations interact with the release-based change log. | **Open issue** | Releases have an owner; multi-owner releases need rules |
+
+The pending items are tracked for upcoming DPM Alliance sessions; see [§2.8](#28-multi-owner-items-in-shared-category) for the use case driving them.
+
+### 2.7.3 Cross-model implications
+
+When Codes/Items are owned by different organisations:
+
+- **SDMX → DPM**: a Codelist `B:CL_X` referenced by a DSD `A:DSD_Y` produces a Category in DPM owned by Organisation `B` (mapped from agency `B`); Category and Items inherit ownership from their source. The referencing DPM Module is owned by Organisation `A`; the cross-ownership reference works because Module references Items, it does not contain them.
+- **DPM → SDMX**: a Module owned by `A` referencing a Category owned by `B` produces SDMX where the Codelist (mapped from the Category) is owned by `B` and the DSD/ReportingTaxonomy (mapped from the Module) is owned by `A`.
+- **Shared Items in Category** (the [§2.8](#28-multi-owner-items-in-shared-category) case): when items have different owners than the Category, SDMX's flat ownership-per-Codelist creates ambiguity that requires a structural workaround (sub-Codelists per owner unioned via Extended Codelist or SuperCategory).
+
+## 2.8 Multi-owner Items in shared Category
+
+This section addresses the use case Angelo highlighted in the meeting on 2026-05-04: a Category that all three of EBA / ECB / a national CB can contribute Items to, with each contributor retaining ownership of its own Items. The pattern recurs in supervisory data (EBA + ECB + NCB) and in IRF (national authorities adding country-specific extensions to a common framework).
+
+### 2.8.1 Setup
+
+- Logical category: `COUNTRIES` (or any country-specific value domain).
+- Owners: EBA (the most general), ECB (euro-area scope), an NCB (national scope).
+- Each owner adds Items under its own naming and lifecycle, but reporters must see them as one coherent Category.
+
+### 2.8.2 Recommended pattern (DPM side)
+
+1. **Three sub-Categories**, one per owner:
+    - `COUNTRIES_EBA` owned by EBA — global / EU-wide country items.
+    - `COUNTRIES_ECB` owned by ECB — euro-area-specific items not in the EBA list.
+    - `COUNTRIES_<NCB>` owned by the national CB — country-specific items relevant only nationally.
+2. **One SuperCategory** `COUNTRIES_ALL` owned by EBA (the most general owner) that unites the three sub-Categories. Membership in the SuperCategory is the "in-scope" signal for any Module that needs the full union.
+3. Items remain owned by their contributing organisation. The SuperCategory does not own the Items; it just unites the Categories.
+4. SubCategories of `COUNTRIES_ALL` (e.g. "EU member states", "Reporting countries") can be defined by any owner who has a legitimate use case; the SubCategory is owned by its definer, not by the SuperCategory's owner.
+
+```mermaid
+classDiagram
+    class COUNTRIES_ALL {
+      <<SuperCategory>>
+      Owner = EBA
+    }
+    class COUNTRIES_EBA {
+      <<Category>>
+      Owner = EBA
+    }
+    class COUNTRIES_ECB {
+      <<Category>>
+      Owner = ECB
+    }
+    class COUNTRIES_NCB {
+      <<Category>>
+      Owner = NCB
+    }
+    COUNTRIES_ALL --> COUNTRIES_EBA : unites
+    COUNTRIES_ALL --> COUNTRIES_ECB : unites
+    COUNTRIES_ALL --> COUNTRIES_NCB : unites
+```
+
+### 2.8.3 Recommended pattern (SDMX side)
+
+1. **Three Codelists**, one per owner: `EBA:CL_COUNTRIES_EBA`, `ECB:CL_COUNTRIES_ECB`, `<NCB>:CL_COUNTRIES_<NCB>`.
+2. **One Extended Codelist** `EBA:CL_COUNTRIES_ALL` that pulls in codes from the three source Codelists with `CodelistExtension` entries (per [§2.1](#21-value-domain-extension)). Use prefix handling to avoid code collisions where they exist (rare for country codes if everyone respects ISO).
+3. The DSD that requires the unified domain references `EBA:CL_COUNTRIES_ALL`.
+
+The mapping from §2.8.2 to §2.8.3 follows the standard rules:
+- DPM SuperCategory ↔ SDMX Extended Codelist (additive).
+- DPM SubCategory of a Category ↔ SDMX Extended Codelist (restrictive, on its parent Codelist).
+
+### 2.8.4 Open issues for DPM Alliance / EBA
+
+These questions surfaced in the 2026-05-04 meeting and need to be resolved before the multi-owner pattern can be specified normatively.
+
+| Issue | Why it matters |
+|---|---|
+| Can Items be owned by an organisation other than the Category's owner? | If yes, the three sub-Categories pattern can collapse into one Category with multi-owner Items. If no, the sub-Category pattern is the only option. |
+| How do Releases interact when contributing organisations have different release calendars? | The release-based change log assumes release ownership at the Category level. Multi-owner Items in different release calendars need clear rules for which release "applies" when querying applicability. |
+| Code-uniqueness rules across multi-owner Items. | Without prefix conventions or registered authority, two contributors could mint the same code for different concepts. |
+| Naming-collision resolution. | When SuperCategory unites Items with potentially overlapping codes, what is the canonical resolution rule (first-registered wins, owner-prefix, error)? |
+| Ownership of derived artefacts (SuperCategory, SubCategory of SuperCategory). | The natural rule is "most general owner" but this needs to be explicit. |
+
+These are flagged as open questions in this work-stream's documentation; they are **not** decided rules. Implementations should default to the conservative pattern (three sub-Categories with explicit owners, plus a SuperCategory) until the Alliance confirms a more permissive option.
+
+### 2.8.5 Cross-references
+
+- The deduplication of glossary content across ModuleVersions in this multi-owner setting interacts with the **virtual versions** algorithm in [§3.7](03_detailed_mapping_rules.md#37-virtual-versions-for-glossary-artefacts). When sub-Categories from different owners are bundled in a single ModuleVersion, the virtual-version snapshot must include all three contributors' Items.
+- The Brexit example in [§3.7.5](03_detailed_mapping_rules.md#375-worked-example--brexit) is single-owner (EBA owns the Category and the changing Item). The multi-owner case adds a layer where each contributor's Item lifecycle is independent.
+- Categorisation lossy round-trip (cross-link to [§02 §3.4.4](../02_data_definition/03_detailed_mapping_rules.md#344-categorisation-implicit-in-module-membership)) compounds in multi-owner scenarios because the original SDMX Categorisation `id` and `version` may belong to a different agency than the receiving Module.
