@@ -101,8 +101,8 @@ Not all data definition artefacts have a clean one-to-one mapping. This section 
 
 ### 2.3.2 DPM-only (at data definition level)
 
-- **Module / ModuleVersion** *(now has a primary counterpart)*
-  DPM Modules group related Tables, Variables, and Operations into a named, versioned reporting package. The primary SDMX counterpart is **ReportingTaxonomy / ReportingCategory** — the deployable unit reporters submit against. The mapping rules live in [§3.4](03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion). The pairing is partial because a ReportingTaxonomy is a navigation wrapper over existing Dataflows, whereas a ModuleVersion contains the structural definitions themselves through `ModuleVersionComposition`. ReportingTaxonomy is currently underused by SDMX implementations (not yet supported by FMR) but the work-stream's recommendation is that it be adopted as a first-class artefact.
+- **Module / ModuleVersion**
+  DPM Modules group related Tables, Variables, and Operations into a named, versioned reporting package. The primary SDMX counterpart is **ReportingTaxonomy / ReportingCategory** — the deployable unit reporters submit against. The mapping rules live in [§3.4](03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion). The pairing is partial because a ReportingTaxonomy is a navigation wrapper over existing Dataflows, whereas a ModuleVersion contains the structural definitions themselves through `ModuleVersionComposition`.
 
 - **Table / TableVersion / Header / Cell**
   DPM has a complete rendering layer defining how data collection forms are visually structured. SDMX intentionally excludes presentation concerns from the information model; table layouts are left to implementations or external specifications.

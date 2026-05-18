@@ -231,20 +231,18 @@ Ownership governs **who can extend what** in each model. The Organisation/Agency
 - **Versioning by owner.** Each maintainable artefact's version is owned by its agency. Two agencies cannot publish overlapping versions of the same artefact identity (`agencyID:id`).
 - **CategoryScheme.** Codes (Items) within a Category cannot have a different owner from the CategoryScheme as far as SDMX 3.x is concerned; the closest mechanism for shared classification is to model the Items in separate Codelists owned by their respective agencies and unite them via Categorisations or Hierarchies.
 
-### 2.7.2 DPM ownership rules — confirmed and pending
+### 2.7.2 DPM ownership rules
 
-The following rules are derived from current DPM 2.0 practice. Items marked **(pending DPM Alliance)** are not yet documented in the official metamodel and need confirmation; this work-stream raises them as questions to the Alliance.
+| Rule | Status |
+|---|---|
+| An organisation **may not** add Items to a Category owned by another organisation directly. | Confirmed |
+| An organisation **may not** add Tables to a Module owned by another organisation. | Confirmed |
+| An organisation **may** create its own Module that references Tables owned by another organisation. | Pending |
+| An organisation **may** create its own ReportingTaxonomy/Module that references Dataflows/Tables owned by another organisation. | Pending |
+| Items in a Category may have a different owner from the Category itself. | Pending |
+| Releases owned by different organisations interact with the release-based change log. | Open |
 
-| Rule | Status | Source |
-|---|---|---|
-| An organisation **may not** add Items to a Category owned by another organisation directly. | Confirmed | DPM 2.0 metamodel ownership constraints |
-| An organisation **may not** add Tables to a Module owned by another organisation. | Confirmed (meeting 2026-05-04) | Bank of Spain example: cannot add a Table to an EBA Module |
-| An organisation **may** create its own Module that references Tables owned by another organisation. | **Pending DPM Alliance** | Discussed but not yet formalised |
-| An organisation **may** create its own ReportingTaxonomy/Module that references Dataflows/Tables owned by another organisation. | **Pending DPM Alliance** | Symmetric to the previous row |
-| Items in a Category may have a different owner from the Category itself. | **Pending DPM Alliance** | Driven by the multi-owner shared-Category case (§2.8) |
-| Releases owned by different organisations interact with the release-based change log. | **Open issue** | Releases have an owner; multi-owner releases need rules |
-
-The pending items are tracked for upcoming DPM Alliance sessions; see [§2.8](#28-multi-owner-items-in-shared-category) for the use case driving them.
+See [§2.8](#28-multi-owner-items-in-shared-category) for the use case driving the pending items.
 
 ### 2.7.3 Cross-model implications
 
@@ -256,7 +254,7 @@ When Codes/Items are owned by different organisations:
 
 ## 2.8 Multi-owner Items in shared Category
 
-This section addresses the use case Angelo highlighted in the meeting on 2026-05-04: a Category that all three of EBA / ECB / a national CB can contribute Items to, with each contributor retaining ownership of its own Items. The pattern recurs in supervisory data (EBA + ECB + NCB) and in IRF (national authorities adding country-specific extensions to a common framework).
+This section addresses the use case of a Category that all three of EBA / ECB / a national CB can contribute Items to, with each contributor retaining ownership of its own Items. The pattern recurs in supervisory data (EBA + ECB + NCB) and in IRF (national authorities adding country-specific extensions to a common framework).
 
 ### 2.8.1 Setup
 
@@ -307,9 +305,9 @@ The mapping from §2.8.2 to §2.8.3 follows the standard rules:
 - DPM SuperCategory ↔ SDMX Extended Codelist (additive).
 - DPM SubCategory of a Category ↔ SDMX Extended Codelist (restrictive, on its parent Codelist).
 
-### 2.8.4 Open issues for DPM Alliance / EBA
+### 2.8.4 Open issues
 
-These questions surfaced in the 2026-05-04 meeting and need to be resolved before the multi-owner pattern can be specified normatively.
+The following questions need to be resolved before the multi-owner pattern can be specified normatively.
 
 | Issue | Why it matters |
 |---|---|
@@ -319,7 +317,7 @@ These questions surfaced in the 2026-05-04 meeting and need to be resolved befor
 | Naming-collision resolution. | When SuperCategory unites Items with potentially overlapping codes, what is the canonical resolution rule (first-registered wins, owner-prefix, error)? |
 | Ownership of derived artefacts (SuperCategory, SubCategory of SuperCategory). | The natural rule is "most general owner" but this needs to be explicit. |
 
-These are flagged as open questions in this work-stream's documentation; they are **not** decided rules. Implementations should default to the conservative pattern (three sub-Categories with explicit owners, plus a SuperCategory) until the Alliance confirms a more permissive option.
+Until these are resolved, implementations should default to the conservative pattern: three sub-Categories with explicit owners, plus a SuperCategory uniting them.
 
 ### 2.8.5 Cross-references
 

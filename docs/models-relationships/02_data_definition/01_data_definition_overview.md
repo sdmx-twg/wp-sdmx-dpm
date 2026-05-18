@@ -8,9 +8,8 @@ The SDMX data definition layer is built around **Data Structure Definitions (DSD
 
 ### Data Structure Definition (DSD)
 
-- **DataStructureDefinition**
-  Maintainable artefact that defines the complete structure for a statistical dataset. A DSD specifies which dimensions identify observations, what measures are collected, and what attributes describe the data. DSDs are versioned and owned by an Agency.
-  - *evolvingStructure*: When `true`, allows adding Dimensions without a major version change (useful for growing classifications).
+- **DataStructureDefinition** — Maintainable artefact that defines the complete structure for a statistical dataset. A DSD specifies which dimensions identify observations, what measures are collected, and what attributes describe the data. DSDs are versioned and owned by an Agency.
+    - *evolvingStructure*: When `true`, allows adding Dimensions without a major version change (useful for growing classifications).
 
 ```mermaid
 classDiagram
@@ -23,31 +22,28 @@ classDiagram
     class DimensionDescriptor
     class MeasureDescriptor
     class AttributeDescriptor
-    class GroupDimensionDescriptor
     DataStructureDefinition "1" --> "1" DimensionDescriptor
     DataStructureDefinition "1" --> "0..1" MeasureDescriptor
     DataStructureDefinition "1" --> "0..1" AttributeDescriptor
-    DataStructureDefinition "1" --> "*" GroupDimensionDescriptor
 ```
 
 ### Components
 
 Components are the building blocks of a DSD. Each component references a **Concept** (from the glossary) for its semantic identity and may override the concept's core representation with a local representation.
 
-- **Dimension**
-  Component that identifies observations. The ordered set of all dimension values forms the **series key** (or observation key in flat datasets). Dimensions reference Concepts and have an enumerated representation (Codelist) or non-enumerated representation (Facet constraints).
-  - *Example*: Dimensions `FREQ` (frequency), `REF_AREA` (reference area), and `INDICATOR` together form a key like `A.ES.GDP` (Annual, Spain, GDP).
+- **Dimension** — Component that identifies observations. The ordered set of all dimension values forms the **series key** (or observation key in flat datasets). Dimensions reference Concepts and have an enumerated representation (Codelist) or non-enumerated representation (Facet constraints).
 
-- **TimeDimension**
-  Special dimension for time periods (at most one per DSD). Uses time-related FacetValueTypes (`observationalTimePeriod`, `reportingTimePeriod`, etc.) rather than Codelists.
-  - *Example*: A TimeDimension with representation `observationalTimePeriod` accepting values like `2024`, `2024-Q1`, `2024-01`.
+    > *Example:* Dimensions `FREQ` (frequency), `REF_AREA` (reference area), and `INDICATOR` together form a key like `A.ES.GDP` (Annual, Spain, GDP).
 
-- **Measure**
-  Component representing the observed phenomenon (the "what is measured"). DSDs can have single or multiple measures. Each Measure has `minOccurs`, `maxOccurs`, and `usage` (mandatory/optional) to control cardinality.
-  - *Example*: A single Measure `OBS_VALUE` representing the observation value, or multiple Measures like `IMPORTS` and `EXPORTS` in a trade DSD.
+- **TimeDimension** — Special dimension for time periods (at most one per DSD). Uses time-related FacetValueTypes (`observationalTimePeriod`, `reportingTimePeriod`, etc.) rather than Codelists.
 
-- **DataAttribute**
-  Component providing additional characteristics of the data (metadata about the data). Attributes do not identify observations but describe them. Each attribute has an **AttributeRelationship** specifying its attachment level.
+    > *Example:* A TimeDimension with representation `observationalTimePeriod` accepting values like `2024`, `2024-Q1`, `2024-01`.
+
+- **Measure** — Component representing the observed phenomenon (the "what is measured"). DSDs can have single or multiple measures. Each Measure has `minOccurs`, `maxOccurs`, and `usage` (mandatory/optional) to control cardinality.
+
+    > *Example:* A single Measure `OBS_VALUE` representing the observation value, or multiple Measures like `IMPORTS` and `EXPORTS` in a trade DSD.
+
+- **DataAttribute** — Component providing additional characteristics of the data (metadata about the data). Attributes do not identify observations but describe them. Each attribute has an **AttributeRelationship** specifying its attachment level.
 
 ```mermaid
 classDiagram
@@ -80,31 +76,14 @@ DataAttributes attach to different levels of the data structure:
 |--------------|------------------|---------|
 | DataflowRelationship | Entire dataset | Dataset title, source agency |
 | DimensionRelationship | Specific dimension(s) | Country-level footnote |
-| GroupRelationship | GroupDimensionDescriptor | Group-level status |
 | ObservationRelationship | Individual observation | Observation status, confidentiality |
 | MeasureRelationship | Specific measure(s) | Unit of measure for a specific measure |
 
-### Groups
-
-- **GroupDimensionDescriptor**
-  Defines a partial key (subset of dimensions) for attaching attributes at an intermediate level between dataset and observation. Groups are useful for attributes that apply to a "slice" of the data cube.
-  - *Example*: A group on `REF_AREA` and `INDICATOR` to attach a revision policy attribute to all time periods for a given country/indicator combination.
-
-```mermaid
-classDiagram
-    class GroupDimensionDescriptor {
-      +id
-    }
-    class DimensionComponent
-    GroupDimensionDescriptor "1" --> "*" DimensionComponent : groupDimension
-    DataStructureDefinition "1" --> "*" GroupDimensionDescriptor
-```
-
 ### Dataflows
 
-- **Dataflow**
-  Structure usage that applies a DSD to a specific data exchange context. Dataflows are the primary artefact referenced in data queries and provision agreements. Multiple Dataflows can share the same DSD.
-  - *Example*: A DSD for balance of payments data may be used by Dataflows `DF_BOP_QUARTERLY` and `DF_BOP_ANNUAL` with different constraints.
+- **Dataflow** — Structure usage that applies a DSD to a specific data exchange context. Dataflows are the primary artefact referenced in data queries and provision agreements. Multiple Dataflows can share the same DSD.
+
+    > *Example:* A DSD for balance of payments data may be used by Dataflows `DF_BOP_QUARTERLY` and `DF_BOP_ANNUAL` with different constraints.
 
 ```mermaid
 classDiagram
@@ -121,14 +100,13 @@ classDiagram
 
 Constraints restrict the allowable or actual content for a Dataflow, DataProvider, or ProvisionAgreement.
 
-- **DataConstraint**
-  Specifies allowable (`allowableContent`) or actual (`actualContent`) data. Two specification methods:
-  - **CubeRegion**: Defines subsets of component values (e.g. only certain codes from a dimension's Codelist).
-  - **DataKeySet**: Enumerates specific key combinations (include/exclude explicit series).
+- **DataConstraint** — Specifies allowable (`allowableContent`) or actual (`actualContent`) data. Two specification methods:
+    - **CubeRegion**: Defines subsets of component values (e.g. only certain codes from a dimension's Codelist).
+    - **DataKeySet**: Enumerates specific key combinations (include/exclude explicit series).
 
-- **MemberSelection**
-  Within a CubeRegion, selects specific values for a component. The `cascadeValues` option allows including child codes in hierarchies.
-  - *Example*: A constraint on `REF_AREA` allowing only EU member states (via a MemberSelection with cascadeValues from an EU parent code).
+- **MemberSelection** — Within a CubeRegion, selects specific values for a component. The `cascadeValues` option allows including child codes in hierarchies.
+
+    > *Example:* A constraint on `REF_AREA` allowing only EU member states (via a MemberSelection with cascadeValues from an EU parent code).
 
 ```mermaid
 classDiagram
@@ -183,12 +161,11 @@ The DPM data definition layer is built around **Tables** (rendering), **Variable
 
 ### Tables and versioning
 
-- **Table**
-  Maintainable artefact representing a data collection form. Tables have multiple **TableVersions** to support evolution over time without breaking references. Each version defines the headers (axes) and cells of the table.
-  - *Example*: Table `T01` with versions `1.0` (2023 reporting) and `2.0` (2024 reporting with an additional breakdown).
+- **Table** — Maintainable artefact representing a data collection form. Tables have multiple **TableVersions** to support evolution over time without breaking references. Each version defines the headers (axes) and cells of the table.
 
-- **TableVersion**
-  Specific version of a Table, defining its structure via headers on the X, Y, and optionally Z axes.
+    > *Example:* Table `T01` with versions `1.0` (2023 reporting) and `2.0` (2024 reporting with an additional breakdown).
+
+- **TableVersion** — Specific version of a Table, defining its structure via headers on the X, Y, and optionally Z axes.
 
 ```mermaid
 classDiagram
@@ -246,34 +223,31 @@ DPM supports different table patterns depending on how Headers define the axes:
 |---------|-------------|------------------------|------------------|
 | **Closed table** | All data points are pre-defined; each Cell corresponds to exactly one Variable. | Headers carry fixed Context (Property–Item pairs) | High (direct cell-to-variable mapping) |
 | **Open table** | Some axes allow user-selected values from a Property's domain (e.g. pick countries from a list). | Key Headers on open axes (`HasOpenRows`, `HasOpenColumns`) | Medium (variable determined at runtime) |
-| **SDMX-like table** | Headers represent dimension breakdowns; similar to SDMX series keys. | Headers reference enumerated Properties with SubCategories | High (maps naturally to SDMX DSDs) |
+| **Flat table** | Headers represent components (dimensions, facts, or attributes). | Headers reference enumerated Properties with SubCategories | High (maps naturally to SDMX DSDs) |
 
-- *Example*: A closed table where row Headers are fixed asset types (each with a Context pinning one Item) and column Headers are fixed time periods — each Cell is a known Variable. An open table where rows are selected countries (Key Header with Property "Residence" and a SubCategory listing EU members) and columns are indicators.
+> *Example:* A closed table where row Headers are fixed asset types (each with a Context pinning one Item) and column Headers are fixed time periods — each Cell is a known Variable. An open table where rows are selected countries (Key Header with Property "Residence" and a SubCategory listing EU members) and columns are indicators.
 
 ### Variables
 
 Variables define the data points that can be collected, independent of their visual rendering in tables. Each **VariableVersion** must indicate a **Property** (for its semantic meaning) and optionally a **SubCategory** (to constrain selectable Items) or a **Context** (Property–Item pairs that further describe the variable's meaning).
 
-- **Variable / VariableVersion**
-  Abstract base for all variable types. Variables are versioned (VariableVersion per Release). Each VariableVersion indicates a Property and optionally a SubCategory. Variables are related to one another via **ConceptRelations** (e.g. `factVariable_keyVariable`, `variable_attribute`).
+- **Variable / VariableVersion** — Abstract base for all variable types. Variables are versioned (VariableVersion per Release). Each VariableVersion indicates a Property and optionally a SubCategory. Variables are related to one another via **ConceptRelations** (e.g. `factVariable_keyVariable`, `variable_attribute`).
 
-- **FactVariable**
-  Variable representing a measured value (the "fact" being reported). The data type (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) is determined by the Property's DataType. A FactVariable may refer to a **Context** when the Property alone is insufficient to describe its meaning. Additional characteristics such as unit of measure are modelled as AttributeVariables.
-  - *Example*: `FAIR_VALUE` as a Monetary FactVariable, or `NUMBER_OF_EMPLOYEES` as an Integer FactVariable.
+- **FactVariable** — Variable representing a measured value (the "fact" being reported). The data type (Monetary, Percentage, Integer, Decimal, Boolean, Date, String) is determined by the Property's DataType. A FactVariable may refer to a **Context** when the Property alone is insufficient to describe its meaning. Additional characteristics such as unit of measure are modelled as AttributeVariables.
 
-- **KeyVariable**
-  Variable that explicitly and uniquely identifies an exchanged observation. KeyVariables result from Key Headers in open tables and are gathered into a **CompoundKey** via **KeyComposition**. 
-  - *Example*: `COUNTRY` and `INSTRUMENT_TYPE` as KeyVariables gathered in a CompoundKey that identifies FactVariable observations.
+    > *Example:* `FAIR_VALUE` as a Monetary FactVariable, or `NUMBER_OF_EMPLOYEES` as an Integer FactVariable.
 
-- **AttributeVariable**
-  Variable providing additional information about an observation (e.g. unit of measure, accuracy, confidentiality). Linked to a FactVariable or KeyVariable via a ConceptRelation of type `variable_attribute`.
-  - *Example*: `CONFIDENTIALITY_STATUS` as an AttributeVariable linked to a FactVariable.
+- **KeyVariable** — Variable that explicitly and uniquely identifies an exchanged observation. KeyVariables result from Key Headers in open tables and are gathered into a **CompoundKey** via **KeyComposition**.
 
-- **FilingIndicatorVariable**
-  Special variable indicating whether a reporting unit (e.g. TableGroup or Table) should be reported. Has `isOpenTable` flag for extensible reporting scope.
+    > *Example:* `COUNTRY` and `INSTRUMENT_TYPE` as KeyVariables gathered in a CompoundKey that identifies FactVariable observations.
 
-- **CompoundKey / KeyComposition**
-  A CompoundKey gathers all KeyVariables applicable to a TableVersion or ModuleVersion via KeyComposition entries. It is referenced by TableVersions, ModuleVersions, and individual FactVariableVersions that need those keys for identification.
+- **AttributeVariable** — Variable providing additional information about an observation (e.g. unit of measure, accuracy, confidentiality). Linked to a FactVariable or KeyVariable via a ConceptRelation of type `variable_attribute`.
+
+    > *Example:* `CONFIDENTIALITY_STATUS` as an AttributeVariable linked to a FactVariable.
+
+- **FilingIndicatorVariable** — Special variable indicating whether a reporting unit (e.g. TableGroup or Table) should be reported. Has `isOpenTable` flag for extensible reporting scope.
+
+- **CompoundKey / KeyComposition** — A CompoundKey gathers all KeyVariables applicable to a TableVersion or ModuleVersion via KeyComposition entries. It is referenced by TableVersions, ModuleVersions, and individual FactVariableVersions that need those keys for identification.
 
 ```mermaid
 classDiagram
@@ -334,22 +308,22 @@ flowchart LR
 
 ### Modules and ModuleVersions
 
-Modules are the primary unit of organisation for DPM data definitions. They group related Variables, Tables, and Operations into coherent packages that can be versioned and released together. In this sense, Modules play a role analogous to SDMX Dataflows: they define what data is requested in a particular reporting context.
+Modules are the primary unit of organisation for DPM data definitions. A Module is an **entry point**: a set of Tables that together constitute a logical reporting unit, scoped along with the Variables they reference and the Operations that validate or calculate over them. In SDMX, the closest analogue is a **ReportingTaxonomy** — a grouping of related reports — rather than a Dataflow; an individual Table maps more naturally to a Dataflow.
 
-- **Module**
-  Maintainable artefact representing a coherent package of reporting requirements (e.g. a regulation annex, a statistical domain). Modules have multiple **ModuleVersions** to support evolution over time.
-  - *Example*: Module `FINREP` for financial reporting, with versions `3.0`, `3.1`, `3.2` tracking regulatory changes.
+- **Module** — Maintainable artefact representing a coherent package of reporting requirements (e.g. a regulation annex, a statistical domain). Modules have multiple **ModuleVersions** to support evolution over time.
 
-- **ModuleVersion**
-  Specific version of a Module, containing:
-  - **Variables**: The data points that can be collected.
-  - **Tables**: The visual/logical presentation of data collection forms.
-  - **Operations**: Validation and calculation rules.
-  - **Glossary roots**: References to Categories and Properties used by this module.
-  - **Dependencies**: References to other ModuleVersions that this version depends on (e.g. a common glossary module).
+    > *Example:* Module `FINREP` for financial reporting, with versions `3.0`, `3.1`, `3.2` tracking regulatory changes.
 
-  ModuleVersions are the unit of deployment: a reporting obligation typically references one or more ModuleVersions.
-  - *Example*: `FINREP v3.2` depending on `COMMON_GLOSSARY v2.0` for shared Categories and Properties.
+- **ModuleVersion** — Specific version of a Module, containing:
+    - **Variables**: The data points that can be collected.
+    - **Tables**: The visual/logical presentation of data collection forms.
+    - **Operations**: Validation and calculation rules.
+    - **Glossary roots**: References to Categories and Properties used by this module.
+    - **Dependencies**: References to other ModuleVersions that this version depends on (e.g. a common glossary module).
+
+    ModuleVersions are the unit of deployment: a reporting obligation typically references one or more ModuleVersions.
+
+    > *Example:* `FINREP v3.2` depending on `COMMON_GLOSSARY v2.0` for shared Categories and Properties.
 
 ```mermaid
 classDiagram
@@ -370,13 +344,13 @@ classDiagram
 
 Modules are organised into Frameworks and published via Releases.
 
-- **Framework**
-  Top-level container for a reporting domain. A Framework typically corresponds to a piece of legislation and groups related Modules. It has no direct SDMX equivalent — SDMX has no artefact that binds a set of reporting structures to a specific legislative act. The CategoryScheme-based convention used as a workaround is documented in [§05 §2.11](../05_gaps/02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent).
-  - *Example*: Framework `EBA_REPORTING` containing Modules `FINREP`, `COREP`, `LIQUIDITY`.
+- **Framework** — Top-level container for a reporting domain. A Framework typically corresponds to a piece of legislation and groups related Modules. It has no direct SDMX equivalent — SDMX has no artefact that binds a set of reporting structures to a specific legislative act. The CategoryScheme-based convention used as a workaround is documented in [§05 §2.11](../05_gaps/02_specific_gap_analysis.md#211-framework-dpm-feature-without-sdmx-equivalent).
 
-- **Release**
-  Publication milestone identified by a code and date. The `isCurrent` flag marks the most recent release in a given model publication. Releases are referenced by versioned entities (TableVersions, HeaderVersions, VariableVersions, ModuleVersions, etc.) via `StartRelease`/`EndRelease` to track their lifecycle. The application dates for reporting obligations are carried by **ModuleVersion** (`FromReferenceDate`, `ToReferenceDate`), not by Release.
-  - *Example*: Release `2024Q1` marked as `isCurrent`, with ModuleVersion `FINREP v3.2` having `FromReferenceDate = 2024-01-01`.
+    > *Example:* Framework `EBA_REPORTING` containing Modules `FINREP`, `COREP`, `LIQUIDITY`.
+
+- **Release** — Publication milestone identified by a code and date. The `isCurrent` flag marks the most recent release in a given model publication. Releases are referenced by versioned entities (TableVersions, HeaderVersions, VariableVersions, ModuleVersions, etc.) via `StartRelease`/`EndRelease` to track their lifecycle. The application dates for reporting obligations are carried by **ModuleVersion** (`FromReferenceDate`, `ToReferenceDate`), not by Release.
+
+    > *Example:* Release `2024Q1` marked as `isCurrent`, with ModuleVersion `FINREP v3.2` having `FromReferenceDate = 2024-01-01`.
 
 ```mermaid
 classDiagram

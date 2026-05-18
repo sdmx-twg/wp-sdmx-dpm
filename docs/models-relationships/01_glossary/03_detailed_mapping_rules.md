@@ -124,11 +124,13 @@ classDiagram
 A Geospatial Codelist is a codelist whose codes represent geographic or spatial entities.
 In SDMX, it is simply a codelist where every code corresponds to a location or a geographically‑defined object.
 
-In the DPM metamodel, a geospatial codelist typically maps to a Category (e.g., COUNTRY, REGION)
-  - Note that geospatial aspects (geometry, CRS, etc.) have no direct slot in DPM; they must be handled via:
-    - naming conventions,
-    - external metadata, or
-    - extended attributes in implementations.
+In the DPM metamodel, a geospatial codelist typically maps to a Category (e.g., COUNTRY, REGION).
+
+Geospatial aspects (geometry, CRS, etc.) have no direct slot in DPM; they must be handled via:
+
+- naming conventions,
+- external metadata, or
+- extended attributes in implementations.
 
 
 ## 3.2 Extended Codelist ↔ Super Category
@@ -456,15 +458,17 @@ classDiagram
 #### 3.3.2.2 Item attributes
 
 `Item` table:
-  - `Name`
-  - `Description`
-  - `IsProperty`
+
+- `Name`
+- `Description`
+- `IsProperty`
 
 `ItemCategory` table (join between Item and Category):
-  - `Code`
-  - `CategoryID`
-  - `Signature` (computed business key — see section 3.3.2.4)
-  - `IsDefaultItem` (XBRL default member flag — see section 3.3.2.5)
+
+- `Code`
+- `CategoryID`
+- `Signature` (computed business key — see section 3.3.2.4)
+- `IsDefaultItem` (XBRL default member flag — see section 3.3.2.5)
 
 #### 3.3.2.3 Mapping details
 

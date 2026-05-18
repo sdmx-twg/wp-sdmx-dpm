@@ -68,6 +68,7 @@ This allows structures to either lock dependencies or follow updates automatical
 ## 1.2 DPM Versioning model
 
 DPM's versioning model is more complex because it distinguishes between:
+
 1. **Structural versioning**: Explicit versions on Modules, Tables, Headers, and Operations.
 2. **Glossary change tracking**: Release-based logs on Categories, Items, Properties—not true versions.
 3. **Applicability context**: Glossary item validity depends on which ModuleVersion references it.
@@ -99,13 +100,8 @@ classDiagram
       +label
     }
     Module "1" --> "*" ModuleVersion : versions
-    ModuleVersion --> Variable : variables
-    ModuleVersion --> Table : tables
-    ModuleVersion --> Category : glossaryRoots
-    ModuleVersion --> ModuleVersion : dependencies
+    ModuleVersion --> TableVersion : tables
 ```
-
-**Key insight**: The `glossaryRoots` reference determines which glossary content is "in scope" for that ModuleVersion. A Category or Property exists in the glossary, but its applicability to a specific reporting context comes from Module membership.
 
 #### Table / TableVersion
 
@@ -122,6 +118,7 @@ classDiagram
     Table "1" --> "*" TableVersion : versions
     TableVersion --> HeaderVersion : xHeader
     TableVersion --> HeaderVersion : yHeader
+    TableVersion --> HeaderVersion : zHeader
 ```
 
 #### SubCategory
@@ -165,39 +162,57 @@ classDiagram
 - The log tells you *when* the Item was added to or removed from a Category.
 - To know if an Item is "valid", you must ask: "valid for which Release?"
 
+#### Two dimensions of item evolution
+
+An Item can evolve across Releases in two distinct ways:
+
+1. **Code change**: The Item's code can be revised over time. The previous code is retired and a new one becomes active from a given Release onward.
+2. **Category reassignment**: The Item can move from one Category to another, recorded as an `endRelease` on one `ItemCategory` and a `startRelease` on a new one.
+
+In both cases, the Item's logical identity persists across the change — neither produces a "new" Item.
+
+#### Per-release uniqueness rule
+
+A critical business rule sits on top of the change log. It is **not enforced by the model's cardinalities** but is required for the model to be usable for data exchange:
+
+> Within any given Release, an Item has exactly one code and belongs to exactly one Category.
+
+Given a Release, this makes the (code, Category) pair for any Item unambiguous — which is precisely the signature a reporter needs to produce data and a consumer needs to interpret it. The model itself permits overlapping log entries (two active `startRelease` rows for the same Item in different Categories, or two simultaneously-active codes); curation must guarantee they do not occur. Without this guarantee, the same logical Item could resolve to two codes or two Categories at once, breaking deterministic exchange.
+
+This is also why a Release — not a Module or a Category in isolation — is the smallest unit at which "what code do I use for Item X?" has a well-defined answer.
+
 #### The applicability problem
 
-The release-based log answers "when did this change happen?" but not "does this apply to my reporting context?" That question can only be answered by looking at the **ModuleVersion**.
+The release-based log answers "when did this change happen?" but not "which code should I use for my reporting context?" That answer can only be derived through a **ModuleVersion** and the Release in which it is published.
 
-**Example scenario**:
-1. Item `X` is added to Category `C` in Release `2024-Q1`.
-2. ModuleVersion `M v1.0` references Category `C` as a glossary root.
-3. ModuleVersion `M v1.0` is included in Release `2024-Q1`.
+Releases are identified by ordered version numbers (e.g. `3.4`, `3.5`, `4.0`); the order follows their publication date.
 
-Is Item `X` valid for ModuleVersion `M v1.0`? Yes, because:
-- `M v1.0` references `C`
-- `X` is in `C` as of Release `2024-Q1`
-- `M v1.0` is published in `2024-Q1`
+**Example scenario** — tracing an Item across three Releases:
 
-But if `M v1.0` were published in Release `2023-Q4` (before `X` was added), then `X` would not be applicable to `M v1.0` even though both reference Category `C`.
+1. **Release 3.4** — Item `X` is created in Category `C` with code `X01`. No Module yet references `C`; the Item simply exists in the glossary.
+
+2. **Release 3.5** — A new `ModuleVersion M v1.0` is created and references Category `C` as a glossary root. Item `X`'s code has not changed since Release 3.4, so within Release 3.5 it is still `X01`. The per-release uniqueness rule guarantees this is the only code in scope: reporters submitting data for `M v1.0` use `X01` for Item `X`. The signature is unambiguous.
+
+3. **Release 4.0** — Item `X`'s code is revised from `X01` to `X02`. This is a glossary-only event in the change log. But the per-release uniqueness rule forbids `M v1.0` from referencing `X` under two different codes across Releases. The change therefore propagates: a new `ModuleVersion M v2.0` must be created in Release 4.0, and reporters submitting data for that Release use `M v2.0` with code `X02`.
+
+The pattern: a glossary-level change (code revision or category reassignment) on an Item referenced — directly or transitively — by a Module is not a private glossary matter. It forces a new ModuleVersion, because the signature a reporter must produce has to remain deterministic for the Release.
 
 ```mermaid
-flowchart TD
-    subgraph "Glossary (change log)"
-        C[Category C]
-        X[Item X]
-        Log["ItemCategory: X in C\nstartRelease: 2024-Q1"]
+flowchart LR
+    subgraph R34["Release 3.4"]
+        X34["Item X — code X01"]
     end
-    subgraph "Module (versioned)"
-        M["ModuleVersion M v1.0\nglossaryRoots: [C]"]
+    subgraph R35["Release 3.5"]
+        X35["Item X — code X01"]
+        M1["ModuleVersion M v1.0<br/>references C → X (X01)"]
     end
-    subgraph "Release (publication)"
-        R["Release 2024-Q1\nmoduleVersions: [M v1.0]"]
+    subgraph R40["Release 4.0"]
+        X40["Item X — code X02"]
+        M2["ModuleVersion M v2.0<br/>references C → X (X02)"]
     end
-    M --> C
-    R --> M
-    C --> Log
-    Log --> X
+    X34 -. code unchanged .-> X35
+    X35 -. code changes .-> X40
+    M1 -. forces new version .-> M2
 ```
 
 ### Summary: Two different models

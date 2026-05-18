@@ -216,9 +216,9 @@ SDMX uses a **Universal Resource Name (URN)**, which is a globally unique identi
 
 - **URN structure**: `urn:sdmx:org.sdmx.infomodel.{package}.{class}={agencyID}:{resourceID}({version})`
 - **Components**:
-  - **Agency ID**: The organization maintaining the artefact.
-  - **Resource ID**: The identifier for the specific artefact.
-  - **Version**: The version string (e.g. `1.0`, `2.1.0`).
+    - **Agency ID**: The organization maintaining the artefact.
+    - **Resource ID**: The identifier for the specific artefact.
+    - **Version**: The version string (e.g. `1.0`, `2.1.0`).
 - **Interoperability**: URNs provide interoperability in a distributed network, ensuring that any identifiable artefact can be referenced and accessed as a single string regardless of its location.
 - **Example**: `urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ECB:CL_FREQ(1.0)`
 
@@ -228,9 +228,9 @@ Modellers identify concepts using **Codes** and **Names**. In physical database 
 
 - **Primary Key IDs**: Owner-prefixed numeric identifiers structured as a three-digit IDPrefix (indicating the owning Organisation) followed by a sequential numeric suffix. These are not pure surrogate keys — the prefix carries business meaning.
 - **IDPrefix for uniqueness**: The first three digits of any Primary Key ID identify the owning Organisation:
-  - `100`: DPM Metamodel
-  - `101`: EBA (European Banking Authority)
-  - `102`: EIOPA (European Insurance and Occupational Pensions Authority)
+    - `100`: DPM Metamodel
+    - `101`: EBA (European Banking Authority)
+    - `102`: EIOPA (European Insurance and Occupational Pensions Authority)
 - **Model merging**: The IDPrefix simplifies the process of merging models from different databases, as keys remain globally unique.
 - **RowGUID**: A separate, system-generated GUID/UUID on every entity, used for change tracking and synchronization. Unlike the Primary Key ID, the RowGUID carries no business semantics.
 
