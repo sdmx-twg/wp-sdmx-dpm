@@ -515,6 +515,51 @@ When ingesting an unfamiliar CategoryScheme, the inverse mapping is ambiguous. H
 2. **Prefer specialised artefacts where they exist**: emit a ReportingTaxonomy for deployable bundles, not a CategoryScheme.
 3. **Use CategoryScheme only when nothing better exists** in SDMX. The temptation to use it for everything is what makes the inverse mapping ambiguous.
 
+## 2.13 DPM glossary/versioning — recommendation to the DPM Alliance
+
+### 2.13.1 The gap
+
+The single largest interoperability challenge is not a missing artefact but the **shape of DPM's versioning model**, and especially its **glossary versioning**. As set out in the [Versioning overview](../00_basics/03_versioning_overview.md), SDMX versions every MaintainableArtefact explicitly and semantically (a Codelist version is a self-contained, citable object), whereas DPM glossary items (Categories, Items, Properties) carry **no explicit version** — their state is reconstructed from release-based change logs and is only unambiguous once resolved through a ModuleVersion and a Release.
+
+### 2.13.2 Not "absent", but implicit
+
+It would be inaccurate to say DPM has no versioning. DPM has mechanisms that can be read as **implicit / snapshot-based versioning**:
+
+- **Release change logs** (`startRelease` / `endRelease` on item–category relationships) record when content changes.
+- **Per-Release snapshots** materialise the full glossary state at any Release ([§00 §3.2](../00_basics/03_versioning_overview.md#32-dpm-versioning-model)).
+- **ModuleVersion-anchored applicability** fixes which glossary slice a reporter must use ([§00 §3.3](../00_basics/03_versioning_overview.md#33-releases-and-temporal-alignment)).
+
+These are real and usable; the difficulty is that they are **implicit, non-uniform, and not expressed as first-class versions**, which is exactly what cross-model exchange with SDMX needs.
+
+### 2.13.3 Recommendation
+
+Raise with the **DPM Alliance** that DPM versioning — glossary versioning in particular — is a **major interoperability challenge**, and that DPM would benefit from evolving towards a **more explicit and standardised versioning model**, ideally one whose glossary artefacts can be referenced as self-contained, versioned objects (closer to the SDMX Codelist/ConceptScheme model).
+
+The recommendation must be framed carefully:
+
+1. **Acknowledge what exists** — DPM already has implicit/snapshot-based mechanisms; this is an *evolution*, not the introduction of versioning from scratch.
+2. **State the benefit** — explicit, uniform versions would remove the need for ModuleVersion-driven inference when exchanging glossary content with SDMX, and make virtual-version computation (see [§04 §3.7](../04_versioning_and_extensibility/03_detailed_mapping_rules.md)) unnecessary in the common case.
+3. **Recognise the cost** — changing the versioning model is itself a **central and breaking change** for existing DPM producers and consumers, so it is a strategic recommendation for Alliance consideration, not a quick fix. It is timely because further DPM changes are still anticipated.
+
+## 2.14 Supporting documents / binary attachments — future extension
+
+### 2.14.1 The use case
+
+In IRF and acquisition processes, a structured submission is sometimes accompanied by **additional unstructured or semi-structured documents** — PDFs, Word or Excel files carrying explanations, supporting evidence, or methodological notes. Neither model treats this as part of the core data/structure exchange.
+
+### 2.14.2 What SDMX can and cannot do
+
+- **Referential metadata** (the first mention of this SDMX feature in these docs) can model structured metadata *reports* — attached to datasets, observations, providers, concepts or other artefacts — using a Metadata Structure Definition with concepts such as methodology, accuracy, timeliness, or links/references to attachments. So SDMX can come *close* to the requirement when the supporting information is itself structured and can be **linked to something in the model**.
+- **Native transmission of binary files** (the actual PDF/Word/Excel payload) is **not naturally supported** by current SDMX formats, and would additionally raise secure-transmission concerns.
+
+### 2.14.3 DPM side
+
+DPM may have, or be planning, **document-oriented modules** for this kind of content; this needs to be **confirmed with EBA / the DPM Alliance**.
+
+### 2.14.4 Classification
+
+This is a **relevant future extension, not central** to the current SDMX–DPM mapping deliverable. It is recorded here so it is not lost, particularly for acquisition processes, but it sits outside the bidirectional structure/glossary mapping that is the focus of this work. If pursued, the binary-attachment transmission aspect is a candidate to raise in the SDMX Technical Working Group.
+
 ## 2.10 Summary of mitigation strategies
 
 | Gap area | Primary mitigation | Secondary mitigation |
@@ -533,3 +578,5 @@ When ingesting an unfamiliar CategoryScheme, the inverse mapping is ambiguous. H
 | CategorySchemeMap (§2.9) | ConceptRelation (`version_new` / `version_fix`) | Documented naming convention on Module `Code` |
 | Framework — DPM feature without SDMX equivalent (§2.11) | CategoryScheme convention (one CategoryScheme per Framework; Modules → Categories) | Pair with ReportingTaxonomy ([§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion)) |
 | CategoryScheme — SDMX backdoor for DPM-only classification (§2.12) | Use for Framework, TableGroup tree, or subject-domain navigation depending on contained references | Annotate intended use; inspect references for inverse mapping |
+| DPM glossary/versioning (§2.13) | Recommendation to the DPM Alliance: evolve towards explicit, standardised versioning | Interim: ModuleVersion-anchored virtual versions / per-Release snapshots |
+| Supporting documents / binary attachments (§2.14) | Out of core scope; future extension | SDMX referential metadata for structured parts; check DPM document modules with EBA |

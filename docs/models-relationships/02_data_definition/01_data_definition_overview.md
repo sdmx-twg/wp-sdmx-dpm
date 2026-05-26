@@ -2,6 +2,8 @@
 
 This chapter introduces the "data definition" parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define data structures, components, variables and tables, i.e. how collected data points are organised, identified and constrained. These artefacts reuse the glossary (concepts, categories, codelists, properties) but add structural semantics: what constitutes a key, what is being measured, and how observations relate to each other.
 
+> **Versioning context**: how these structures evolve — SDMX semantic versions vs DPM Modules/Releases — is covered in the foundational [Versioning overview](../00_basics/03_versioning_overview.md). The ReportingTaxonomy ↔ Module/ModuleVersion bundle below only makes sense against that background.
+
 ## 1.1 SDMX Data Definition artefacts
 
 The SDMX data definition layer is built around **Data Structure Definitions (DSDs)** and their usage via **Dataflows**. A DSD specifies the components (dimensions, measures, attributes) that describe a statistical domain; a Dataflow applies a DSD to a particular data exchange context. Below are the artefacts that matter for understanding how SDMX structures data, without getting into exchange formats or REST APIs.

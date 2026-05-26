@@ -23,6 +23,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Cross-codelist hierarchy | Hierarchy (multi-parent, cross-codelist) | SubCategory (single Category) | DPM SubCategories are limited to one Category; complex SDMX Hierarchies may not map exactly |
 | Super category | Extended Codelist (approximation) | SuperCategory (explicit) | DPM SuperCategories explicitly unite Categories; SDMX Extended Codelists have different semantics |
 | Generic subject classification | CategoryScheme / Category | No direct counterpart | SDMX CategoryScheme is generic and retrofittable; DPM partitions classification across Framework/Module/Category/SuperCategory. Used as a backdoor for DPM-only navigation — see [§2.12](02_specific_gap_analysis.md#212-categoryscheme-sdmx-backdoor-for-dpm-only-classification) |
+| Glossary versioning | Explicit Codelist/ConceptScheme versions | Release-based change log; no explicit item version | DPM versioning is implicit/snapshot-based and ModuleVersion-anchored — a major interoperability challenge raised as a recommendation to the DPM Alliance, see [§2.13](02_specific_gap_analysis.md#213-dpm-glossaryversioning-recommendation-to-the-dpm-alliance) |
 
 ### Data definition layer gaps
 
@@ -47,6 +48,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Generic annotation | Annotation (key-value) | Typed description fields | SDMX is more flexible; DPM is more structured |
 | Release milestone | Versioning only | Release (with applicationDate) | DPM has explicit temporal publication; SDMX uses version validity |
 | Soft delete | Version validity (validFrom/validTo) | Deactivation artefact | Different mechanisms for lifecycle management |
+| Supporting documents / attachments | Referential metadata (structured reports only) | Document modules (to be confirmed with EBA) | Binary file transmission not natively supported by SDMX; relevant future extension, not central — see [§2.14](02_specific_gap_analysis.md#214-supporting-documents-binary-attachments-future-extension) |
 
 ## 1.3 Critical semantic gaps
 

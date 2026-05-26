@@ -29,7 +29,7 @@ This file is generated/maintained by hand and is the canonical reference for the
 | AnnotableArtefact (abstract) | DPMClass | §00 | Foundation; not directly mapped |
 | IdentifiableArtefact (abstract) | Concept | §00 | Foundation |
 | NameableArtefact (abstract) | Concept (Name + Description) | §00 | Multilingual rules in §00 §2.3 |
-| VersionableArtefact (abstract) | Versioned DPM Concepts | §00 + §04 | Versioning model in §04 §1.1 |
+| VersionableArtefact (abstract) | Versioned DPM Concepts | §00 | Versioning model in §00 §3.1 |
 | MaintainableArtefact (abstract) | Concept with Owner | §00 + §04 | `agencyID` ↔ `Owner` (§04 §3.1) |
 
 ### Glossary layer
@@ -158,10 +158,10 @@ This file is generated/maintained by hand and is the canonical reference for the
 |-----------|---------------------|------------|-----------------|
 | Category (abstract) | Codelist / ValueList | §01 §3.1 | Enumerated vs non-enumerated |
 | Item | Code | §01 §3.3 | Identity via ItemCategory |
-| ItemCategory | (Code in Codelist) | §01 §3.3 + §04 §1.2 | Holds `Signature` and `IsDefaultItem` |
+| ItemCategory | (Code in Codelist) | §01 §3.3 + §00 §3.2 | Holds `Signature` and `IsDefaultItem` |
 | SubCategory | Hierarchy / Codelist subset | §01 §3.4 | Triggered from Codelist Extensions or Constraints |
 | SubCategoryItem | (Code member) | §01 §3.4 | |
-| SubCategoryVersion | — | §04 §1.2 | Versioned subset |
+| SubCategoryVersion | — | §00 §3.2 | Versioned subset |
 | SuperCategory | Extended Codelist (additive, partial) | §01 §3.2 + §04 §2.1 | Union of Categories |
 | SuperCategoryComposition | (within Extended Codelist) | §01 §3.2 | |
 | Property | Concept | §01 §3.5 | `IsMetric` distinguishes qualitative vs quantitative |
@@ -182,7 +182,7 @@ This file is generated/maintained by hand and is the canonical reference for the
 | FilingIndicatorVariable | — | §02 + §05 §1.2 | DPM-only |
 | Dimension (DPM Variables) | (Property reference) | §02 §3.2 | |
 | Table | Dataflow + DSD | §02 §3.1 | `IsFlat` flag distinguishes patterns |
-| TableVersion | Dataflow version | §02 §3.1 + §04 §1.2 | Versioning behaviour in §04 |
+| TableVersion | Dataflow version | §02 §3.1 + §00 §3.2 | Versioning behaviour in §00 §3.2 |
 | Header / HeaderVersion | Dimension / Measure (in flat) or composite | §02 §3.2 | Carries Property, Context, or SubCategory |
 | Cell / TableVersionCell | Observation key | §02 §3.2 | Cell→VariableVersion link is optional |
 | TableGroup | — (proposal: ReportingCategory inside ReportingTaxonomy) | §05 §2.8 | DPM-only; partial image via ReportingCategory |
@@ -223,7 +223,7 @@ This file is generated/maintained by hand and is the canonical reference for the
 |-----------|---------------------|------------|-----------------|
 | Release | (validFrom convention; no dedicated artefact) | §04 §3.4 | Releases bundle ModuleVersions |
 | Deactivation | validTo + Annotation | §04 §3.5 | Soft delete; reason preserved via `DPM_DEACTIVATION_REASON` annotation |
-| StartReleaseID / EndReleaseID | validFrom / validTo | §04 §1.3 + §3.4, §3.5 | |
+| StartReleaseID / EndReleaseID | validFrom / validTo | §00 §3.3 + §04 §3.4, §3.5 | |
 | FromReferenceDate / ToReferenceDate | (no SDMX field) | §04 §3.4 | Application date; preserved via `DPM_FROM_REFERENCE_DATE` annotation |
 
 ## Cross-cutting topics

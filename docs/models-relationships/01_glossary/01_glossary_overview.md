@@ -2,6 +2,8 @@
 
 This chapter introduces the "glossary" parts of the two metamodels used in this work: SDMX and DPM. It focuses on the artefacts that define and organise concepts, categories and value domains, i.e. the vocabulary that is later reused by structures (DSDs, tables, variables, etc.) but is itself independent from any particular data exchange syntax or physical implementation.
 
+> **Versioning context**: glossary items version very differently across the two models — SDMX Codelists/ConceptSchemes carry explicit versions, while DPM glossary items use release-based change logs resolved through a ModuleVersion. This distinction is explained in the foundational [Versioning overview](../00_basics/03_versioning_overview.md) and underpins the mapping rules in this chapter.
+
 ## Key characteristics of a glossary
 
 A well-designed glossary in a data-modelling context typically exhibits the following characteristics:

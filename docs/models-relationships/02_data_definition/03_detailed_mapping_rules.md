@@ -1622,7 +1622,7 @@ classDiagram
 - `Code` (the version code)
 - `Name`
 - `Description`
-- `FromReferenceDate`, `ToReferenceDate` (4.2.2) — see [§04 §1.2](../04_versioning_and_extensibility/01_versioning_overview.md#12-dpm-versioning-model); ModuleVersion is the only DPM artefact with reference-date validity
+- `FromReferenceDate`, `ToReferenceDate` (4.2.2) — see [§00 §3.2](../00_basics/03_versioning_overview.md#32-dpm-versioning-model); ModuleVersion is the only DPM artefact with reference-date validity
 - `StartReleaseID`, `EndReleaseID` (4.2.1)
 - inherits Owner from Module → Framework
 
@@ -1745,4 +1745,4 @@ In DPM, the equivalent intent is expressed by the two ModuleVersions (`100300000
 | SDMX → DPM      | Materialise the source and target ReportingTaxonomies as two ModuleVersions of the same Module (per §3.4.5). ReportingCategoryMaps are ignored.                  |
 | DPM → SDMX      | Emit a ReportingTaxonomyMap whenever two consecutive ModuleVersions of the same Module are both being exported. No ReportingCategoryMaps are produced.            |
 
-> **Cross-reference to §04**: the version-bump semantics (when does a ModuleVersion change require a new ReportingTaxonomy version vs a backwards-compatible update) are covered in [§04 Versioning](../04_versioning_and_extensibility/01_versioning_overview.md).
+> **Cross-reference**: the version-bump semantics (when does a ModuleVersion change require a new ReportingTaxonomy version vs a backwards-compatible update) are covered in the [Versioning overview](../00_basics/03_versioning_overview.md).

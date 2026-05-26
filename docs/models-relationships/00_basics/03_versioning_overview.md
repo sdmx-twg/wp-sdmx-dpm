@@ -1,8 +1,10 @@
-# 1. Versioning overview
+# 3. Versioning overview
 
-This chapter explains how versioning works in SDMX and DPM. While SDMX has a straightforward, uniform versioning model, DPM's approach is more nuanced: true versioning applies only to certain artefacts (Modules, Tables, SubCategories), while glossary items use a release-based change log that must be interpreted in context.
+Versioning is a **foundational, horizontal topic**: how each model identifies and evolves its artefacts shapes almost every mapping rule that follows. 
 
-## 1.1 SDMX Versioning model
+While SDMX has a straightforward, uniform versioning model, DPM's approach is more nuanced: true versioning applies only to certain artefacts (Modules, Tables, SubCategories), while glossary items use a release-based change log that must be interpreted in context.
+
+## 3.1 SDMX Versioning model
 
 SDMX has a clean, hierarchical versioning model built into the artefact hierarchy.
 
@@ -10,7 +12,10 @@ SDMX has a clean, hierarchical versioning model built into the artefact hierarch
 
 1. **Only MaintainableArtefacts are versioned**: Codelists, ConceptSchemes, DSDs, Dataflows, etc. have explicit `version` attributes. Contained items (Codes, Concepts, Dimensions) inherit their parent's version.
 
-2. **Semantic versioning convention**: Versions typically follow `major.minor.patch` (e.g. `1.0.0`, `2.1.0`). Major changes break compatibility; minor changes add content; patches fix errors.
+2. **Semantic versioning convention**: Versions follow `major.minor.patch` (e.g. `1.0.0`, `2.1.0`). The increment communicates the nature of the change:
+   - **Patch** (`1.0.0 → 1.0.1`): corrections that change nothing structural (e.g. fixing a typo in a name).
+   - **Minor** (`1.0.0 → 1.1.0`): backward-compatible additions. **Adding a Code to a Codelist** is the canonical case: data and structures valid against the old version remain valid against the new one.
+   - **Major** (`1.0.0 → 2.0.0`): breaking changes. **Deleting a Code from a Codelist** is the canonical case: data that used the removed Code is no longer valid, so the change requires a major increment.
 
 3. **Validity periods**: MaintainableArtefacts can have `validFrom` and `validTo` dates indicating when a version is effective.
 
@@ -30,10 +35,6 @@ SDMX has a clean, hierarchical versioning model built into the artefact hierarch
 | Hierarchy | Yes | Independent from source Codelists |
 | DataConstraint | Yes | Can evolve separately from Dataflow |
 | ProvisionAgreement | Yes | Versioned contract |
-
-### evolvingStructure flag
-
-DSDs can set `evolvingStructure = true` to allow adding Dimensions without a major version change. This supports growing classifications while maintaining backward compatibility for existing data.
 
 ```mermaid
 classDiagram
@@ -59,13 +60,24 @@ classDiagram
 
 ### Version references
 
-When one artefact references another (e.g. a DSD referencing a Codelist), the reference can be:
-- **Specific version**: `AGENCY:CODELIST(1.0)` – pinned to exact version.
-- **Latest version**: `AGENCY:CODELIST(+)` – always resolves to the latest available version.
+Because each MaintainableArtefact is versioned independently, a referencing artefact (e.g. a DSD pointing at a Codelist) must say *which* version it consumes. The reference can be:
 
-This allows structures to either lock dependencies or follow updates automatically.
+- **Fixed (pinned)**: `AGENCY:CL_COUNTRY(1.0.0)` – locked to an exact version. The reference never changes meaning, but it must be updated by hand to pick up new content.
+- **Flexible (latest compatible)**: `AGENCY:CL_COUNTRY(1.0.0+)` or the "latest stable" wildcard `AGENCY:CL_COUNTRY(+)` – resolves to the newest version compatible with the stated baseline. The reference follows backward-compatible updates automatically and only needs manual attention when a breaking (major) change occurs.
 
-## 1.2 DPM Versioning model
+This choice — lock dependencies, or follow compatible updates — is what lets a large structure absorb routine codelist growth without rippling version bumps through every artefact that points at it.
+
+### Worked example: country and currency code lists
+
+Consider a DSD with two enumerated Dimensions — one referencing `CL_COUNTRY`, the other `CL_CURRENCY` — and suppose a new country has to be added.
+
+- `CL_COUNTRY` gets a **minor** bump (`1.0.0 → 1.1.0`): adding a code is backward-compatible, so existing data stays valid.
+- `CL_CURRENCY` does **not** change — it is a separately versioned artefact and the country addition does not touch it.
+- The **DSD itself** does not need a new version **if** its reference to `CL_COUNTRY` is flexible (`1.0.0+`): it simply resolves to `1.1.0` and the new country becomes available. If the reference were fixed at `1.0.0`, the DSD would have to be re-published with an updated reference to expose the new country.
+
+The lesson the group drew from this: SDMX's independent, semantic versioning lets a single classification grow while everything that does not depend on the change stays untouched — a property DPM's release-based model handles very differently (see §3.2).
+
+## 3.2 DPM Versioning model
 
 DPM's versioning model is more complex because it distinguishes between:
 
@@ -215,6 +227,60 @@ flowchart LR
     M1 -. forces new version .-> M2
 ```
 
+### Kinds of glossary versions
+
+The change log on its own does not declare "glossary versions" — but two distinct projections of it can stand in as version concepts. They are not alternatives so much as complementary views: the first is the archival ground truth, the second is the operational view that matches how the glossary is actually consumed.
+
+#### Per-Release snapshot
+
+The straightforward approach: for each Release `R`, materialise the full glossary state at `R`.
+
+Walk the change log and resolve, for every Item, every `ItemCategory` record, and every code record, which entries are active in `R` — i.e. `startRelease ≤ R` and (`endRelease` is null or `endRelease > R`). The result is one self-contained, flat snapshot per Release.
+
+**Properties**:
+- One version per Release, regardless of which Modules are in scope.
+- Easy to compute, easy to consume — a closed snapshot anyone can pin against by Release number.
+- Includes glossary content even when no ModuleVersion in the Release references it.
+- Storage and processing cost grow linearly with Releases, even when little has changed between them.
+
+**When to use**: archival publication, regulator-side reference, answering "what did the glossary look like at Release 3.7?".
+
+#### Virtual versions (Module-driven)
+
+The more sophisticated approach: do not materialise glossary versions at all. Instead, derive them implicitly from the set of ModuleVersions that consume the glossary.
+
+The underlying observation: the only place a glossary signature *must* be deterministic is inside a ModuleVersion that someone reports against. Versioning the glossary outside that context produces snapshots that no reporter or consumer ever actually uses.
+
+The construction:
+
+1. For each `ModuleVersion M v_n`, walk from its glossary roots to the transitive closure of Categories, Items, and codes it requires.
+2. That slice **is** the virtual glossary version for `M v_n`.
+3. Two ModuleVersions whose slices contain the same Items, Categories, and codes share the same virtual version (an equivalence class).
+4. A virtual version "exists" for as long as at least one ModuleVersion still references that exact slice.
+
+**Properties**:
+- Versions emerge from usage; the Release calendar does not, on its own, mint a new version.
+- Multiple virtual versions can coexist within a single Release — one per distinct Module slice.
+- A virtual version can persist across many Releases if no relevant change occurs in its slice.
+- Items that no Module references in a given Release contribute to no virtual version.
+- Computation requires the Module → glossary reachability graph and a stable way to identify equivalence classes (e.g. a content hash of the slice).
+
+**When to use**: minimising what a reporter needs to know (only their Module's slice), checking whether two ModuleVersions are glossary-compatible, detecting that a Module's glossary slice has materially changed across Releases.
+
+#### Comparison
+
+| Dimension | Per-Release snapshot | Virtual (Module-driven) |
+|-----------|----------------------|-------------------------|
+| Granularity | One version per Release | One version per distinct Module slice |
+| Identifier | Release number | Equivalence-class key (e.g. content hash) |
+| Includes unused content | Yes | No |
+| Survives unchanged across Releases | No (new snapshot each Release) | Yes (as long as the slice is unchanged) |
+| Cheap to materialise upfront | Yes | No — requires walking the Module graph |
+| Answers "the glossary at Release R" | Directly | Indirectly — must enumerate slices in R |
+| Answers "what does this reporter need" | Indirectly — must filter the snapshot | Directly |
+
+Both views are computable from the same change log; choosing one or the other (or maintaining both side by side) is a publication-strategy decision, not a modelling constraint.
+
 ### Summary: Two different models
 
 | Aspect | SDMX | DPM |
@@ -236,20 +302,30 @@ When mapping between SDMX and DPM:
 
 3. **Module context is essential**: When converting DPM to SDMX, the ModuleVersion determines which glossary content to include. Without a Module context, you cannot determine which Items are "in scope".
 
-## 1.3 Releases and temporal alignment
+The artefact-level rules that implement these conversions are in [§04 §3 Detailed mapping rules](../04_versioning_and_extensibility/03_detailed_mapping_rules.md).
+
+## 3.3 Releases and temporal alignment
 
 ### SDMX: Version validity
 
 SDMX artefacts can have `validFrom` and `validTo` dates, but these are optional and not consistently used. Multiple versions of an artefact can coexist; consumers choose which version to use.
 
-### DPM: Releases as publication milestones
+### DPM: Releases as snapshots / publication packages
 
-DPM Releases are explicit publication events:
+A DPM **Release is a snapshot** — a publication of the state of the *whole* DPM repository at a point in time. It is best thought of as a publication package rather than a version of any single artefact:
+
 - `releaseDate`: When the release is published.
 - `applicationDate`: When reporting obligations begin.
 - `moduleVersions`: Which ModuleVersions are included.
 
-Releases provide temporal coordination: all stakeholders know that Release `2024-Q1` contains specific ModuleVersions with specific glossary content.
+> **A release is related to versioning, but it is not the same thing as a version.**
+> An SDMX version identifies one artefact's state; a DPM Release captures the coordinated state of *everything* at once. This reflects two different design models:
+> - a **repository / artefact-versioning** model (SDMX): each artefact carries its own independent version, and consumers pull whichever versions they need;
+> - a **database / snapshot** model (DPM): the repository is published as a coherent whole, and the Release is the unit everyone pins against.
+
+Releases provide temporal coordination: all stakeholders know that Release `2024-Q1` contains specific ModuleVersions with specific glossary content (the per-Release snapshot of §3.2 made concrete).
+
+**Why releases are central to regulatory reporting.** In supervisory reporting a release is not only a technical milestone but a *functional and regulatory workflow*: changes are deliberately batched and communicated to reporting institutions, who plan their submissions around the release calendar. This is why DPM releases remain a first-class concept even though they do not map neatly onto SDMX artefact versions — they carry obligations, not just content.
 
 ### Alignment challenge
 
@@ -263,3 +339,5 @@ Releases provide temporal coordination: all stakeholders know that Release `2024
 1. How SDMX artefact versions align with DPM Releases.
 2. How to derive `validFrom`/`validTo` from `applicationDate`.
 3. How to bundle SDMX artefacts when converting from a DPM Release.
+
+> The limitations of DPM glossary/versioning for interoperability — and a recommendation to the DPM Alliance — are recorded in [§05 §2.13](../05_gaps/02_specific_gap_analysis.md#213-dpm-glossaryversioning-recommendation-to-the-dpm-alliance).

@@ -8,7 +8,7 @@ This chapter provides the artefact-level mapping rules for the cross-cutting fou
 
 > - **Prerequisites**:
 >     - General identification and multilingual rules from [Basics — Detailed Mapping Rules](../00_basics/02_detailed_mapping_rules.md).
->     - The conceptual treatment of versioning and Releases lives in chapter 1 of this same section: [Versioning overview](01_versioning_overview.md). The detailed rules here are the artefact-level companion.
+>     - The conceptual treatment of versioning and Releases lives in the Basics chapter: [Versioning overview](../00_basics/03_versioning_overview.md). The detailed rules here are the artefact-level companion.
 >     - The extensibility patterns (Codelist extensions, structural extension, compatibility) live in chapter 2: [Extensibility patterns](02_extensibility_patterns.md).
 > - **Scope**: real cross-model correspondences only. Artefacts without a counterpart in the other model (ProvisionAgreement, Process, TableGroup, Framework) are documented in [§05 Gaps](../05_gaps/02_specific_gap_analysis.md). The deployable bundle (ReportingTaxonomy / ReportingCategory ↔ Module / ModuleVersion, including Categorisation and ReportingTaxonomyMap) lives in [§02 §3.4](../02_data_definition/03_detailed_mapping_rules.md#34-reporting-bundle-reportingtaxonomy-reportingcategory-moduleversion).
 
@@ -357,7 +357,7 @@ flowchart LR
     VA ---|"partial alignment"| R
 ```
 
-> **Cross-reference**: the conceptual treatment of Release semantics (publication vs application date, version validity, two-model summary) is in [§04 §1.3](01_versioning_overview.md#13-releases-and-temporal-alignment). This section is the artefact-level mapping companion.
+> **Cross-reference**: the conceptual treatment of Release semantics (publication vs application date, version validity, two-model summary) is in [§00 §3.3](../00_basics/03_versioning_overview.md#33-releases-and-temporal-alignment). This section is the artefact-level mapping companion.
 
 ### 3.4.1 Mapping cardinality
 
@@ -532,7 +532,7 @@ The mapping emits:
 </Dataflow>
 ```
 
-> **Note — Deactivation propagation**: deactivating a Category cascades to its Items, SubCategories, and Properties (4.2.4 of the DPM metamodel). The propagation rules are part of the versioning model and are documented in [§04 §1.2](01_versioning_overview.md#12-dpm-versioning-model).
+> **Note — Deactivation propagation**: deactivating a Category cascades to its Items, SubCategories, and Properties (4.2.4 of the DPM metamodel). The propagation rules are part of the versioning model and are documented in [§00 §3.2](../00_basics/03_versioning_overview.md#32-dpm-versioning-model).
 
 ## 3.6 Annotation ↔ description / structured fields
 
@@ -669,7 +669,7 @@ The naive approach — emit one Codelist version per Release — is too coarse. 
 A **virtual version** of a glossary artefact is a synthetic version computed by snapshotting the artefact's state at the Release window of a given ModuleVersion.
 
 - The version is *virtual* because it does not exist in the DPM database; it is inferred at export time.
-- The version is *anchored to a ModuleVersion* because that is the only artefact with reference-date validity (see [§1.2](01_versioning_overview.md#12-dpm-versioning-model)).
+- The version is *anchored to a ModuleVersion* because that is the only artefact with reference-date validity (see [§00 §3.2](../00_basics/03_versioning_overview.md#32-dpm-versioning-model)).
 - Two ModuleVersions that produce the same item set yield the **same** virtual version (deduplicated).
 
 This is the recommended approach for SDMX-DPM mapping. It can be implemented today against the existing DPM 2.0 database with no schema changes.
