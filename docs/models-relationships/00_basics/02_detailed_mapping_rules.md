@@ -308,7 +308,7 @@ SDMX annotations (`AnnotationType` / `AnnotationText`) provide a standard extens
 
 ### 2.6.1 DPM Signature annotation
 
-The DPM `Signature` field (see [Glossary mapping rules §3.3.2.4](../01_glossary/03_detailed_mapping_rules.md#3324-signature--dpm-business-key)) has no direct SDMX equivalent. When converting DPM→SDMX, it is preserved as an annotation on the corresponding `Code`.
+The DPM `Signature` field (see [Glossary mapping rules §3.3.2.4](../01_glossary/03_detailed_mapping_rules.md#3324-signature-dpm-business-key)) has no direct SDMX equivalent. When converting DPM→SDMX, it is preserved as an annotation on the corresponding `Code`.
 
 | Property         | Value                                                                 |
 |------------------|-----------------------------------------------------------------------|

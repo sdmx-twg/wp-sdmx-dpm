@@ -322,5 +322,5 @@ Until these are resolved, implementations should default to the conservative pat
 ### 2.8.5 Cross-references
 
 - The deduplication of glossary content across ModuleVersions in this multi-owner setting interacts with the **virtual versions** algorithm in [§3.7](03_detailed_mapping_rules.md#37-virtual-versions-for-glossary-artefacts). When sub-Categories from different owners are bundled in a single ModuleVersion, the virtual-version snapshot must include all three contributors' Items.
-- The Brexit example in [§3.7.5](03_detailed_mapping_rules.md#375-worked-example--brexit) is single-owner (EBA owns the Category and the changing Item). The multi-owner case adds a layer where each contributor's Item lifecycle is independent.
+- The Brexit example in [§3.7.5](03_detailed_mapping_rules.md#375-worked-example-brexit) is single-owner (EBA owns the Category and the changing Item). The multi-owner case adds a layer where each contributor's Item lifecycle is independent.
 - Categorisation lossy round-trip (cross-link to [§02 §3.4.4](../02_data_definition/03_detailed_mapping_rules.md#344-categorisation-implicit-in-module-membership)) compounds in multi-owner scenarios because the original SDMX Categorisation `id` and `version` may belong to a different agency than the receiving Module.

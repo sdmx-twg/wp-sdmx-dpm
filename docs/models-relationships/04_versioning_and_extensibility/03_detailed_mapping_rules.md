@@ -708,7 +708,7 @@ For each ModuleVersion `mv` being exported:
     - `MAJOR.MINOR.PATCH` derived from the cumulative changes since the previous deduplicated virtual version.
     - When a virtual version diverges from its predecessor in a backwards-compatible way (only additions), bump MINOR; for code renames or removals bump MAJOR; for typo fixes that don't change semantics bump PATCH.
 
-The materialised SDMX artefacts (`Codelist`, `ConceptScheme`, `Hierarchy` versions) reference the virtual version codes; ReportingTaxonomy version emitted for `mv` (per [§02 §3.4.6](../02_data_definition/03_detailed_mapping_rules.md#346-example-mapping-dpm--sdmx)) references the virtual versions of all glossary artefacts in scope.
+The materialised SDMX artefacts (`Codelist`, `ConceptScheme`, `Hierarchy` versions) reference the virtual version codes; ReportingTaxonomy version emitted for `mv` (per [§02 §3.4.6](../02_data_definition/03_detailed_mapping_rules.md#346-example-mapping-dpm-sdmx)) references the virtual versions of all glossary artefacts in scope.
 
 ### 3.7.4 Algorithm (SDMX → DPM)
 

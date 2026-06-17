@@ -68,10 +68,11 @@ nav:
   - Glossary & Abbreviations: models-relationships/glossary_and_abbreviations.md
   - Concept Note: concept-note.md
   - Business Case:
-      - business-case/business-case-draft.md
+      - business-case/index.md
   - Models Relationships:
       - models-relationships/index.md
       - Artefact Index: models-relationships/artefact_index.md
+      - Open Questions: models-relationships/open_questions.md
       - Basics:
           - models-relationships/00_basics/index.md
           - 1. Base Comparison: models-relationships/00_basics/01_base_comparison.md
@@ -97,3 +98,11 @@ nav:
           - 2. Specific Gap Analysis: models-relationships/05_gaps/02_specific_gap_analysis.md
   - Transformation Guidelines:
       - transformation-guidelines/index.md
+      - 1. Methodology: transformation-guidelines/01_methodology.md
+      - 2. DPM → SDMX: transformation-guidelines/02_dpm_to_sdmx.md
+      - 3. SDMX → DPM: transformation-guidelines/03_sdmx_to_dpm.md
+      - 4. Sample Conversion Script: transformation-guidelines/04_sample_script.md
+  - Data Instances:
+      - data-instances/index.md
+      - 1. SDMX-CSV and XBRL-CSV: data-instances/01_sdmx_csv_xbrl_csv.md
+      - 2. Constraints and Examples: data-instances/02_constraints_and_examples.md

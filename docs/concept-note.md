@@ -1,8 +1,5 @@
 # Concept Note: SDMX–DPM Interoperability Work Package
 
-**DRAFT for Review 26 Sept 2026**
-
-Date: 26 Sept 2025
 
 ## Background and Context
 

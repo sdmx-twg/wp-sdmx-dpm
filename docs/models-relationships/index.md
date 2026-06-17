@@ -4,6 +4,7 @@
 - [Data Definition](02_data_definition/index.md): Dataflows/DSDs ↔ Report Tables and variables; ReportingTaxonomy ↔ Module/ModuleVersion as the deployable bundle; common table patterns.
 - [Versioning and Extensibility](04_versioning_and_extensibility/index.md): How the models evolve, how extensions are handled, and serialisation/version constraints.
 - [Gaps](05_gaps/index.md): Known loss points and mitigation/open questions.
+- [Open Questions](open_questions.md): Register of intentionally-unresolved items, linking to their canonical locations.
 
 ## Scope
 - Focus on the core SDMX–DPM mapping; XBRL is covered only where required to serialise/exchange DPM content.

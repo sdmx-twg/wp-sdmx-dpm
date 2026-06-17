@@ -140,7 +140,7 @@ SDMX and DPM handle these differently, and XBRL (often used for DPM serialisatio
 
 SDMX has no explicit construct for expressing that a single code is *composed of* multiple values across different dimensions or categories. Every code in a Codelist is a flat, atomic value with no built-in mechanism to encode its internal structure.
 
-DPM provides an explicit **Compound Category Item**: an item that declares its composition via a set of Property–Item pairs (a `Context` with `ContextCompositions`). This makes the multi-dimensional semantics machine-readable and reusable across tables and validation rules. See [glossary mapping rules §3.3.5](../01_glossary/03_detailed_mapping_rules.md#335-compound-item--known-limitation) for the mapping consequences.
+DPM provides an explicit **Compound Category Item**: an item that declares its composition via a set of Property–Item pairs (a `Context` with `ContextCompositions`). This makes the multi-dimensional semantics machine-readable and reusable across tables and validation rules. See [glossary mapping rules §3.3.5](../01_glossary/03_detailed_mapping_rules.md#335-compound-item-known-limitation) for the mapping consequences.
 
 ### 2.4.2 DPM use case
 

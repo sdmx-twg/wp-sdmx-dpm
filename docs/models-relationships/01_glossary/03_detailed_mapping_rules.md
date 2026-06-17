@@ -1,13 +1,6 @@
 # 3. Detailed mapping rules
 
-> **NOTE:**
-
-> - Add coding/naming issues here for each mapping
-> - Explain the constraints under which a mapping is simple (e.g., an organisation that uses only one Concept Scheme, vs many Concept Schemes), and proposed conventions if simple mapping is not possible.
-> - Shall we add here something about versioning and extensibility? Or as a separate chapter?
-
-
-This chapter provides the detailed rules for each of the high-level correspondences described in chapter 3.
+This chapter provides the detailed rules for each of the high-level correspondences described in [chapter 2](02_high_level_mapping_summary.md). For each mapping it covers the coding and naming conventions and the constraints under which the mapping is straightforward (for example, an organisation that uses a single ConceptScheme) versus the conventions proposed where a simple mapping is not possible. Versioning and extensibility rules are kept separate, in [§04 Versioning and Extensibility](../04_versioning_and_extensibility/index.md).
 
 ## 3.1 Codelist ↔ Category
 An SDMX CodeList is a structural component of the SDMX standard that defines a **set of coded values** that can be used as a representation for concepts or components.
@@ -409,7 +402,7 @@ Items ES (3005) and PT (3006) from CL_COUNTRY are **not** in the SubCategory —
 An **SDMX Code** is the atomic element of a Codelist. Codes may participate in hierarchical structures as defined by the SDMX Item Scheme pattern. They inherit their identification and naming attributes from the SDMX artefact hierarchy (IdentifiableArtefact → NameableArtefact) .
 
 The equivalent artefact in the DPM is the **Category Item**.
-A DPM Item represents one enumerated value of a Category. The DPM uses two tables for this: the `Item` table stores the item's identity (`ItemID`), display name (`Name`), description (`Description`), and the `IsProperty` flag; the `ItemCategory` table is the join between an `Item` and the `Category` it belongs to, and it is where the `Code` and the `CategoryID` foreign key are stored. Items may take part in parent–child relationships. Only Items with `IsProperty = false` are candidates for mapping to SDMX Codes; Items with `IsProperty = true` serve as counterparts to Properties and are mapped to SDMX Concepts instead (see [section 3.5](#35-concept--property)).
+A DPM Item represents one enumerated value of a Category. The DPM uses two tables for this: the `Item` table stores the item's identity (`ItemID`), display name (`Name`), description (`Description`), and the `IsProperty` flag; the `ItemCategory` table is the join between an `Item` and the `Category` it belongs to, and it is where the `Code` and the `CategoryID` foreign key are stored. Items may take part in parent–child relationships. Only Items with `IsProperty = false` are candidates for mapping to SDMX Codes; Items with `IsProperty = true` serve as counterparts to Properties and are mapped to SDMX Concepts instead (see [section 3.5](#35-concept-property)).
 
 **Example Code**
 
@@ -444,7 +437,7 @@ classDiagram
 ```
 
 - **From SDMX to DPM:** One SDMX Code maps to one DPM Item with `IsProperty = false`, belonging to the mapped Category.
-- **From DPM to SDMX:** One DPM Item maps to an SDMX Code only if `IsProperty = false` and its Category is mapped to a Codelist. Items with `IsProperty = true` are not mapped as Codes — they correspond to Properties (see [section 3.5](#35-concept--property)).
+- **From DPM to SDMX:** One DPM Item maps to an SDMX Code only if `IsProperty = false` and its Category is mapped to a Codelist. Items with `IsProperty = true` are not mapped as Codes — they correspond to Properties (see [section 3.5](#35-concept-property)).
 
 ### 3.3.2 Attributes equivalence
 
