@@ -1,1 +1,0 @@
-- Does looking for a solution in which data are completely interoperable but metadata are not make sense?
