@@ -11,3 +11,6 @@ dpm-db-inspector/
 scripts/
 workspace/
 input/
+__pycache__/
+*.py[cod]
+*.egg-info/
