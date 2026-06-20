@@ -2,7 +2,10 @@
 
 Closed tables (no open axes) -> DataKeySet (enumerated series keys); open tables
 -> CubeRegion (per-dimension value lists). A dimension a data point leaves
-unassigned takes the Category default Item, made explicit either way.
+unassigned takes the Category default Item, made explicit either way. An open
+table's open keys (KeyVariables on open axes) are also dimensions: an enumerated
+open key is constrained to its open-axis SubCategory subset, a non-enumerated one
+is a dimension but left unconstrained.
 """
 
 from __future__ import annotations
@@ -38,6 +41,26 @@ def test_open_table_builds_cube_region_with_explicit_default():
     by_dim = {kv.id: sorted(v.value for v in kv.values) for kv in region.key_values}
     assert by_dim == {"qFI": ["qx0", "qx2006"], "qSR": ["qx2011"]}
     assert any(f.code == "constraint.default_item_explicit" for f in report.flags)
+
+
+def test_open_table_includes_enumerated_open_key_and_omits_non_enumerated():
+    report = ReviewReport()
+    constraint = CN.table_to_content_constraint(
+        {"code": "C_27.00", "name": "Counterparty"},
+        ["qBEA"],  # context dimension
+        keys=[{"qBEA": "qx0"}, {"qBEA": "qx2019"}],
+        uses_default={"qBEA": True},
+        closed=False, agency="EBA", conventions=Conventions(), report=report,
+        # qNCO is an enumerated open key (restricted to its SubCategory subset);
+        # qINC is a non-enumerated open key (no values -> not constrained).
+        open_key_values=[("qNCO", ["qx2000", "qx2001"]), ("qINC", [])],
+    )
+    assert constraint is not None and constraint.cube_regions
+    by_dim = {kv.id: sorted(v.value for v in kv.values)
+              for kv in constraint.cube_regions[0].key_values}
+    assert by_dim == {"qBEA": ["qx0", "qx2019"], "qNCO": ["qx2000", "qx2001"]}
+    assert "qINC" not in by_dim  # non-enumerated open key left unconstrained
+    assert any(f.code == "constraint.open_key_values" for f in report.flags)
 
 
 def test_closed_table_builds_data_key_set():
@@ -92,6 +115,28 @@ def test_read_constraint_values_fills_default_for_contextless_datapoints():
 
 
 @requires_db
+def test_read_open_keys_for_open_table():
+    from wp_sdmx_dpm.dpm.reader import DpmReader
+
+    with DpmReader(str(DB_PATH)) as reader:
+        module = reader.read_module("COREP_LE")
+        by_code = {t["code"]: t for t in module["tables"]}
+        # C_27.00 is open (HasOpenRows) with two open keys; the counterparty id
+        # type is enumerated (restricted to its open-axis SubCategory), the
+        # individual-clients flag is a free string.
+        open_keys = reader.read_open_keys(by_code["C_27.00"])
+        # Closed tables carry no open keys.
+        assert reader.read_open_keys(by_code["C_26.00"]) == []
+    by_enum = {k["isEnumerated"] for k in open_keys}
+    assert by_enum == {True, False} and len(open_keys) == 2
+    enum_key = next(k for k in open_keys if k["isEnumerated"])
+    assert enum_key["categoryCode"] == "qCO"
+    assert set(enum_key["allowedItemCodes"]) == {"qx2000", "qx2001"}
+    free_key = next(k for k in open_keys if not k["isEnumerated"])
+    assert free_key["allowedItemCodes"] == []
+
+
+@requires_db
 def test_convert_corep_le_constraints_closed_vs_open_and_validate():
     import re
 
@@ -122,6 +167,16 @@ def test_convert_corep_le_constraints_closed_vs_open_and_validate():
     # C_28.00 is open (HasOpenRows) -> CubeRegion.
     c28 = constraints["C_28_00_CONSTRAINTS"]
     assert c28.cube_regions and not c28.key_sets
+
+    # C_27.00 is open: its open keys are dimensions. The enumerated open key
+    # qNCO is a DSD Dimension *and* is constrained to its SubCategory subset;
+    # the non-enumerated open key qINC is a Dimension but left unconstrained.
+    assert {"qNCO", "qINC"} <= dims_by_df["C_27_00"]
+    c27 = constraints["C_27_00_CONSTRAINTS"]
+    by_dim = {kv.id: {v.value for v in kv.values}
+              for kv in c27.cube_regions[0].key_values}
+    assert by_dim.get("qNCO") == {"qx2000", "qx2001"}
+    assert "qINC" not in by_dim  # non-enumerated open key is unconstrained
 
     # Every constraint attaches to a present Dataflow; every component id is a
     # Dimension of that Dataflow's DSD (whether in a CubeRegion or a DataKeySet).

@@ -25,7 +25,7 @@ defaulting key). The reader flags this via ``usesDefault``.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from pysdmx.model.constraint import (
     ConstraintAttachment,
@@ -78,22 +78,31 @@ def table_to_content_constraint(
     conventions: Conventions,
     report: ReviewReport,
     datapoint_count: Optional[int] = None,
+    open_key_values: Optional[List[Tuple[str, List[str]]]] = None,
 ) -> Optional[DataConstraint]:
     """Map one DPM Table's data-point keys to an SDMX DataConstraint.
 
-    ``ordered_dim_ids`` are the DSD Dimension ids in order; ``keys`` is the list
-    of distinct data-point dimension keys (each ``{dim_id: code}``, default Item
-    already filled in by the reader); ``uses_default[dim_id]`` flags dimensions
-    that defaulted somewhere. ``closed`` selects the representation: a DataKeySet
-    of the full keys (closed table) or a CubeRegion of per-dimension value lists
-    (open table).
+    ``ordered_dim_ids`` are the context DSD Dimension ids in order; ``keys`` is
+    the list of distinct data-point dimension keys (each ``{dim_id: code}``,
+    default Item already filled in by the reader); ``uses_default[dim_id]`` flags
+    dimensions that defaulted somewhere. ``closed`` selects the representation: a
+    DataKeySet of the full keys (closed table) or a CubeRegion of per-dimension
+    value lists (open table).
+
+    ``open_key_values`` are the *open-axis* dimensions (only present on open
+    tables): ``(dim_id, [allowed item codes])`` pairs for **enumerated** open
+    keys, whose rows are open but whose values are confined to the open-axis
+    SubCategory subset. They are appended to the CubeRegion after the context
+    dimensions. A non-enumerated open key is a DSD Dimension but is left out of
+    the constraint (its string values are unconstrained); it never appears here.
 
     Returns ``None`` (and a flag) when there is nothing to constrain.
     """
     table_code = table["code"]
     artefact = f"Table:{table_code}"
+    open_key_values = [kv for kv in (open_key_values or []) if kv[1]]
 
-    if not ordered_dim_ids or not keys:
+    if (not ordered_dim_ids or not keys) and not open_key_values:
         report.add(
             "constraint.empty",
             "Table yields no constrained dimension values; no ContentConstraint "
@@ -163,6 +172,23 @@ def table_to_content_constraint(
                     values=tuple(CubeValue(value=c) for c in sorted(values)),
                 )
             )
+    # Append the enumerated open keys: their rows are open, but each is confined
+    # to the open-axis SubCategory subset, so the constraint lists that subset.
+    for dim_id, codes in open_key_values:
+        key_values.append(
+            CubeKeyValue(
+                id=dim_id,
+                values=tuple(CubeValue(value=c) for c in sorted(set(codes))),
+            )
+        )
+    if open_key_values:
+        report.add(
+            "constraint.open_key_values",
+            "Open-axis key dimension(s) constrained to their SubCategory subset: "
+            f"{', '.join(dim_id for dim_id, _ in open_key_values)}.",
+            artefact=artefact,
+            severity=ReviewSeverity.INFO,
+        )
     if not key_values:
         return None
     return _new_constraint(

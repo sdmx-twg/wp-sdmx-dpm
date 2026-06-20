@@ -206,11 +206,23 @@ class SdmxBuilder:
                 for pid, flag in cv.get("usesDefault", {}).items()
                 if pid in id_by_pid
             }
+            # Enumerated open keys (open-axis dimensions) carry their own allowed
+            # values; resolve each to its DSD Dimension id. Non-enumerated open
+            # keys have no values and are skipped (unconstrained dimensions).
+            open_key_values = [
+                (
+                    normalise_sdmx_id(prop_index[pid]["code"]),
+                    meta.get("allowedItemCodes") or [],
+                )
+                for pid, meta in cv.get("openDims", {}).items()
+                if pid in prop_index and meta.get("allowedItemCodes")
+            ]
             constraint = table_to_content_constraint(
                 table, ordered_dim_ids, keys, uses_default,
                 closed=self._is_closed_table(table), agency=agency,
                 conventions=self.conventions, report=self.report,
                 datapoint_count=cv.get("datapointCount"),
+                open_key_values=open_key_values,
             )
             if constraint is not None:
                 objects.append(constraint)

@@ -69,13 +69,28 @@ def convert_module(
         constraint_values_by_table: Dict[int, Dict[str, Any]] = {}
         need_constraints = "constraints" in layers and "data-def" in layers
         for table in module.get("tables") or []:
-            dim_pids, metric_pids = reader.read_table_components(table["tableVersionId"])
+            tvid = table["tableVersionId"]
+            context_dims, metric_pids = reader.read_table_components(tvid)
+            open_keys = reader.read_open_keys(table)
+            # DSD dimensions = context Properties + open keys (spec 3.2.7). Open
+            # keys (KeyVariables on open axes) are dimensions the FactVariable
+            # Contexts never mention; append them after the context dimensions,
+            # de-duplicated, and never count them as measures.
+            dim_pids = list(context_dims)
+            seen = set(dim_pids)
+            for pid in (k["propertyId"] for k in open_keys):
+                if pid not in seen:
+                    seen.add(pid)
+                    dim_pids.append(pid)
+            metric_pids = [p for p in metric_pids if p not in seen]
             table_specs.append((table, dim_pids, metric_pids))
             used_property_ids.update(dim_pids, metric_pids)
             if need_constraints:
-                constraint_values_by_table[table["tableVersionId"]] = (
+                # Context dims drive the per-data-point keys; open keys carry
+                # their own (open-axis SubCategory) allowed values separately.
+                constraint_values_by_table[tvid] = (
                     reader.read_table_constraint_values(
-                        table["tableVersionId"], dim_pids
+                        tvid, context_dims, open_keys=open_keys
                     )
                 )
 

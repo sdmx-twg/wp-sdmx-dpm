@@ -274,11 +274,14 @@ class DpmReader:
         return result
 
     def read_table_components(self, table_version_id: int) -> Tuple[List[int], List[int]]:
-        """Return (dimension property ids, metric property ids) for a Table.
+        """Return (context dimension property ids, metric property ids) for a Table.
 
-        Dimensions come from the union of the table's FactVariable Contexts
-        (the (Property, Item) pairs that position each data point); metrics are
-        the FactVariables' main Properties. Spec section 3.2.7.
+        These are the dimensions that come from the union of the table's
+        FactVariable Contexts (the (Property, Item) pairs that position each data
+        point); metrics are the FactVariables' main Properties. Spec section
+        3.2.7. **Open keys** (KeyVariables on open axes) are additional dimensions
+        that the Contexts never mention -- read them separately with
+        :meth:`read_open_keys` and union the two.
         """
         session = self._db.session
         dim = [r[0] for r in session.execute(
@@ -289,6 +292,50 @@ class DpmReader:
         dim_set = set(dim)
         metric = [p for p in metric if p not in dim_set]
         return dim, metric
+
+    @staticmethod
+    def read_open_keys(table: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Return a Table's open keys (KeyVariables on Key Headers) as dim specs.
+
+        In a non-flat table an open axis (``HasOpenRows``/``Columns``/``Sheets``)
+        is not materialised in the grid; its rows are instantiated at report time,
+        each identified by a **KeyVariable** -- the *open key*. Every open key is
+        an additional DSD Dimension (spec 3.2.7) that the FactVariable Contexts
+        never mention, so it is read from the Table's ``keyVariables`` rather than
+        from the Contexts. Closed tables have no open keys (empty list).
+
+        Each entry::
+
+            {"propertyId": int,
+             "isEnumerated": bool,
+             "categoryCode": str | None,      # the enumerated key's Category
+             "allowedItemCodes": [str, ...]}  # open-axis SubCategory subset
+
+        For an **enumerated** open key the allowed Items are its open-axis
+        SubCategory subset (e.g. a counterparty identified by *LEI* or *national
+        code*) -- the finite set a ContentConstraint restricts the dimension to,
+        even though the rows themselves are open. A **non-enumerated** open key (a
+        free string such as an entity name) has no enumerable values
+        (``allowedItemCodes`` empty) and is left unconstrained.
+        """
+        open_keys: List[Dict[str, Any]] = []
+        for kv in table.get("keyVariables") or []:
+            prop = kv.get("property") or {}
+            pid = prop.get("id")
+            if pid is None:
+                continue
+            enum = kv.get("enumeration") or {}
+            open_keys.append(
+                {
+                    "propertyId": pid,
+                    "isEnumerated": bool(kv.get("isEnumerated")),
+                    "categoryCode": enum.get("categoryCode"),
+                    "allowedItemCodes": [
+                        i["code"] for i in (enum.get("items") or []) if i.get("code")
+                    ],
+                }
+            )
+        return open_keys
 
     # -- constraint support (datapoint keys per dimension) ----------------
     # A non-flat table's valid-series space is the set of its FactVariable
@@ -355,28 +402,54 @@ class DpmReader:
         return cache
 
     def read_table_constraint_values(
-        self, table_version_id: int, dimension_property_ids: List[int]
+        self,
+        table_version_id: int,
+        dimension_property_ids: List[int],
+        open_keys: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
         """Return the data-point dimension keys for a Table's constraint.
 
-        ``dimension_property_ids`` are the DSD's dimension Properties (from
-        :meth:`read_table_components`). The result is::
+        ``dimension_property_ids`` are the **context** dimension Properties (from
+        :meth:`read_table_components`); ``open_keys`` are the open-axis dimensions
+        (from :meth:`read_open_keys`), handled separately because they are not
+        pinned per data point. The result is::
 
             {"dims": {prop_id: {"categoryCode", "defaultItemCode"}},
              "keys": [ {prop_id: item_code, ...}, ... ],   # distinct, dims filled
-             "usesDefault": {prop_id: bool}}               # dim defaulted somewhere
+             "usesDefault": {prop_id: bool},               # dim defaulted somewhere
+             "datapointCount": int,
+             "openDims": {prop_id: {"categoryCode", "isEnumerated",
+                                    "allowedItemCodes": [...]}}}
 
-        Each data point (fact Variable) contributes one full dimension key: the
-        Item its Context pins for each dimension, or the Category default Item
-        where the Context omits the dimension. Keys are de-duplicated (several
+        Each data point (fact Variable) contributes one full **context** key: the
+        Item its Context pins for each context dimension, or the Category default
+        Item where the Context omits the dimension. Keys are de-duplicated (several
         data points differing only by metric collapse to one series key).
         ``usesDefault[p]`` is True when at least one data point defaulted
-        dimension ``p`` (so its default Item is among the values). Spec 3.3.8.
+        dimension ``p`` (so its default Item is among the values). Open keys never
+        appear in ``keys`` -- their rows are open -- but an enumerated open key
+        carries the finite ``allowedItemCodes`` its open-axis SubCategory permits,
+        which the constraint lists for that dimension. Spec 3.3.8.
         """
         session = self._db.session
+        open_dims = {
+            k["propertyId"]: {
+                "categoryCode": k.get("categoryCode"),
+                "isEnumerated": bool(k.get("isEnumerated")),
+                "allowedItemCodes": list(k.get("allowedItemCodes") or []),
+            }
+            for k in (open_keys or [])
+            if k.get("propertyId") is not None
+        }
         dims = sorted(set(dimension_property_ids))
         if not dims:
-            return {"dims": {}, "keys": [], "usesDefault": {}}
+            return {
+                "dims": {},
+                "keys": [],
+                "usesDefault": {},
+                "datapointCount": 0,
+                "openDims": open_dims,
+            }
         defaults = self._default_items_by_category()
 
         dim_meta: Dict[int, Dict[str, Any]] = {}
@@ -425,4 +498,5 @@ class DpmReader:
             "keys": keys,
             "usesDefault": uses_default,
             "datapointCount": len(datapoints),
+            "openDims": open_dims,
         }
