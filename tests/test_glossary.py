@@ -130,6 +130,54 @@ def test_open_property_maxlength_facet():
     assert concept.facets is not None and concept.facets.max_length == 255
 
 
+def _sample_hierarchy_subcategory():
+    # x0 (root) -> {AL, AT}; AT -> ATsub. Codes resolve against the GA codelist.
+    return {
+        "code": "GA5",
+        "name": "EU geographies",
+        "description": None,
+        "categoryCode": "GA",
+        "items": [
+            {"code": "x0", "parentCode": None, "name": "All areas"},
+            {"code": "AL", "parentCode": "x0", "name": "Albania"},
+            {"code": "AT", "parentCode": "x0", "name": "Austria"},
+            {"code": "ATsub", "parentCode": "AT", "name": "Austria region"},
+        ],
+    }
+
+
+def test_subcategory_to_hierarchy_builds_tree():
+    h = G.subcategory_to_hierarchy(
+        _sample_hierarchy_subcategory(), agency="EBA", conventions=_conv(),
+        report=ReviewReport(),
+    )
+    assert h.id == "GA5" and h.agency == "EBA" and h.name == "EU geographies"
+    assert [c.id for c in h.codes] == ["x0"]            # single root
+    root = h.codes[0]
+    assert root.urn == "urn:sdmx:org.sdmx.infomodel.codelist.Code=EBA:GA(1.0).x0"
+    assert {c.id for c in root.codes} == {"AL", "AT"}   # two children
+    at = next(c for c in root.codes if c.id == "AT")
+    assert [c.id for c in at.codes] == ["ATsub"]        # nested grandchild
+
+
+def test_hierarchy_serialises_and_references_codes():
+    from wp_sdmx_dpm.sdmx.serializer import serialize
+
+    h = G.subcategory_to_hierarchy(
+        _sample_hierarchy_subcategory(), agency="EBA", conventions=_conv(),
+        report=ReviewReport(),
+    )
+    xml = serialize([h], "sdmx-ml")
+    assert '<str:Hierarchy id="GA5"' in xml
+    assert 'hasFormalLevels="false"' in xml
+    assert '<str:HierarchicalCode id="x0">' in xml
+    assert "<str:Code>urn:sdmx:org.sdmx.infomodel.codelist.Code=EBA:GA(1.0).AL</str:Code>" in xml
+    # mixing a hierarchy with other artefacts in one message is rejected
+    from pysdmx.model import Codelist
+    with pytest.raises(ValueError):
+        serialize([h, Codelist(id="X", name="x", agency="EBA", version="1.0")], "sdmx-ml")
+
+
 def test_datatype_mapping_flags_unknown():
     from pysdmx.model.dataflow import DataType
 
@@ -145,7 +193,7 @@ def test_convert_corep_le_glossary_serialises(tmp_path):
     from pysdmx.model import Codelist, ConceptScheme
 
     from wp_sdmx_dpm.convert.dpm_to_sdmx import convert_module
-    from wp_sdmx_dpm.sdmx.serializer import serialize
+    from wp_sdmx_dpm.sdmx.serializer import partition_stages, serialize
 
     res = convert_module(str(DB_PATH), "COREP_LE", layers=["glossary"])
     codelists = {o.id for o in res.objects if isinstance(o, Codelist)}
@@ -161,6 +209,12 @@ def test_convert_corep_le_glossary_serialises(tmp_path):
             clid = concept.enum_ref.split("=")[1].split(":")[1].split("(")[0]
             assert clid in codelists, f"dangling enum_ref to {clid}"
 
-    out = tmp_path / "COREP_LE.xml"
-    serialize(res.objects, "sdmx-ml", str(out))
-    assert read_sdmx(out) is not None
+    # Hierarchies must be serialised in their own tier (pysdmx can't write them
+    # alongside other artefacts), so serialise per dependency tier as the CLI does.
+    for label, objects in partition_stages(res.objects):
+        if not objects:
+            continue
+        out = tmp_path / f"COREP_LE.{label}.xml"
+        serialize(objects, "sdmx-ml", str(out))
+        if label != "hierarchies":
+            assert read_sdmx(out) is not None

@@ -7,7 +7,9 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from .convert.dpm_to_sdmx import convert_module
+from pysdmx.model import ConceptScheme
+
+from .convert.dpm_to_sdmx import convert_glossary, convert_module
 from .convert.sdmx_to_dpm import convert_structure
 from .sdmx.serializer import partition_stages, serialize
 
@@ -27,7 +29,13 @@ def dpm_to_sdmx_main(argv: Optional[List[str]] = None) -> int:
         prog="dpm-to-sdmx", description="Translate a DPM module into SDMX structures."
     )
     p.add_argument("--db", required=True, help="Path to the input DPM SQLite database")
-    p.add_argument("--module", required=True, help="Module code, e.g. COREP_LE")
+    p.add_argument("--module", help="Module code, e.g. COREP_LE")
+    p.add_argument(
+        "--glossary",
+        action="store_true",
+        help="Export the whole glossary (all codelists, hierarchies and concepts), "
+        "independent of any module. Mutually exclusive with --module.",
+    )
     p.add_argument("--release", default=None, help="DPM release code (default: latest)")
     p.add_argument("--out", required=True, help="Output directory")
     p.add_argument("--format", default="sdmx-ml", choices=["sdmx-ml", "json"])
@@ -45,33 +53,55 @@ def dpm_to_sdmx_main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--layers", type=_layers_arg, default=None, help="Comma-separated subset")
     args = p.parse_args(argv)
 
-    result = convert_module(
-        args.db,
-        args.module,
-        release_code=args.release,
-        layers=args.layers,
-        include_agency=not args.no_agency,
-    )
+    if bool(args.module) == bool(args.glossary):
+        p.error("provide exactly one of --module or --glossary")
+
+    if args.glossary:
+        result = convert_glossary(
+            args.db,
+            release_code=args.release,
+            include_agency=not args.no_agency,
+        )
+        base = _glossary_basename(result.objects)
+    else:
+        result = convert_module(
+            args.db,
+            args.module,
+            release_code=args.release,
+            layers=args.layers,
+            include_agency=not args.no_agency,
+        )
+        base = args.module
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     ext = "xml" if args.format == "sdmx-ml" else "json"
 
     # Emit one message per dependency tier so they load into FMR in order:
-    # codelists (agencies+codelists) -> concepts (concept schemes referencing
-    # codelists) -> structures (DSDs/Dataflows referencing both). Files are named
-    # with a numeric prefix so a glob loads them in order.
+    # codelists (agencies+codelists) -> hierarchies -> concepts (concept schemes
+    # referencing codelists) -> structures (DSDs/Dataflows referencing both).
+    # Files are named with a numeric prefix so a glob loads them in order.
     # See out/fmr-structure-submission-race.md.
     written = []
     for order, (label, objects) in enumerate(partition_stages(result.objects), start=1):
         if not objects:
             continue
-        name = f"{args.module}.{order}_{label}.{ext}"
+        name = f"{base}.{order}_{label}.{ext}"
         serialize(objects, args.format, str(out_dir / name), sdmx_version=args.sdmx_version)
         written.append(name)
 
-    (out_dir / f"{args.module}.review.json").write_text(result.report.to_json())
+    (out_dir / f"{base}.review.json").write_text(result.report.to_json())
     print(f"Wrote {', '.join(written)} and review report to {out_dir}")
     return 1 if result.report.has_blocking else 0
+
+
+def _glossary_basename(objects: List) -> str:
+    """Name whole-glossary output by its agency when there is just one, else GLOSSARY."""
+    agencies = set()
+    for obj in objects:
+        if isinstance(obj, ConceptScheme):
+            agency = obj.agency.id if hasattr(obj.agency, "id") else obj.agency
+            agencies.add(str(agency))
+    return agencies.pop() if len(agencies) == 1 else "GLOSSARY"
 
 
 def sdmx_to_dpm_main(argv: Optional[List[str]] = None) -> int:

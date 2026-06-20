@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>f680ef56-2ca6-4c83-a971-bb1d5f03c635</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-06-20T15:07:37Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:AgencySchemes>
+			<str:AgencyScheme id="AGENCIES" isExternalReference="false" agencyID="SDMX" isPartial="false">
+				<com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+				<str:Agency id="EBA">
+					<com:Name xml:lang="en">European Banking Authority</com:Name>
+				</str:Agency>
+			</str:AgencyScheme>
+		</str:AgencySchemes>
+	</mes:Structures>
+</mes:Structure>

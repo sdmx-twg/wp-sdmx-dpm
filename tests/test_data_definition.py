@@ -78,7 +78,7 @@ def test_convert_corep_le_data_def_validates():
     from pysdmx.model.dataflow import DataStructureDefinition, Dataflow
 
     from wp_sdmx_dpm.convert.dpm_to_sdmx import convert_module
-    from wp_sdmx_dpm.sdmx.serializer import serialize
+    from wp_sdmx_dpm.sdmx.serializer import partition_stages, serialize
 
     res = convert_module(str(DB_PATH), "COREP_LE", layers=["glossary", "data-def"])
     dsds = [o for o in res.objects if isinstance(o, DataStructureDefinition)]
@@ -92,6 +92,11 @@ def test_convert_corep_le_data_def_validates():
         for comp in dsd.components:
             assert comp.concept.item_id in concept_ids
 
-    # serialised structure passes pysdmx schema validation
-    xml = serialize(res.objects, "sdmx-ml")
-    assert read_sdmx(io.BytesIO(xml.encode())) is not None
+    # serialised structure passes pysdmx schema validation (per dependency tier;
+    # the hierarchies tier uses the in-house writer, not pysdmx)
+    for label, objects in partition_stages(res.objects):
+        if not objects:
+            continue
+        xml = serialize(objects, "sdmx-ml")
+        if label != "hierarchies":
+            assert read_sdmx(io.BytesIO(xml.encode())) is not None

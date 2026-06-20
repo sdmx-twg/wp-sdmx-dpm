@@ -771,6 +771,19 @@ This is consistent with the SuperCategory pattern already used at the Property-r
 
 > **Fallback**: When no SuperCategory can reasonably be defined (for example, base Codelists owned by different agencies with no aggregating Extended Codelist), create separate SubCategory hierarchies per Category, each reflecting the portion of the cross-codelist hierarchy that falls within that Category. The cross-Category linkage is then lost from the model.
 
+#### DPM → SDMX: hierarchical SubCategory → Hierarchy
+
+In the reverse direction, every **hierarchical SubCategory** over a Category — a `SubCategory` whose `SubCategoryItem`s carry at least one `ParentItemID` — maps to one SDMX **`Hierarchy`** over the Codelist mapped from that Category:
+
+1. The Hierarchy's `id`/`name` derive from the SubCategory's code/name (the code is normalised to a valid SDMX id; the original is retained as a `DPM_CODE` annotation).
+2. Each `SubCategoryItem` maps to a **`HierarchicalCode`** whose `id` is the (normalised) Item code and whose `<Code>` is the URN of that code **in the parent Category's Codelist** (`urn:…codelist.Code=AGENCY:CODELIST(1.0).CODE`) — the codes are *referenced*, not duplicated.
+3. `ParentItemID` links are reproduced by nesting `HierarchicalCode`s; an item whose parent is absent is a root.
+4. `hasFormalLevels` is `false` (DPM hierarchies are value-based, with no formal Level structure), and the Hierarchy is `isPartial` (it selects a subset of the Codelist's codes).
+
+Flat SubCategories (subsets with no parent–child links) are **not** Hierarchies; they are subset/constraint artefacts (sections 3.4.1–3.4.2).
+
+> **Dependency note.** A `Hierarchy`'s `HierarchicalCode`s reference `Code`s in a Codelist, so the Codelist must exist before the Hierarchy that points at it — they cannot be defined circularly.
+
 
 ## 3.5 Concept ↔ Property
 
@@ -1002,8 +1015,8 @@ A qualitative Property (`IsMetric = FALSE`) can be used as a FactVariable (measu
 
 #### 3.5.3.5 Data type mapping
 
-> **Authoritative source**: the full DPM ↔ SDMX data type correspondence (and the
-> matching `_DATATYPE_MAP` in the converter) is maintained in
+> **Authoritative source**: the full DPM ↔ SDMX data type correspondence is
+> maintained in
 > [Transformation Guidelines §5 — Data types mapping](../../transformation-guidelines/05_data_types_mapping.md).
 > The tables below are kept consistent with it; where they differ, that file wins.
 

@@ -81,12 +81,16 @@ def convert_module(
             categories = reader.read_categories(
                 list(category_codes), release_code=release_code
             )
+            hierarchies = reader.read_hierarchies(
+                list(category_codes), release_code=release_code
+            )
             objects += builder.build_glossary(
                 categories,
                 properties,
                 conceptscheme_id=conceptscheme_id,
                 conceptscheme_name=conventions.conceptscheme_name_for(agency),
                 agency=agency,
+                hierarchies_by_category=hierarchies,
             )
 
         if "data-def" in layers:
@@ -111,6 +115,70 @@ def convert_module(
             "Constraints layer (SubCategory -> ContentConstraint) is Phase 4.",
             artefact=module_code,
             severity=ReviewSeverity.INFO,
+        )
+
+    return DpmToSdmxResult(objects=objects, report=report)
+
+
+def convert_glossary(
+    db_path: str,
+    *,
+    release_code: Optional[str] = None,
+    conventions: Optional[Conventions] = None,
+    include_agency: bool = True,
+) -> DpmToSdmxResult:
+    """Build the *whole* glossary (Codelists + Hierarchies + Concepts), no module.
+
+    Unlike :func:`convert_module`, this does not filter by what a module uses:
+    every enumerated Category becomes a Codelist carrying all its Items, every
+    hierarchical SubCategory becomes a Hierarchy, and every Property becomes a
+    Concept. Artefacts are grouped by owning Agency -- one ``CS_<AGENCY>``
+    ConceptScheme per agency -- and a single ``SDMX:AGENCIES`` scheme bundles all
+    agencies referenced. This is the practical unit for sharing/importing the
+    glossary: importing a Codelist brings everything related to it.
+    """
+    conventions = conventions or Conventions()
+    report = ReviewReport()
+    builder = SdmxBuilder(conventions, report)
+    objects: List[Any] = []
+
+    with DpmReader(db_path) as reader:
+        # Emit *every* enumerated Category as a Codelist -- including "internal"
+        # ones (e.g. the "_PR"/"_TE" property categories) -- because Concepts may
+        # reference them via their enumerated representation; dropping them would
+        # leave dangling references. The whole-glossary export is deliberately
+        # complete and self-contained.
+        categories = [
+            c
+            for c in reader.read_all_categories(release_code=release_code)
+            if c.get("isEnumerated")
+        ]
+        hierarchies = reader.read_hierarchies(release_code=release_code)
+        properties = list(reader.properties_by_id(release_code=release_code).values())
+
+    # Group categories and properties by owning agency so each agency gets its
+    # own ConceptScheme (and its codelists carry the right agencyID).
+    cats_by_agency: Dict[str, List[Dict[str, Any]]] = {}
+    for category in categories:
+        agency = conventions.agency_for(category.get("owner"))
+        cats_by_agency.setdefault(agency, []).append(category)
+    props_by_agency: Dict[str, List[Dict[str, Any]]] = {}
+    for prop in properties:
+        agency = conventions.agency_for(prop.get("owner"))
+        props_by_agency.setdefault(agency, []).append(prop)
+
+    agencies = sorted(set(cats_by_agency) | set(props_by_agency))
+    if include_agency:
+        objects.append(builder.build_agency_scheme(agencies))
+
+    for agency in agencies:
+        objects += builder.build_glossary(
+            cats_by_agency.get(agency, []),
+            props_by_agency.get(agency, []),
+            conceptscheme_id=conventions.conceptscheme_id_for(agency),
+            conceptscheme_name=conventions.conceptscheme_name_for(agency),
+            agency=agency,
+            hierarchies_by_category=hierarchies,
         )
 
     return DpmToSdmxResult(objects=objects, report=report)

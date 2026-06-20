@@ -117,17 +117,22 @@ Split the submission into separate transactions, one per dependency tier, and
 load (or GUI-import) them in this order:
 
 1. **Codelists:** OrganisationSchemes/Agencies, Codelists.
-2. **Concepts:** ConceptSchemes, Hierarchies. *(A Concept's enumerated core
-   representation references a Codelist, so the ConceptScheme cannot share a
-   submission with the Codelists it points at — it must load after tier 1.)*
-3. **Structures:** DataStructures, Dataflows, Constraints, CategorySchemes.
+2. **Hierarchies:** Hierarchies. *(Each `HierarchicalCode` references a `Code` in
+   a Codelist, so a Hierarchy cannot share a submission with the Codelist it
+   points at — it must load after tier 1.)*
+3. **Concepts:** ConceptSchemes. *(A Concept's enumerated core representation
+   references a Codelist, so the ConceptScheme cannot share a submission with the
+   Codelists it points at — it must load after tier 1.)*
+4. **Structures:** DataStructures, Dataflows, Constraints, CategorySchemes.
 
 With each tier's referenced artefacts persisted by the previous transaction, the
 next one resolves deterministically. Because each file is a self-contained
 message, this also works when importing through the FMR GUI one file at a time
 (the GUI submits via the same structure API). The converter emits these as
-`<module>.1_codelists.xml`, `<module>.2_concepts.xml`, `<module>.3_structures.xml`
-(`serializer.partition_stages()`).
+`<base>.1_codelists.xml`, `<base>.2_hierarchies.xml`, `<base>.3_concepts.xml`,
+`<base>.4_structures.xml` (`serializer.partition_stages()`); empty tiers are
+skipped, so a numeric gap in the filenames is normal (`<base>` is the module
+code, or the agency for a whole-glossary export).
 
 > **Note (2026-06-20):** an earlier version of the workaround grouped Codelists
 > *and* ConceptSchemes into a single "vocabulary" file. That was only safe while

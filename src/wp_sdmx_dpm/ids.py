@@ -24,20 +24,24 @@ _INVALID = re.compile(r"[^A-Za-z0-9_@$\-]")
 def normalise_sdmx_id(dpm_code: str) -> str:
     """Map an arbitrary DPM code to a syntactically valid SDMX id.
 
+    SDMX (and FMR) require an id to match ``[A-Za-z][A-Za-z0-9_@$\\-]*`` -- it
+    must *start with a letter*. Invalid characters are replaced with ``_``; if the
+    result does not begin with a letter (e.g. the internal ``_PR``/``_TE``
+    categories, or a code starting with a digit), an ``X`` is prepended.
+
     Pure and deterministic. The original code should be preserved alongside the
     result via :func:`code_annotation` so it can be recovered on the way back.
     """
     if dpm_code is None:
         raise ValueError("dpm_code must not be None")
     normalised = _INVALID.sub("_", dpm_code)
-    # SDMX ids may not start with a digit in some profiles; prefix if needed.
-    if normalised and normalised[0].isdigit():
-        normalised = "_" + normalised
+    if not normalised or not normalised[0].isalpha():
+        normalised = "X" + normalised
     return normalised
 
 
 def is_valid_sdmx_id(value: str) -> bool:
-    return bool(value) and _INVALID.search(value) is None and not value[0].isdigit()
+    return bool(value) and _INVALID.search(value) is None and value[0].isalpha()
 
 
 def code_annotation(original_code: str) -> Optional[dict]:

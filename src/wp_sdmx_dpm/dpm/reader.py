@@ -125,6 +125,21 @@ class DpmReader:
         )
         return rows
 
+    def read_all_categories(
+        self, *, release_code: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Return every Category dict (with items), independent of any module.
+
+        Used by the module-independent glossary export so that importing a
+        Codelist brings the *whole* value domain, not just the slice a module
+        happens to reference. ~150 rows; cheap to load whole.
+        """
+        params = self._params(["*"], release_code=release_code)
+        rows, _ = self._db.services.structure.query_categories(
+            params=params, detail="full", limit=1_000_000
+        )
+        return rows
+
     def properties_by_id(
         self, *, release_code: Optional[str] = None
     ) -> Dict[int, Dict[str, Any]]:
@@ -157,6 +172,106 @@ class DpmReader:
         WHERE tvc.TableVID = :tvid AND vv.PropertyID IS NOT NULL
         """
     )
+
+    # -- hierarchy support (SubCategory parent-child trees) ----------------
+    # A SubCategory is a versioned subset of a Category's Items. When its Items
+    # carry parent-child links (``SubCategoryItem.ParentItemID``), the SubCategory
+    # is a *hierarchy* over the Category's Codelist and maps to an SDMX Hierarchy
+    # (glossary detailed rules section 3.4.3). The current version of each
+    # SubCategory is the one whose ``SubCategoryVersion`` is still open
+    # (``EndReleaseID IS NULL``); item codes/names are resolved against the
+    # parent Category's current ``ItemCategory`` rows.
+    _HIERARCHIES_SQL = text(
+        """
+        SELECT c.Code        AS cat_code,
+               sc.SubCategoryID AS sub_id,
+               sc.Code        AS sub_code,
+               sc.Name        AS sub_name,
+               sc.Description AS sub_desc,
+               sci.ItemID     AS item_id,
+               sci.ParentItemID AS parent_item_id,
+               sci."Order"    AS ord,
+               sci.Label      AS label,
+               ic.Code        AS item_code,
+               i.Name         AS item_name
+        FROM SubCategory sc
+        JOIN Category c            ON c.CategoryID = sc.CategoryID
+        JOIN SubCategoryVersion scv ON scv.SubCategoryID = sc.SubCategoryID
+                                   AND scv.EndReleaseID IS NULL
+        JOIN SubCategoryItem sci   ON sci.SubCategoryVID = scv.SubCategoryVID
+        JOIN Item i                ON i.ItemID = sci.ItemID
+        LEFT JOIN ItemCategory ic  ON ic.ItemID = sci.ItemID
+                                  AND ic.CategoryID = sc.CategoryID
+                                  AND ic.EndReleaseID IS NULL
+        WHERE c.IsEnumerated = 1
+        ORDER BY c.Code, sc.SubCategoryID, sci."Order"
+        """
+    )
+
+    def read_hierarchies(
+        self, category_codes: Optional[List[str]] = None, *, release_code: Optional[str] = None
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """Return hierarchical SubCategories grouped by their Category code.
+
+        Only SubCategories whose Items carry at least one parent-child link are
+        returned (flat subsets are not hierarchies). Each entry is a dict::
+
+            {"code", "name", "description", "categoryCode",
+             "items": [{"code", "parentCode", "name", "label", "order"}, ...]}
+
+        ``category_codes`` restricts the result to those Categories (the
+        module-driven path passes the codelists it emits); ``None`` returns the
+        hierarchies of every enumerated Category (the whole-glossary path).
+
+        Note: this reads the *current* (open) SubCategory version regardless of
+        ``release_code`` -- per-release hierarchy history is not yet wired up.
+        """
+        wanted = set(category_codes) if category_codes is not None else None
+        rows = self._db.session.execute(self._HIERARCHIES_SQL).fetchall()
+
+        # Group rows by SubCategory, preserving DPM order.
+        by_sub: Dict[int, Dict[str, Any]] = {}
+        for r in rows:
+            if wanted is not None and r.cat_code not in wanted:
+                continue
+            sub = by_sub.get(r.sub_id)
+            if sub is None:
+                sub = by_sub[r.sub_id] = {
+                    "code": r.sub_code,
+                    "name": r.sub_name,
+                    "description": r.sub_desc,
+                    "categoryCode": r.cat_code,
+                    "_rows": [],
+                }
+            sub["_rows"].append(r)
+
+        result: Dict[str, List[Dict[str, Any]]] = {}
+        for sub in by_sub.values():
+            subrows = sub.pop("_rows")
+            # Resolve item ids -> codes within this SubCategory so parent links
+            # (which point at ItemIDs) can be expressed as parent *codes*.
+            code_by_item = {r.item_id: r.item_code for r in subrows if r.item_code}
+            if not any(r.parent_item_id is not None for r in subrows):
+                continue  # flat subset, not a hierarchy
+            items = []
+            for r in subrows:
+                if not r.item_code:
+                    continue  # item not in the current codelist; skip
+                parent_code = code_by_item.get(r.parent_item_id) if r.parent_item_id else None
+                items.append(
+                    {
+                        "code": r.item_code,
+                        "parentCode": parent_code,
+                        "name": r.item_name,
+                        "label": r.label,
+                        "order": r.ord,
+                    }
+                )
+            if not items:
+                continue
+            sub["items"] = items
+            result.setdefault(sub["categoryCode"], []).append(sub)
+        return result
 
     def read_table_components(self, table_version_id: int) -> Tuple[List[int], List[int]]:
         """Return (dimension property ids, metric property ids) for a Table.

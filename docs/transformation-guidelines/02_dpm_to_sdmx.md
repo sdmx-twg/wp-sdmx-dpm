@@ -31,6 +31,24 @@ Each enumerated Category becomes a Codelist; each Item becomes a Code. The `Item
 
 Only Items with `IsProperty = FALSE` become Codes. Items with `IsProperty = TRUE` are Properties and are handled next. DPM default-item flags (`IsDefaultItem`, e.g. `x0`) are XBRL-validation machinery and are **not** emitted as Codes.
 
+### Hierarchical SubCategory → Hierarchy
+
+For each translated Category, every **hierarchical SubCategory** over it (a `SubCategory` whose `SubCategoryItem`s carry `ParentItemID` links) becomes one SDMX **`Hierarchy`** over the Category's Codelist. Each item becomes a `HierarchicalCode` that *references* a Code in the Codelist by URN (codes are not duplicated), nested to reproduce the parent–child tree. Flat (non-hierarchical) SubCategories are not emitted here.
+
+```xml
+<Hierarchy id="GA5" agencyID="EBA" version="1.0" isExternalReference="false" hasFormalLevels="false">
+  <Name xml:lang="en">EU geographies</Name>
+  <HierarchicalCode id="x0">
+    <Code>urn:sdmx:org.sdmx.infomodel.codelist.Code=EBA:GA(1.0).x0</Code>
+    <HierarchicalCode id="AT">
+      <Code>urn:sdmx:org.sdmx.infomodel.codelist.Code=EBA:GA(1.0).AT</Code>
+    </HierarchicalCode>
+  </HierarchicalCode>
+</Hierarchy>
+```
+
+See [§3.4.3 of the glossary mapping rules](../models-relationships/01_glossary/03_detailed_mapping_rules.md#343-hierarchies) for the full rule. pysdmx (1.16) cannot serialise Hierarchies, so the converter writes this tier with a small in-house SDMX-ML writer; the output is FMR-loadable.
+
 ### Property → Concept
 
 Each Property becomes a Concept in the single ConceptScheme for the agency, named by convention `CS_<AGENCY>` (e.g. `CS_EBA`). The enumerated representation points at the Codelist mapped above; metric Properties carry a numeric `TextFormat`. See [§5 Data types mapping](05_data_types_mapping.md) for the full representation rules.

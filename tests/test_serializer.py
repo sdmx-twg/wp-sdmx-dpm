@@ -53,23 +53,27 @@ def test_agency_scheme_carries_named_agency():
 
 
 def test_partition_stages_orders_by_dependency_tier():
+    from pysdmx.model import Hierarchy
+
     builder = SdmxBuilder(Conventions(), ReviewReport())
     agency = builder.build_agency_scheme(["EBA"])
     cl = Codelist(id="CL", name="cl", agency="EBA", version="1.0")
+    hier = Hierarchy(id="H", name="h", agency="EBA", version="1.0")
     cs = ConceptScheme(id="CS", name="cs", agency="EBA", version="1.0")
     dsd = DataStructureDefinition(id="DSD", name="dsd", agency="EBA", version="1.0",
                                   components=[])
     df = Dataflow(id="DF", name="df", agency="EBA", version="1.0")
 
-    stages = partition_stages([agency, df, cl, cs, dsd])
+    stages = partition_stages([agency, df, cl, cs, hier, dsd])
     labels = [label for label, _ in stages]
     by_label = {label: objs for label, objs in stages}
 
-    # Tiers are returned in dependency order: codelists -> concepts -> structures.
-    assert labels == ["codelists", "concepts", "structures"]
-    # Concepts (which reference codelists) load AFTER codelists.
-    assert labels.index("codelists") < labels.index("concepts")
+    # Tiers are returned in dependency order.
+    assert labels == ["codelists", "hierarchies", "concepts", "structures"]
+    # Hierarchies and concepts (which reference codelists) load AFTER codelists.
+    assert labels.index("codelists") < labels.index("hierarchies") < labels.index("concepts")
     assert agency in by_label["codelists"] and cl in by_label["codelists"]
+    assert hier in by_label["hierarchies"]
     assert cs in by_label["concepts"]
     # Structures tier preserves input order (df precedes dsd).
     assert by_label["structures"] == [df, dsd]

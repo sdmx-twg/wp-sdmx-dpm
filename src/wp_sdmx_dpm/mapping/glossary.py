@@ -18,7 +18,15 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pysdmx.model import Annotation, Code, Codelist, Concept, Facets
+from pysdmx.model import (
+    Annotation,
+    Code,
+    Codelist,
+    Concept,
+    Facets,
+    HierarchicalCode,
+    Hierarchy,
+)
 from pysdmx.model.dataflow import DataType
 
 from ..config import Conventions, ReviewReport, ReviewSeverity
@@ -133,7 +141,9 @@ def _item_to_code(item: Dict[str, Any]) -> Code:
     )
     return Code(
         id=normalise_sdmx_id(code),
-        name=item.get("name"),
+        # SDMX requires a Name on every Code; fall back to the code itself when
+        # the DPM Item carries none.
+        name=item.get("name") or code,
         description=item.get("description"),
         annotations=tuple(anns),
     )
@@ -144,7 +154,17 @@ def category_to_codelist(
 ) -> Codelist:
     """Map an enumerated DPM Category dict to an SDMX Codelist."""
     code = category["code"]
-    items = [_item_to_code(it) for it in (category.get("items") or [])]
+    items = []
+    for it in category.get("items") or []:
+        if not it.get("code"):
+            report.add(
+                "codelist.item_without_code",
+                "Skipped a Category Item that has no code (cannot map to an SDMX Code)",
+                artefact=f"Codelist:{code}",
+                severity=ReviewSeverity.REVIEW,
+            )
+            continue
+        items.append(_item_to_code(it))
     return Codelist(
         id=normalise_sdmx_id(code),
         name=category.get("name"),
@@ -158,6 +178,88 @@ def category_to_codelist(
 
 def _codelist_urn(agency: str, codelist_id: str, version: str = "1.0") -> str:
     return f"urn:sdmx:org.sdmx.infomodel.codelist.Codelist={agency}:{codelist_id}({version})"
+
+
+def _code_urn(agency: str, codelist_id: str, code_id: str, version: str = "1.0") -> str:
+    """URN of a single Code, as referenced by a HierarchicalCode."""
+    return (
+        f"urn:sdmx:org.sdmx.infomodel.codelist.Code="
+        f"{agency}:{codelist_id}({version}).{code_id}"
+    )
+
+
+def subcategory_to_hierarchy(
+    subcategory: Dict[str, Any],
+    *,
+    agency: str,
+    conventions: Conventions,
+    report: ReviewReport,
+) -> Optional[Hierarchy]:
+    """Map a hierarchical DPM SubCategory to an SDMX Hierarchy over its Codelist.
+
+    The SubCategory's Items become :class:`HierarchicalCode` nodes whose
+    ``parentCode`` links reproduce the DPM parent-child tree; each node carries
+    the URN of the Code it references in the Codelist mapped from the parent
+    Category (glossary detailed rules section 3.4.3). Returns ``None`` if no node
+    survives (e.g. every item dropped for lack of a current code).
+    """
+    category_code = subcategory["categoryCode"]
+    codelist_id = normalise_sdmx_id(category_code)
+    sub_code = subcategory["code"]
+    artefact = f"SubCategory:{sub_code}"
+
+    # First pass: per-item metadata + parent links (deduping on code id, which
+    # SDMX requires to be unique within a hierarchy).
+    meta: Dict[str, Dict[str, Any]] = {}
+    order: List[str] = []
+    children_of: Dict[Optional[str], List[str]] = {}
+    for item in subcategory.get("items") or []:
+        code_id = normalise_sdmx_id(item["code"])
+        if code_id in meta:
+            report.add(
+                "hierarchy.duplicate_code",
+                f"Code {code_id!r} appears more than once in {sub_code!r}; "
+                "keeping the first occurrence (SDMX requires unique ids per hierarchy)",
+                artefact=artefact,
+                severity=ReviewSeverity.REVIEW,
+            )
+            continue
+        parent = item.get("parentCode")
+        meta[code_id] = {
+            "name": item.get("name"),
+            "parent_id": normalise_sdmx_id(parent) if parent else None,
+        }
+        order.append(code_id)
+
+    if not meta:
+        return None
+
+    for code_id in order:
+        parent_id = meta[code_id]["parent_id"]
+        # A node whose declared parent is absent is promoted to a root.
+        key = parent_id if parent_id in meta else None
+        children_of.setdefault(key, []).append(code_id)
+
+    def build(code_id: str) -> HierarchicalCode:
+        return HierarchicalCode(
+            id=code_id,
+            name=meta[code_id]["name"],
+            urn=_code_urn(agency, codelist_id, code_id),
+            codes=[build(c) for c in children_of.get(code_id, [])],
+        )
+
+    roots = [build(c) for c in children_of.get(None, [])]
+
+    return Hierarchy(
+        id=normalise_sdmx_id(sub_code),
+        name=subcategory.get("name") or sub_code,
+        description=subcategory.get("description"),
+        agency=agency,
+        version="1.0",
+        codes=roots,
+        is_partial=True,
+        annotations=tuple(_annotations(code_annotation(sub_code))),
+    )
 
 
 def _codelist_ref(agency: str, category_code: str, version: str = "1.0") -> Codelist:

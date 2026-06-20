@@ -24,9 +24,12 @@ def test_ids_roundtrip():
     from wp_sdmx_dpm import ids
 
     assert ids.normalise_sdmx_id("C_00.01") == "C_00_01"
-    assert ids.normalise_sdmx_id("0010") == "_0010"
+    # ids must start with a letter: leading digit / underscore get an "X" prefix
+    assert ids.normalise_sdmx_id("0010") == "X0010"
+    assert ids.normalise_sdmx_id("_PR") == "X_PR"
     assert ids.is_valid_sdmx_id("C_00_01")
     assert not ids.is_valid_sdmx_id("C_00.01")
+    assert not ids.is_valid_sdmx_id("_PR")
     ann = ids.code_annotation("C_00.01")
     assert ann and ann["text"] == "C_00.01"
     assert ids.code_annotation("ALREADY_OK") is None

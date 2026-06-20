@@ -11,14 +11,18 @@ serialisation.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from pysdmx.model import Agency, AgencyScheme, ConceptScheme
 
 from ..config import Conventions, ReviewReport
 from ..ids import normalise_sdmx_id
 from ..mapping.data_definition import table_to_dsd_and_dataflow
-from ..mapping.glossary import category_to_codelist, property_to_concept
+from ..mapping.glossary import (
+    category_to_codelist,
+    property_to_concept,
+    subcategory_to_hierarchy,
+)
 
 # The SDMX agency scheme is a fixed maintainable (SDMX:AGENCIES(1.0)) that every
 # registry hosts; custom agencies are added as items of it.
@@ -85,13 +89,27 @@ class SdmxBuilder:
         conceptscheme_id: str,
         conceptscheme_name: str,
         agency: str,
+        hierarchies_by_category: Optional[Dict[str, List[Dict[str, Any]]]] = None,
     ) -> List[Any]:
-        """Build Codelists + one ConceptScheme from DPM category/property dicts."""
+        """Build Codelists (+ Hierarchies) + one ConceptScheme from DPM dicts.
+
+        ``hierarchies_by_category`` maps a Category code to the hierarchical
+        SubCategories over it (from :meth:`DpmReader.read_hierarchies`); each
+        becomes an SDMX :class:`Hierarchy` over the Category's Codelist. Pass
+        ``None`` to emit codelists without hierarchies.
+        """
+        hierarchies_by_category = hierarchies_by_category or {}
         objects: List[Any] = []
         for category in categories:
             if not category.get("isEnumerated"):
                 continue
             objects.append(category_to_codelist(category, self.conventions, self.report))
+            for sub in hierarchies_by_category.get(category.get("code"), []):
+                hierarchy = subcategory_to_hierarchy(
+                    sub, agency=agency, conventions=self.conventions, report=self.report
+                )
+                if hierarchy is not None:
+                    objects.append(hierarchy)
 
         concepts = [
             property_to_concept(prop, self.conventions, self.report) for prop in properties
