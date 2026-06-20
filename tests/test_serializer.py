@@ -8,7 +8,7 @@ from wp_sdmx_dpm.config import Conventions, ReviewReport
 from wp_sdmx_dpm.sdmx.builder import SdmxBuilder
 from wp_sdmx_dpm.sdmx.serializer import (
     DEFAULT_SDMX_VERSION,
-    partition_messages,
+    partition_stages,
     resolve_format,
     serialize,
 )
@@ -52,7 +52,7 @@ def test_agency_scheme_carries_named_agency():
     assert scheme.items[0].name == "European Banking Authority"
 
 
-def test_partition_messages_splits_vocabulary_from_structures():
+def test_partition_stages_orders_by_dependency_tier():
     builder = SdmxBuilder(Conventions(), ReviewReport())
     agency = builder.build_agency_scheme(["EBA"])
     cl = Codelist(id="CL", name="cl", agency="EBA", version="1.0")
@@ -61,9 +61,15 @@ def test_partition_messages_splits_vocabulary_from_structures():
                                   components=[])
     df = Dataflow(id="DF", name="df", agency="EBA", version="1.0")
 
-    vocabulary, structures = partition_messages([agency, df, cl, cs, dsd])
+    stages = partition_stages([agency, df, cl, cs, dsd])
+    labels = [label for label, _ in stages]
+    by_label = {label: objs for label, objs in stages}
 
-    assert agency in vocabulary and cl in vocabulary and cs in vocabulary
-    assert dsd in structures and df in structures
-    # Order within each group is preserved (df precedes dsd in the input).
-    assert structures == [df, dsd]
+    # Tiers are returned in dependency order: codelists -> concepts -> structures.
+    assert labels == ["codelists", "concepts", "structures"]
+    # Concepts (which reference codelists) load AFTER codelists.
+    assert labels.index("codelists") < labels.index("concepts")
+    assert agency in by_label["codelists"] and cl in by_label["codelists"]
+    assert cs in by_label["concepts"]
+    # Structures tier preserves input order (df precedes dsd).
+    assert by_label["structures"] == [df, dsd]

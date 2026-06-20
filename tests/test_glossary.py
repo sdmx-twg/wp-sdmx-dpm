@@ -94,8 +94,40 @@ def test_enumerated_property_to_concept_uses_enum_ref():
     }
     concept = G.property_to_concept(prop, _conv(), report)
     assert concept.enum_ref == "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:AS(1.0)"
+    # `codes` is what the SDMX-ML writer serialises into <Enumeration>; it must be set.
+    assert concept.codes is not None and concept.codes.id == "AS"
+    assert concept.codes.short_urn == "Codelist=EBA:AS(1.0)"
     back = G.concept_to_property(concept, _conv(), report)
     assert back["isMetric"] is False and back["isEnumerated"] is True
+
+
+def test_enumerated_concept_serialises_enumeration():
+    """Regression: the enumerated CoreRepresentation must reach the SDMX-ML output."""
+    from pysdmx.model import ConceptScheme
+
+    from wp_sdmx_dpm.sdmx.serializer import serialize
+
+    prop = {
+        "code": "ei4", "signature": "ei4", "label": "Accounting standard",
+        "owner": "EBA", "isMetric": False, "isEnumerated": True, "periodType": None,
+        "dataType": {"code": "e"}, "enumeration": {"categoryCode": "AS", "items": []},
+    }
+    concept = G.property_to_concept(prop, _conv(), ReviewReport())
+    cs = ConceptScheme(id="CS_EBA", name="EBA Concepts", agency="EBA", version="1.0",
+                       items=[concept])
+    xml = serialize([cs], "sdmx-ml")
+    assert "<str:CoreRepresentation>" in xml
+    assert "Codelist=EBA:AS(1.0)" in xml
+
+
+def test_open_property_maxlength_facet():
+    prop = {
+        "code": "si615", "signature": "si615", "label": "Identifier",
+        "owner": "EBA", "isMetric": False, "isEnumerated": False,
+        "dataType": {"code": "s"}, "enumeration": None, "valueLength": 255,
+    }
+    concept = G.property_to_concept(prop, _conv(), ReviewReport())
+    assert concept.facets is not None and concept.facets.max_length == 255
 
 
 def test_datatype_mapping_flags_unknown():
@@ -119,6 +151,8 @@ def test_convert_corep_le_glossary_serialises(tmp_path):
     codelists = {o.id for o in res.objects if isinstance(o, Codelist)}
     schemes = [o for o in res.objects if isinstance(o, ConceptScheme)]
     assert codelists and len(schemes) == 1
+    # one ConceptScheme per agency, named by convention CS_<AGENCY>
+    assert schemes[0].id == "CS_EBA"
     assert not res.report.has_blocking
 
     # every enumerated concept must reference a codelist we actually built

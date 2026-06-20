@@ -8,6 +8,7 @@ This section provides practical guidance for transforming structures and data be
 - [2. DPM → SDMX](02_dpm_to_sdmx.md) — a worked example converting a DPM glossary and table into SDMX structures.
 - [3. SDMX → DPM](03_sdmx_to_dpm.md) — the reverse direction, converting an SDMX Dataflow + DSD into a DPM Table.
 - [4. Sample conversion script](04_sample_script.md) — walkthrough of the `dpm_to_sdmx` reference implementation.
+- [5. Data types mapping](05_data_types_mapping.md) — the authoritative DPM ↔ SDMX `DataType`/representation correspondence (the proposal the converter implements).
 
 ## Prerequisites
 

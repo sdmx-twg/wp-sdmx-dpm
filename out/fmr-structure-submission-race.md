@@ -113,13 +113,28 @@ pipelines see spurious failures and must implement a workaround.
 
 ## Workaround
 
-Split the submission into two transactions and load in dependency order:
+Split the submission into separate transactions, one per dependency tier, and
+load (or GUI-import) them in this order:
 
-1. **Vocabulary:** OrganisationSchemes/Agencies, Codelists, ConceptSchemes, Hierarchies.
-2. **Structures:** DataStructures, Dataflows, Constraints, CategorySchemes.
+1. **Codelists:** OrganisationSchemes/Agencies, Codelists.
+2. **Concepts:** ConceptSchemes, Hierarchies. *(A Concept's enumerated core
+   representation references a Codelist, so the ConceptScheme cannot share a
+   submission with the Codelists it points at — it must load after tier 1.)*
+3. **Structures:** DataStructures, Dataflows, Constraints, CategorySchemes.
 
-With the referenced artefacts persisted by the first POST, the second POST
-resolves deterministically.
+With each tier's referenced artefacts persisted by the previous transaction, the
+next one resolves deterministically. Because each file is a self-contained
+message, this also works when importing through the FMR GUI one file at a time
+(the GUI submits via the same structure API). The converter emits these as
+`<module>.1_codelists.xml`, `<module>.2_concepts.xml`, `<module>.3_structures.xml`
+(`serializer.partition_stages()`).
+
+> **Note (2026-06-20):** an earlier version of the workaround grouped Codelists
+> *and* ConceptSchemes into a single "vocabulary" file. That was only safe while
+> Concepts carried no representation; once the converter began emitting the
+> enumerated core representation on Concepts, the ConceptScheme→Codelist
+> reference hit this same race, so the vocabulary tier was split into separate
+> `codelists` and `concepts` files.
 
 ## Suggested fix
 

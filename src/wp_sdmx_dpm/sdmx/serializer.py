@@ -9,7 +9,7 @@ supports it. SDMX-JSON 2.0 is the machine-friendly alternative.
 
 from __future__ import annotations
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from pysdmx.io import write_sdmx
 from pysdmx.io.format import Format
@@ -21,35 +21,44 @@ from pysdmx.model import (
     HierarchyAssociation,
 )
 
-# FMR resolves a DSD's references against the registry store and cannot reliably
-# resolve a Codelist that arrives in the *same* submission (intermittent code-100
-# "Could not resolve reference" — see out/fmr-structure-submission-race.md). So
-# the converter emits two messages, loaded in this order:
-#   1. vocabulary — the agencies/codelists/concepts/hierarchies things point at;
-#   2. structures — everything else (DSDs, Dataflows, Constraints, CategorySchemes).
-# Agencies lead the vocabulary message because every artefact's agencyID resolves
-# against them.
-_VOCABULARY_TYPES = (
-    AgencyScheme,
-    Codelist,
-    ConceptScheme,
-    Hierarchy,
-    HierarchyAssociation,
+# FMR cannot reliably resolve a reference to an artefact that arrives in the
+# *same* submission (intermittent code-100 "Could not resolve reference" — see
+# out/fmr-structure-submission-race.md). The converter therefore emits one
+# message per dependency tier, each loaded as a separate POST in this order:
+#   1. codelists  — agencies + codelists (the value domains everything points at);
+#   2. concepts   — concept schemes + hierarchies (Concepts reference Codelists
+#                   via their enumerated core representation);
+#   3. structures — everything else (DSDs, Dataflows, Constraints, CategorySchemes)
+#                   which reference both codelists and concepts.
+# Agencies lead tier 1 because every artefact's agencyID resolves against them.
+# Each tier's references are persisted by the previous POST, so validation is
+# deterministic regardless of intra-message ordering.
+_STAGE_TYPES: Tuple[Tuple[str, Tuple[type, ...]], ...] = (
+    ("codelists", (AgencyScheme, Codelist)),
+    ("concepts", (ConceptScheme, Hierarchy, HierarchyAssociation)),
 )
 
 
-def partition_messages(objects: Any) -> Tuple[List[Any], List[Any]]:
-    """Split artefacts into ``(vocabulary, structures)`` for separate submission.
+def partition_stages(objects: Any) -> List[Tuple[str, List[Any]]]:
+    """Split artefacts into ordered ``(label, objects)`` FMR submission tiers.
 
-    Vocabulary = agencies, codelists, concept schemes, hierarchies. Structures =
-    everything else (DSDs, Dataflows, Constraints, CategorySchemes, …). Order
-    within each group is preserved.
+    Returns the tiers in dependency order: ``codelists`` (agencies + codelists),
+    ``concepts`` (concept schemes + hierarchies), then ``structures`` (everything
+    else). Order within each tier is preserved. Empty tiers are still returned;
+    callers skip them.
     """
-    vocabulary: List[Any] = []
+    stages: Dict[str, List[Any]] = {label: [] for label, _ in _STAGE_TYPES}
     structures: List[Any] = []
     for obj in objects:
-        (vocabulary if isinstance(obj, _VOCABULARY_TYPES) else structures).append(obj)
-    return vocabulary, structures
+        for label, types in _STAGE_TYPES:
+            if isinstance(obj, types):
+                stages[label].append(obj)
+                break
+        else:
+            structures.append(obj)
+    ordered = [(label, stages[label]) for label, _ in _STAGE_TYPES]
+    ordered.append(("structures", structures))
+    return ordered
 
 # SDMX-ML structure format per requested version. 3.0 is the default because it
 # is the newest dialect FMR accepts; 3.1 is opt-in for spec-aligned output.

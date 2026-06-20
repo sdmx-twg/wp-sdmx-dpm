@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pysdmx.model import Annotation, Code, Codelist, Concept
+from pysdmx.model import Annotation, Code, Codelist, Concept, Facets
 from pysdmx.model.dataflow import DataType
 
 from ..config import Conventions, ReviewReport, ReviewSeverity
@@ -31,36 +31,53 @@ from ..ids import (
 )
 
 # --- DPM DataType (by code) -> SDMX DataType --------------------------------
+# Authoritative proposal: docs/transformation-guidelines/05_data_types_mapping.md.
 # DPM codes (from query_datatypes): m monetary, r decimal, i integer,
-# p percentage, b boolean, t true, d date, dt date-time, es string, e
-# enumeration, u URI, o ordinals.
+# p percentage, b boolean, t true, d date, dt date-time, s string (non-empty),
+# es string (incl. empty), e enumeration, u URI, o ordinals.
 _DATATYPE_MAP: Dict[str, DataType] = {
-    "m": DataType.DECIMAL,    # monetary -> decimal (unit deferred)
-    "r": DataType.DECIMAL,
     "i": DataType.INTEGER,
-    "p": DataType.DECIMAL,    # percentage -> decimal (no native % type)
+    "r": DataType.DECIMAL,
+    "m": DataType.DECIMAL,    # monetary -> decimal (semantic distinction lost; flagged)
+    "p": DataType.DECIMAL,    # percentage -> decimal (no native % type; flagged)
+    "o": DataType.INTEGER,    # ordinals -> integer (ordering lost; flagged)
+    "s": DataType.STRING,
+    "es": DataType.STRING,    # empty-string distinction not expressible in SDMX
+    "e": DataType.STRING,     # enumeration scalar fallback (codes carried separately)
+    "u": DataType.URI,
     "b": DataType.BOOLEAN,
     "t": DataType.BOOLEAN,    # "true" is a boolean subtype
-    "d": DataType.DATE,
+    "d": DataType.DATE,       # GregorianDay (ISO date)
     "dt": DataType.DATE_TIME,
-    "es": DataType.STRING,
-    "s": DataType.STRING,
-    "e": DataType.STRING,     # enumeration carried via enum_ref, scalar is string
-    "u": DataType.URI,
-    "o": DataType.STRING,     # ordinals: ordered enumeration, flagged below
+}
+
+# DPM data type codes whose SDMX mapping is lossy -> the review message to emit.
+_LOSSY_DATATYPES: Dict[str, str] = {
+    "m": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+    "p": "DPM 'percentage' has no SDMX equivalent; mapped to Decimal (% semantics lost)",
+    "o": "DPM 'ordinals' has no SDMX equivalent; mapped to Integer (ordering lost)",
 }
 
 
 # Reverse of _DATATYPE_MAP: SDMX DataType -> a representative DPM datatype code.
-# (DPM has finer numeric types; we pick the closest single code.)
+# Keys are the SDMX DataType *values* (DataType.X.value). DPM has finer numeric
+# and temporal types, so several SDMX types collapse onto the closest DPM code.
 _SDMX_TO_DPM_DATATYPE: Dict[str, str] = {
-    "Decimal": "r",
-    "Integer": "i",
-    "Boolean": "b",
-    "Date": "d",
-    "DateTime": "dt",
-    "String": "es",
-    "URI": "u",
+    DataType.INTEGER.value: "i",
+    DataType.LONG.value: "i",
+    DataType.SHORT.value: "i",
+    DataType.COUNT.value: "i",
+    DataType.DECIMAL.value: "r",
+    DataType.FLOAT.value: "r",
+    DataType.DOUBLE.value: "r",
+    DataType.NUMERIC.value: "r",
+    DataType.BOOLEAN.value: "b",
+    DataType.DATE.value: "d",                 # GregorianDay
+    DataType.DATE_TIME.value: "dt",
+    DataType.PERIOD.value: "d",               # ObservationalTimePeriod -> Date
+    DataType.BASIC_TIME_PERIOD.value: "d",
+    DataType.STRING.value: "es",
+    DataType.URI.value: "u",
 }
 
 
@@ -84,10 +101,10 @@ def map_datatype(
     """Map a DPM dataType dict ({code,name}) to an SDMX DataType."""
     code = (dpm_datatype or {}).get("code")
     if code in _DATATYPE_MAP:
-        if code == "o":
+        if code in _LOSSY_DATATYPES:
             report.add(
-                "datatype.ordinal",
-                "DPM 'ordinals' has no SDMX equivalent; mapped to STRING",
+                "datatype.lossy",
+                _LOSSY_DATATYPES[code],
                 artefact=artefact,
                 severity=ReviewSeverity.REVIEW,
             )
@@ -143,13 +160,34 @@ def _codelist_urn(agency: str, codelist_id: str, version: str = "1.0") -> str:
     return f"urn:sdmx:org.sdmx.infomodel.codelist.Codelist={agency}:{codelist_id}({version})"
 
 
+def _codelist_ref(agency: str, category_code: str, version: str = "1.0") -> Codelist:
+    """A lightweight Codelist reference (id/agency/version only).
+
+    Used as the Concept's enumerated CoreRepresentation: the SDMX-ML writer reads
+    only ``short_urn`` from it, so the full code set is not duplicated here.
+    """
+    return Codelist(id=normalise_sdmx_id(category_code), agency=agency, version=version)
+
+
+def _facets_for(prop: Dict[str, Any]) -> Optional[Facets]:
+    """Map DPM Property facet-like attributes to SDMX Facets (ValueLength -> maxLength)."""
+    value_length = prop.get("valueLength")
+    if value_length:
+        return Facets(max_length=int(value_length))
+    return None
+
+
 def property_to_concept(
     prop: Dict[str, Any], conventions: Conventions, report: ReviewReport
 ) -> Concept:
-    """Map a DPM Property dict to an SDMX Concept.
+    """Map a DPM Property dict to an SDMX Concept with a CoreRepresentation.
 
-    Enumerated properties get an ``enum_ref`` to the Codelist built from their
-    category; non-enumerated properties get a scalar ``dtype``.
+    Enumerated properties get an enumerated representation (``codes`` referencing
+    the Codelist built from their category); non-enumerated properties get a
+    scalar representation (``dtype`` per the data-type mapping, plus ``facets``).
+    Both ``codes`` and ``enum_ref`` are set for the enumerated case: ``codes``
+    drives SDMX-ML serialisation, ``enum_ref`` carries the URN for URN-based
+    tooling and the SDMX->DPM round trip.
     """
     code = prop["code"]
     artefact = f"Property:{code}"
@@ -160,19 +198,26 @@ def property_to_concept(
     )
 
     enum_ref = None
+    codes: Optional[Codelist] = None
     dtype: Optional[DataType] = None
+    facets: Optional[Facets] = None
     enumeration = prop.get("enumeration")
     if prop.get("isEnumerated") and enumeration and enumeration.get("categoryCode"):
         agency = conventions.agency_for(prop.get("owner"))
-        enum_ref = _codelist_urn(agency, normalise_sdmx_id(enumeration["categoryCode"]))
+        category_id = normalise_sdmx_id(enumeration["categoryCode"])
+        codes = _codelist_ref(agency, enumeration["categoryCode"])
+        enum_ref = _codelist_urn(agency, category_id)
     else:
         dtype = map_datatype(prop.get("dataType"), report, artefact=artefact)
+        facets = _facets_for(prop)
 
     return Concept(
         id=normalise_sdmx_id(code),
         name=prop.get("label"),
         description=prop.get("description"),
         dtype=dtype,
+        facets=facets,
+        codes=codes,
         enum_ref=enum_ref,
         annotations=tuple(anns),
     )

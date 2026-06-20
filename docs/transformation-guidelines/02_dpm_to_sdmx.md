@@ -33,10 +33,10 @@ Only Items with `IsProperty = FALSE` become Codes. Items with `IsProperty = TRUE
 
 ### Property → Concept
 
-Each Property becomes a Concept in a ConceptScheme owned by the agency. The enumerated representation points at the Codelist mapped above; metric Properties carry a numeric `TextFormat`.
+Each Property becomes a Concept in the single ConceptScheme for the agency, named by convention `CS_<AGENCY>` (e.g. `CS_EBA`). The enumerated representation points at the Codelist mapped above; metric Properties carry a numeric `TextFormat`. See [§5 Data types mapping](05_data_types_mapping.md) for the full representation rules.
 
 ```xml
-<ConceptScheme id="STANDALONE_CONCEPTS" agencyID="EBA" version="1.0">
+<ConceptScheme id="CS_EBA" agencyID="EBA" version="1.0">
   <Concept id="RCP">
     <Name xml:lang="en">Residence of counterparty</Name>
     <CoreRepresentation>
@@ -52,7 +52,7 @@ Each Property becomes a Concept in a ConceptScheme owned by the agency. The enum
 </ConceptScheme>
 ```
 
-DPM has no explicit ConceptScheme container, so the choice of scheme is **convention-driven**: typically one ConceptScheme per owner (or per semantic domain). The Property's `IsMetric`/DataType drive the representation. `PeriodType` (stock/flow) has no native SDMX home — preserve it as an annotation or in the Concept description (see [§1.3](01_methodology.md)).
+DPM has no explicit ConceptScheme container, so the choice of scheme is **convention-driven**: one ConceptScheme per owner/agency, with the conventional id `CS_<AGENCY>` (e.g. `CS_EBA`). The Property's `IsMetric`/DataType drive the representation. `PeriodType` (stock/flow) has no native SDMX home — preserve it as an annotation or in the Concept description (see [§1.3](01_methodology.md)).
 
 ## 2.4 Step 3 — Data definition
 

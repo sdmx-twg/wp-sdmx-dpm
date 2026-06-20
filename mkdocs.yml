@@ -102,6 +102,7 @@ nav:
       - 2. DPM → SDMX: transformation-guidelines/02_dpm_to_sdmx.md
       - 3. SDMX → DPM: transformation-guidelines/03_sdmx_to_dpm.md
       - 4. Sample Conversion Script: transformation-guidelines/04_sample_script.md
+      - 5. Data Types Mapping: transformation-guidelines/05_data_types_mapping.md
   - Data Instances:
       - data-instances/index.md
       - 1. SDMX-CSV and XBRL-CSV: data-instances/01_sdmx_csv_xbrl_csv.md

@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from .convert.dpm_to_sdmx import convert_module
 from .convert.sdmx_to_dpm import convert_structure
-from .sdmx.serializer import partition_messages, serialize
+from .sdmx.serializer import partition_stages, serialize
 
 _LAYERS = ["glossary", "data-def", "constraints"]
 
@@ -56,15 +56,16 @@ def dpm_to_sdmx_main(argv: Optional[List[str]] = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     ext = "xml" if args.format == "sdmx-ml" else "json"
 
-    # Emit two messages so they load into FMR in dependency order: vocabulary
-    # (agencies/codelists/concepts/hierarchies) before structures (DSDs,
-    # Dataflows, …). See out/fmr-structure-submission-race.md.
-    vocabulary, structures = partition_messages(result.objects)
+    # Emit one message per dependency tier so they load into FMR in order:
+    # codelists (agencies+codelists) -> concepts (concept schemes referencing
+    # codelists) -> structures (DSDs/Dataflows referencing both). Files are named
+    # with a numeric prefix so a glob loads them in order.
+    # See out/fmr-structure-submission-race.md.
     written = []
-    for label, objects in (("vocabulary", vocabulary), ("structures", structures)):
+    for order, (label, objects) in enumerate(partition_stages(result.objects), start=1):
         if not objects:
             continue
-        name = f"{args.module}.{label}.{ext}"
+        name = f"{args.module}.{order}_{label}.{ext}"
         serialize(objects, args.format, str(out_dir / name), sdmx_version=args.sdmx_version)
         written.append(name)
 

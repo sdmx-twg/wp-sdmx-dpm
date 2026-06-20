@@ -109,9 +109,14 @@ class Conventions:
     default_item_candidates: tuple = ("_T", "_X", "_Z")
 
     # ConceptScheme grouping policy for DPM Properties exported to SDMX.
-    #   "per_framework": one ConceptScheme per DPM Framework (default convention)
+    #   "per_owner": one ConceptScheme per Owner/Agency, id ``CS_<AGENCY>``
+    #               (default convention -- see glossary mapping rules §3.5.6)
+    #   "per_framework": one ConceptScheme per DPM Framework (legacy)
     #   "single":        one standalone ConceptScheme for all Properties
-    conceptscheme_grouping: str = "per_framework"
+    conceptscheme_grouping: str = "per_owner"
+
+    # Prefix for the conventional ConceptScheme id (``CS_EBA`` for agency EBA).
+    conceptscheme_prefix: str = "CS_"
 
     # SDMX->DPM tables are flat by default (DSD is inherently flat).
     produce_flat_tables: bool = True
@@ -123,6 +128,14 @@ class Conventions:
 
     def agency_name_for(self, agency: str) -> str:
         return self.agency_names.get(agency, agency)
+
+    def conceptscheme_id_for(self, agency: str) -> str:
+        """The conventional single ConceptScheme id for an agency (``CS_EBA``)."""
+        return f"{self.conceptscheme_prefix}{agency}"
+
+    def conceptscheme_name_for(self, agency: str) -> str:
+        """The conventional ConceptScheme name for an agency (``EBA Concepts``)."""
+        return f"{agency} Concepts"
 
     def owner_for(self, agency: Optional[str]) -> str:
         if not agency:

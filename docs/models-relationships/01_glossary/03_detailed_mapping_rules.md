@@ -1002,6 +1002,11 @@ A qualitative Property (`IsMetric = FALSE`) can be used as a FactVariable (measu
 
 #### 3.5.3.5 Data type mapping
 
+> **Authoritative source**: the full DPM ↔ SDMX data type correspondence (and the
+> matching `_DATATYPE_MAP` in the converter) is maintained in
+> [Transformation Guidelines §5 — Data types mapping](../../transformation-guidelines/05_data_types_mapping.md).
+> The tables below are kept consistent with it; where they differ, that file wins.
+
 Every DPM Property carries a `DataTypeID` that determines whether the Property is **enumerated** (values drawn from a Category) or **open** (free-form values of a specified type). The full DPM DataType catalogue is:
 
 | DataTypeID | Code | Name | Parent | Classification |
@@ -1046,7 +1051,7 @@ For non-enumerated Properties, the DPM DataType maps to an SDMX `textType` withi
 | Boolean (`b`) | `Boolean` | Direct mapping |
 | True (`t`) | `Boolean` | Subtype collapsed to Boolean |
 | Date time (`dt`) | `DateTime` | Direct mapping |
-| Date (`d`) | `ObservationalTimePeriod` | Or `BasicTimePeriod` depending on context |
+| Date (`d`) | `GregorianDay` | ISO date (e.g. `2011-06-17`); use `ObservationalTimePeriod` when the date is a reporting period — see [TG §5.2](../../transformation-guidelines/05_data_types_mapping.md#52-dpm--sdmx-data-type-correspondence) |
 
 > **Note**: `Monetary` and `Percentage` both map to SDMX `Decimal`. When converting back (SDMX → DPM), the distinction cannot be recovered from the `textType` alone — it requires semantic inference from the Concept's name, annotations, or a mapping configuration table.
 

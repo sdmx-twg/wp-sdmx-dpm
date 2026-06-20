@@ -56,12 +56,11 @@ def convert_module(
 
     with DpmReader(db_path) as reader:
         module = reader.read_module(module_code, release_code=release_code)
-        framework = module.get("framework") or {}
-        fw_code = framework.get("code") or module_code
         agency = conventions.agency_for(module.get("owner"))
         if include_agency:
             objects.append(builder.build_agency_scheme([agency]))
-        conceptscheme_id = f"CS_{fw_code}"
+        # One ConceptScheme per Owner/Agency (CS_<AGENCY>), per glossary rule §3.5.6.
+        conceptscheme_id = conventions.conceptscheme_id_for(agency)
         prop_index = reader.properties_by_id(release_code=release_code)
 
         # Per-table components (dimensions from contexts, measures from metrics).
@@ -86,7 +85,7 @@ def convert_module(
                 categories,
                 properties,
                 conceptscheme_id=conceptscheme_id,
-                conceptscheme_name=framework.get("name") or f"{fw_code} concepts",
+                conceptscheme_name=conventions.conceptscheme_name_for(agency),
                 agency=agency,
             )
 
