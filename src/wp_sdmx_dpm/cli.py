@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from .convert.dpm_to_sdmx import convert_module
 from .convert.sdmx_to_dpm import convert_structure
-from .sdmx.serializer import serialize
+from .sdmx.serializer import partition_messages, serialize
 
 _LAYERS = ["glossary", "data-def", "constraints"]
 
@@ -31,18 +31,45 @@ def dpm_to_sdmx_main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--release", default=None, help="DPM release code (default: latest)")
     p.add_argument("--out", required=True, help="Output directory")
     p.add_argument("--format", default="sdmx-ml", choices=["sdmx-ml", "json"])
+    p.add_argument(
+        "--sdmx-version",
+        default="3.0",
+        choices=["3.0", "3.1"],
+        help="SDMX-ML dialect (default 3.0, loadable by FMR; 3.1 is spec-aligned)",
+    )
+    p.add_argument(
+        "--no-agency",
+        action="store_true",
+        help="Do not bundle the SDMX:AGENCIES scheme in the output",
+    )
     p.add_argument("--layers", type=_layers_arg, default=None, help="Comma-separated subset")
     args = p.parse_args(argv)
 
     result = convert_module(
-        args.db, args.module, release_code=args.release, layers=args.layers
+        args.db,
+        args.module,
+        release_code=args.release,
+        layers=args.layers,
+        include_agency=not args.no_agency,
     )
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     ext = "xml" if args.format == "sdmx-ml" else "json"
-    serialize(result.objects, args.format, str(out_dir / f"{args.module}.{ext}"))
+
+    # Emit two messages so they load into FMR in dependency order: vocabulary
+    # (agencies/codelists/concepts/hierarchies) before structures (DSDs,
+    # Dataflows, …). See out/fmr-structure-submission-race.md.
+    vocabulary, structures = partition_messages(result.objects)
+    written = []
+    for label, objects in (("vocabulary", vocabulary), ("structures", structures)):
+        if not objects:
+            continue
+        name = f"{args.module}.{label}.{ext}"
+        serialize(objects, args.format, str(out_dir / name), sdmx_version=args.sdmx_version)
+        written.append(name)
+
     (out_dir / f"{args.module}.review.json").write_text(result.report.to_json())
-    print(f"Wrote {args.module}.{ext} and review report to {out_dir}")
+    print(f"Wrote {', '.join(written)} and review report to {out_dir}")
     return 1 if result.report.has_blocking else 0
 
 

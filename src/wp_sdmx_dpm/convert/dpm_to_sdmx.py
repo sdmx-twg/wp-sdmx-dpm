@@ -35,6 +35,7 @@ def convert_module(
     release_code: Optional[str] = None,
     conventions: Optional[Conventions] = None,
     layers: Optional[List[str]] = None,
+    include_agency: bool = True,
 ) -> DpmToSdmxResult:
     """Read ``module_code`` from ``db_path`` and build SDMX structures.
 
@@ -42,6 +43,10 @@ def convert_module(
     The data-definition layer drives which glossary Concepts/Codelists are
     needed (context dimensions + metrics), so glossary gathering unions the
     references from variables/headers with the data-definition components.
+
+    ``include_agency`` (default True) prepends the SDMX:AGENCIES scheme carrying
+    the owning agency, so the output is a self-contained, directly-FMR-loadable
+    message; set it False to emit only the framework artefacts.
     """
     conventions = conventions or Conventions()
     report = ReviewReport()
@@ -54,6 +59,8 @@ def convert_module(
         framework = module.get("framework") or {}
         fw_code = framework.get("code") or module_code
         agency = conventions.agency_for(module.get("owner"))
+        if include_agency:
+            objects.append(builder.build_agency_scheme([agency]))
         conceptscheme_id = f"CS_{fw_code}"
         prop_index = reader.properties_by_id(release_code=release_code)
 

@@ -86,6 +86,13 @@ class Conventions:
     owner_to_agency: Dict[str, str] = field(default_factory=dict)
     agency_to_owner: Dict[str, str] = field(default_factory=dict)
 
+    # Human-readable names for the SDMX agencies the converter emits. FMR
+    # requires every referenced Agency to exist, so the converter bundles an
+    # AgencyScheme; this supplies the Name (falls back to the agency id).
+    agency_names: Dict[str, str] = field(
+        default_factory=lambda: {"EBA": "European Banking Authority"}
+    )
+
     # DPM Categories whose codes start with any of these prefixes are internal
     # plumbing and are not emitted as SDMX Codelists (e.g. the "_PR" property
     # category from the reference dpm_to_sdmx repo).
@@ -113,6 +120,9 @@ class Conventions:
         if not owner:
             return self.default_agency
         return self.owner_to_agency.get(owner, owner)
+
+    def agency_name_for(self, agency: str) -> str:
+        return self.agency_names.get(agency, agency)
 
     def owner_for(self, agency: Optional[str]) -> str:
         if not agency:

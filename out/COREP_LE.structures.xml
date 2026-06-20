@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>16c4e6dd-6b73-4109-8591-4e9670fb27ca</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-06-20T08:46:33Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:Dataflows>
+			<str:Dataflow id="C_26_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_MODULE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">COREP_LE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
+				<com:Name xml:lang="en">Large exposures limits</com:Name>
+				<com:Description xml:lang="en">Large exposures limits</com:Description>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EBA:DSD_C_26_00(1.0)</str:Structure>
+			</str:Dataflow>
+			<str:Dataflow id="C_27_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_MODULE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">COREP_LE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
+				<com:Name xml:lang="en">Identification of the counterparty</com:Name>
+				<com:Description xml:lang="en">Identification of the counterparty</com:Description>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EBA:DSD_C_27_00(1.0)</str:Structure>
+			</str:Dataflow>
+			<str:Dataflow id="C_28_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_MODULE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">COREP_LE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
+				<com:Name xml:lang="en">Exposures in the non-trading and trading book</com:Name>
+				<com:Description xml:lang="en">Exposures in the non-trading and trading book</com:Description>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EBA:DSD_C_28_00(1.0)</str:Structure>
+			</str:Dataflow>
+			<str:Dataflow id="C_29_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_MODULE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">COREP_LE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
+				<com:Name xml:lang="en">Detail of the exposures to individual clients within groups of connected clients</com:Name>
+				<com:Description xml:lang="en">Detail of the exposures to individual clients within groups of connected clients</com:Description>
+				<str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EBA:DSD_C_29_00(1.0)</str:Structure>
+			</str:Dataflow>
+		</str:Dataflows>
+		<str:DataStructures>
+			<str:DataStructure id="DSD_C_26_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Name xml:lang="en">Large exposures limits</com:Name>
+				<com:Description xml:lang="en">Large exposures limits</com:Description>
+				<str:DataStructureComponents>
+					<str:DimensionList>
+						<str:Dimension id="qEBF" position="1">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEBF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+					</str:DimensionList>
+					<str:MeasureList>
+						<str:Measure id="qAIH">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAIH</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qAIC">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAIC</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qBFH">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBFH</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qAJB">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAJB</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+			<str:DataStructure id="DSD_C_27_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Name xml:lang="en">Identification of the counterparty</com:Name>
+				<com:Description xml:lang="en">Identification of the counterparty</com:Description>
+				<str:DataStructureComponents>
+					<str:DimensionList>
+						<str:Dimension id="qBEA" position="1">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBEA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qRP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+					</str:DimensionList>
+					<str:MeasureList>
+						<str:Measure id="qCDF">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCDF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="String"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qCEC">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCEC</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="String"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qAZC">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAZC</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIG(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qEBD">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEBD</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qES(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qBLT">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBLT</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:NC(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qEDA">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEDA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qTE(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Measure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+			<str:DataStructure id="DSD_C_28_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Name xml:lang="en">Exposures in the non-trading and trading book</com:Name>
+				<com:Description xml:lang="en">Exposures in the non-trading and trading book</com:Description>
+				<str:DataStructureComponents>
+					<str:DimensionList>
+						<str:Dimension id="qZZX" position="1">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qZZX</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qLJI" position="2">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qLJI</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAF(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qBFA" position="3">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBFA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIM(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qAFF" position="4">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAFF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFI(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qCAA" position="5">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCAA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAI(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qADB" position="6">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qADB</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qAZP" position="7">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAZP</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qCP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qLNJ" position="8">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qLNJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qCAD" position="9">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCAD</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qJLJ" position="10">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJLJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qEEF" position="11">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEEF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPL(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qZZY" position="12">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qZZY</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFF(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qJLM" position="13">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJLM</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+					</str:DimensionList>
+					<str:MeasureList>
+						<str:Measure id="qBXZ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBXZ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qRP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qEFF">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEFF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Boolean"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qIJJ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qIJJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qJIM">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJIM</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qHNJ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qHNJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qALA">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qALA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qNKI">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qNKI</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qAHV">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAHV</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+			<str:DataStructure id="DSD_C_29_00" version="1.0" isExternalReference="false" agencyID="EBA">
+				<com:Name xml:lang="en">Detail of the exposures to individual clients within groups of connected clients</com:Name>
+				<com:Description xml:lang="en">Detail of the exposures to individual clients within groups of connected clients</com:Description>
+				<str:DataStructureComponents>
+					<str:DimensionList>
+						<str:Dimension id="qZZX" position="1">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qZZX</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qLJI" position="2">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qLJI</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAF(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qBFA" position="3">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qBFA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIM(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qAFF" position="4">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAFF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFI(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qCAA" position="5">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCAA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAI(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qADB" position="6">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qADB</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qAZP" position="7">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAZP</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qCP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qLNJ" position="8">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qLNJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAP(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qCAD" position="9">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qCAD</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qJLJ" position="10">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJLJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qEEF" position="11">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEEF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPL(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qZZY" position="12">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qZZY</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFF(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+						<str:Dimension id="qJLM" position="13">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJLM</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+							</str:LocalRepresentation>
+						</str:Dimension>
+					</str:DimensionList>
+					<str:MeasureList>
+						<str:Measure id="qEFF">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qEFF</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Boolean"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qIJJ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qIJJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qJIM">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qJIM</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qHNJ">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qHNJ</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qALA">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qALA</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qNKI">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qNKI</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+						<str:Measure id="qAHV">
+							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_COREP(1.0).qAHV</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="Decimal"/>
+							</str:LocalRepresentation>
+						</str:Measure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+		</str:DataStructures>
+	</mes:Structures>
+</mes:Structure>

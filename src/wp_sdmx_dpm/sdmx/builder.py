@@ -13,12 +13,16 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Set, Tuple
 
-from pysdmx.model import ConceptScheme
+from pysdmx.model import Agency, AgencyScheme, ConceptScheme
 
 from ..config import Conventions, ReviewReport
 from ..ids import normalise_sdmx_id
 from ..mapping.data_definition import table_to_dsd_and_dataflow
 from ..mapping.glossary import category_to_codelist, property_to_concept
+
+# The SDMX agency scheme is a fixed maintainable (SDMX:AGENCIES(1.0)) that every
+# registry hosts; custom agencies are added as items of it.
+_SDMX_AGENCY_SCHEME = ("SDMX", "AGENCIES", "1.0")
 
 
 class SdmxBuilder:
@@ -27,6 +31,29 @@ class SdmxBuilder:
     def __init__(self, conventions: Conventions, report: ReviewReport):
         self.conventions = conventions
         self.report = report
+
+    # -- organisation layer ------------------------------------------------
+    def build_agency_scheme(self, agency_ids: List[str]) -> AgencyScheme:
+        """Build the SDMX:AGENCIES scheme carrying the agencies we reference.
+
+        FMR resolves every artefact's ``agencyID`` against an Agency item of
+        ``SDMX:AGENCIES(1.0)``; a fresh registry only has ``SDMX`` itself, so the
+        converter bundles this scheme to make the output self-contained.
+        Submitting it requires ``Action: Replace`` (it updates the existing
+        scheme rather than appending a sibling).
+        """
+        sdmx_agency, scheme_id, version = _SDMX_AGENCY_SCHEME
+        agencies = [
+            Agency(id=aid, name=self.conventions.agency_name_for(aid))
+            for aid in sorted(set(agency_ids))
+        ]
+        return AgencyScheme(
+            id=scheme_id,
+            name="SDMX Agency Scheme",
+            agency=sdmx_agency,
+            version=version,
+            items=agencies,
+        )
 
     # -- reference gathering ----------------------------------------------
     @staticmethod
