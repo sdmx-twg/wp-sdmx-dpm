@@ -14,3 +14,4 @@ input/
 __pycache__/
 *.py[cod]
 *.egg-info/
+out/COREP_LE.xml

@@ -16,10 +16,11 @@ notes; key shapes (verified against dpm_4.2.1):
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from dpmcore import connect
 from dpmcore.server.params import ReleaseKeyword, StructureParams
+from sqlalchemy import text
 
 
 def _sqlite_url(db_path: str) -> str:
@@ -111,3 +112,65 @@ class DpmReader:
             params=params, detail="full", limit=1
         )
         return rows[0] if rows else None
+
+    def read_categories(
+        self, codes: List[str], *, release_code: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Return full Category dicts (with items) for the given codes."""
+        if not codes:
+            return []
+        params = self._params(sorted(set(codes)), release_code=release_code)
+        rows, _ = self._db.services.structure.query_categories(
+            params=params, detail="full", limit=len(codes) + 1
+        )
+        return rows
+
+    def properties_by_id(
+        self, *, release_code: Optional[str] = None
+    ) -> Dict[int, Dict[str, Any]]:
+        """Index every Property dict by its numeric ``id``.
+
+        DPM variables reference a Property by id only (no code), so resolving a
+        module's Concepts requires this lookup. ~3k rows; cheap to load whole.
+        """
+        params = self._params(["*"], release_code=release_code)
+        rows, _ = self._db.services.structure.query_properties(
+            params=params, detail="full", limit=1_000_000
+        )
+        return {r["id"]: r for r in rows}
+
+    # -- data-definition support ------------------------------------------
+    _DIMENSION_PIDS_SQL = text(
+        """
+        SELECT DISTINCT cc.PropertyID
+        FROM TableVersionCell tvc
+        JOIN VariableVersion vv ON tvc.VariableVID = vv.VariableVID
+        JOIN ContextComposition cc ON vv.ContextID = cc.ContextID
+        WHERE tvc.TableVID = :tvid
+        """
+    )
+    _METRIC_PIDS_SQL = text(
+        """
+        SELECT DISTINCT vv.PropertyID
+        FROM TableVersionCell tvc
+        JOIN VariableVersion vv ON tvc.VariableVID = vv.VariableVID
+        WHERE tvc.TableVID = :tvid AND vv.PropertyID IS NOT NULL
+        """
+    )
+
+    def read_table_components(self, table_version_id: int) -> Tuple[List[int], List[int]]:
+        """Return (dimension property ids, metric property ids) for a Table.
+
+        Dimensions come from the union of the table's FactVariable Contexts
+        (the (Property, Item) pairs that position each data point); metrics are
+        the FactVariables' main Properties. Spec section 3.2.7.
+        """
+        session = self._db.session
+        dim = [r[0] for r in session.execute(
+            self._DIMENSION_PIDS_SQL, {"tvid": table_version_id}).fetchall()]
+        metric = [r[0] for r in session.execute(
+            self._METRIC_PIDS_SQL, {"tvid": table_version_id}).fetchall()]
+        # A property used as a context dimension is not also a measure.
+        dim_set = set(dim)
+        metric = [p for p in metric if p not in dim_set]
+        return dim, metric

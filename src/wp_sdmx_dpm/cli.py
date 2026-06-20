@@ -57,8 +57,12 @@ def sdmx_to_dpm_main(argv: Optional[List[str]] = None) -> int:
     args = p.parse_args(argv)
 
     result = convert_structure(args.source, args.structure, args.out, layers=args.layers)
-    print(f"Wrote DPM database to {result.out_db_path}")
-    return 1 if result.report.has_blocking else 0
+    status = "valid" if result.is_valid else "INVALID"
+    print(
+        f"Wrote DPM database to {result.out_db_path} "
+        f"({result.tables_written} table(s), schema {status})"
+    )
+    return 1 if result.report.has_blocking or not result.is_valid else 0
 
 
 if __name__ == "__main__":  # pragma: no cover

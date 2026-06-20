@@ -1,0 +1,20 @@
+{
+  "count": 2,
+  "has_blocking": false,
+  "flags": [
+    {
+      "code": "dsd.no_dimensions",
+      "message": "Table yields no dimensions (e.g. a cover/info page); no valid SDMX DSD can be emitted (a DimensionList is mandatory). Skipped -- a dimension must be added by convention (e.g. reporting entity / time).",
+      "artefact": "Table:C_00.01",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "reporting_taxonomy.unsupported",
+      "message": "pysdmx has no ReportingTaxonomy; the Module grouping is recorded as a DPM_MODULE annotation on each Dataflow instead.",
+      "artefact": "COREP_LE",
+      "severity": "info",
+      "context": {}
+    }
+  ]
+}

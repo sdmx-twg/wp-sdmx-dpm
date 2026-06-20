@@ -1,27 +1,109 @@
 """Build pysdmx structure objects from DPM dicts.
 
-Phase 2+ deliverable. Turns the JSON-like dicts returned by
-``dpmcore`` StructureService into pysdmx model objects:
-``Codelist``/``Code`` (glossary), ``Concept``/``ConceptScheme`` (glossary),
-``DataStructureDefinition``/``Dataflow``/``Components`` (data definition).
+Turns the JSON-like dicts returned by ``dpmcore`` StructureService into pysdmx
+model objects. Phase 2 implements the glossary layer (Codelists +
+ConceptScheme); the data-definition layer (DSD/Dataflow) follows in Phase 3.
 
-The actual mapping logic lives in :mod:`wp_sdmx_dpm.mapping`; this module
-assembles the resulting objects into the message ready for serialisation.
+The per-artefact mapping rules live in :mod:`wp_sdmx_dpm.mapping`; this module
+gathers the glossary a module references and assembles the objects for
+serialisation.
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set, Tuple
+
+from pysdmx.model import ConceptScheme
 
 from ..config import Conventions, ReviewReport
+from ..ids import normalise_sdmx_id
+from ..mapping.data_definition import table_to_dsd_and_dataflow
+from ..mapping.glossary import category_to_codelist, property_to_concept
 
 
 class SdmxBuilder:
-    """Assemble pysdmx artefacts for a DPM module. (Phase 2/3.)"""
+    """Assemble pysdmx artefacts for a DPM module."""
 
     def __init__(self, conventions: Conventions, report: ReviewReport):
         self.conventions = conventions
         self.report = report
 
-    def build_module(self, module: Dict[str, Any]) -> List[Any]:
-        raise NotImplementedError("SdmxBuilder.build_module is implemented in Phase 2/3")
+    # -- reference gathering ----------------------------------------------
+    @staticmethod
+    def gather_references(module: Dict[str, Any]) -> Tuple[Set[str], Set[int]]:
+        """Collect (enumerated category codes, property ids) used by a module."""
+        category_codes: Set[str] = set()
+        property_ids: Set[int] = set()
+        for table in module.get("tables") or []:
+            variables = (table.get("keyVariables") or []) + (table.get("factVariables") or [])
+            for var in variables:
+                prop = var.get("property")
+                if prop and prop.get("id") is not None:
+                    property_ids.add(prop["id"])
+                enum = var.get("enumeration")
+                if enum and enum.get("categoryCode"):
+                    category_codes.add(enum["categoryCode"])
+            for header in table.get("headers") or []:
+                prop = header.get("property")
+                if prop and prop.get("id") is not None:
+                    property_ids.add(prop["id"])
+        return category_codes, property_ids
+
+    # -- glossary layer ----------------------------------------------------
+    def build_glossary(
+        self,
+        categories: List[Dict[str, Any]],
+        properties: List[Dict[str, Any]],
+        *,
+        conceptscheme_id: str,
+        conceptscheme_name: str,
+        agency: str,
+    ) -> List[Any]:
+        """Build Codelists + one ConceptScheme from DPM category/property dicts."""
+        objects: List[Any] = []
+        for category in categories:
+            if not category.get("isEnumerated"):
+                continue
+            objects.append(category_to_codelist(category, self.conventions, self.report))
+
+        concepts = [
+            property_to_concept(prop, self.conventions, self.report) for prop in properties
+        ]
+        scheme = ConceptScheme(
+            id=normalise_sdmx_id(conceptscheme_id),
+            name=conceptscheme_name,
+            agency=agency,
+            version="1.0",
+            items=concepts,
+        )
+        objects.append(scheme)
+        return objects
+
+    # -- data-definition layer --------------------------------------------
+    def build_data_definition(
+        self,
+        table_specs: List[Tuple[Dict[str, Any], List[int], List[int]]],
+        prop_index: Dict[int, Dict[str, Any]],
+        *,
+        conceptscheme_id: str,
+        agency: str,
+        module_code: str,
+    ) -> List[Any]:
+        """Build one DSD + Dataflow per table from (table, dim_pids, metric_pids)."""
+        objects: List[Any] = []
+        for table, dim_pids, metric_pids in table_specs:
+            dim_props = [prop_index[p] for p in dim_pids if p in prop_index]
+            metric_props = [prop_index[p] for p in metric_pids if p in prop_index]
+            built = table_to_dsd_and_dataflow(
+                table,
+                dim_props,
+                metric_props,
+                conceptscheme_id=conceptscheme_id,
+                agency=agency,
+                module_code=module_code,
+                conventions=self.conventions,
+                report=self.report,
+            )
+            if built is not None:
+                objects += list(built)
+        return objects
