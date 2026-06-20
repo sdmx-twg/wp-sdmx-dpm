@@ -1,7 +1,77 @@
 {
-  "count": 18,
+  "count": 28,
   "has_blocking": false,
   "flags": [
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qNKI",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qHNJ",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qIJJ",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qJIM",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qAHV",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qAIC",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qAJB",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'monetary' has no SDMX equivalent; mapped to Decimal (unit/currency lost)",
+      "artefact": "Property:qAIH",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'percentage' has no SDMX equivalent; mapped to Decimal (% semantics lost)",
+      "artefact": "Property:qALA",
+      "severity": "review",
+      "context": {}
+    },
+    {
+      "code": "datatype.lossy",
+      "message": "DPM 'percentage' has no SDMX equivalent; mapped to Decimal (% semantics lost)",
+      "artefact": "Property:qBFH",
+      "severity": "review",
+      "context": {}
+    },
     {
       "code": "dsd.no_dimensions",
       "message": "Table yields no dimensions (e.g. a cover/info page); no valid SDMX DSD can be emitted (a DimensionList is mandatory). Skipped -- a dimension must be added by convention (e.g. reporting entity / time).",

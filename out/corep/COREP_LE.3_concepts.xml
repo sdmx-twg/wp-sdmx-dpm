@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>820c3316-c9f7-4223-90a7-c21f56e265d2</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-06-20T15:56:52Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:ConceptSchemes>
+			<str:ConceptScheme id="CS_EBA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Name xml:lang="en">EBA Concepts</com:Name>
+				<str:Concept id="qBLT">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBLT</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Sector</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:NC(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qCAA">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qCAA</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Accounting items</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAI(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAFF">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAFF</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Type of financial instruments</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFI(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qBFA">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBFA</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Impairment status</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QIM(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qCDF">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qCDF</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Name of entity</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="String"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qCEC">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qCEC</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">National Code of Entity</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="String"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qCAD">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qCAD</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Own funds</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qADB">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qADB</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Given/received nature of a product</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qBEA">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBEA</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Relationships</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QRP(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qZZY">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qZZY</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Flows (direction)</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFF(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qZZX">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qZZX</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Own funds calculation component</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qEBD">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qEBD</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Sector or type of entity serving as counterparty</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QES(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qEDA">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qEDA</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Type of entity serving as counterparty</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QTE(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qEBF">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qEBF</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Regulatory assesment of type of entity</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qEEF">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qEEF</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Prudential portfolio</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPL(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qEFF">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qEFF</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Is a transaction where there is an exposure to underlying assets</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Boolean"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qLJI">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qLJI</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Accounting items and Financial instruments</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAF(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qLNJ">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qLNJ</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Methods to determine exposure values</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAP(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qJLJ">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qJLJ</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Type of adjustment</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qJLM">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qJLM</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Type of requirement</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qNKI">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qNKI</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Amount of CRM substitution effects</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qHNJ">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qHNJ</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Exposure value</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qIJJ">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qIJJ</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">Flow</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Original exposure pre conversion factors</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qJIM">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qJIM</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Value of adjustments and provision associated with the original exposure</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAHV">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAHV</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">Stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Amounts exempted from the LE regime</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAIC">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAIC</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Large exposures applicable limit for institutions</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAJB">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAJB</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">Stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Large exposures applicable limit for institutions or group</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAIH">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAIH</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Large exposures applicable limit for non institutions</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qALA">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qALA</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">Stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Percentage of exposure value in Tier 1 capital</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAST">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAST</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Accounting standard</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAS(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qNCO">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qNCO</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Is LEI Code/National Code of Counterparty</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QCO(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAZP">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAZP</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">CRM Effects/Collateral</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QCP(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qAZC">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qAZC</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Jurisdiction of incorporation</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QIG(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qBBU">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBBU</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Reporting level</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QSC(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qBFH">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBFH</com:AnnotationText>
+						</com:Annotation>
+						<com:Annotation>
+							<com:AnnotationType>DPM_PERIOD_TYPE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">stock</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Applicable percentage limit for institutions (%)</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="Decimal"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qINC">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qINC</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Individual clients</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="String"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qGCC">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qGCC</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Group of connected clients</com:Name>
+					<str:CoreRepresentation>
+						<str:TextFormat textType="String"/>
+					</str:CoreRepresentation>
+				</str:Concept>
+				<str:Concept id="qBXZ">
+					<com:Annotations>
+						<com:Annotation>
+							<com:AnnotationType>DPM_SIGNATURE</com:AnnotationType>
+							<com:AnnotationText xml:lang="en">qBXZ</com:AnnotationText>
+						</com:Annotation>
+					</com:Annotations>
+					<com:Name xml:lang="en">Individual client or group of clients</com:Name>
+					<str:CoreRepresentation>
+						<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QRP(1.0)</str:Enumeration>
+					</str:CoreRepresentation>
+				</str:Concept>
+			</str:ConceptScheme>
+		</str:ConceptSchemes>
+	</mes:Structures>
+</mes:Structure>

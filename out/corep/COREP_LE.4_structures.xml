@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
 	<mes:Header>
-		<mes:ID>f680ef56-2ca6-4c83-a971-bb1d5f03c635</mes:ID>
+		<mes:ID>820c3316-c9f7-4223-90a7-c21f56e265d2</mes:ID>
 		<mes:Test>false</mes:Test>
-		<mes:Prepared>2026-06-20T15:07:37Z</mes:Prepared>
+		<mes:Prepared>2026-06-20T15:56:52Z</mes:Prepared>
 		<mes:Sender id="ZZZ"/>
 	</mes:Header>
 	<mes:Structures>
@@ -62,7 +62,7 @@
 						<str:Dimension id="qEBF" position="1">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qEBF</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 					</str:DimensionList>
@@ -102,7 +102,7 @@
 						<str:Dimension id="qBEA" position="1">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qBEA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qRP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QRP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 					</str:DimensionList>
@@ -122,13 +122,13 @@
 						<str:Measure id="qAZC">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qAZC</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIG(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QIG(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Measure>
 						<str:Measure id="qEBD">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qEBD</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qES(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QES(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Measure>
 						<str:Measure id="qBLT">
@@ -140,7 +140,7 @@
 						<str:Measure id="qEDA">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qEDA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qTE(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QTE(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Measure>
 					</str:MeasureList>
@@ -154,79 +154,79 @@
 						<str:Dimension id="qZZX" position="1">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qZZX</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qLJI" position="2">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qLJI</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAF(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAF(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qBFA" position="3">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qBFA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIM(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QIM(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qAFF" position="4">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qAFF</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFI(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFI(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qCAA" position="5">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qCAA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAI(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAI(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qADB" position="6">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qADB</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qAZP" position="7">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qAZP</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qCP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QCP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qLNJ" position="8">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qLNJ</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qCAD" position="9">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qCAD</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qJLJ" position="10">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qJLJ</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qEEF" position="11">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qEEF</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPL(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPL(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qZZY" position="12">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qZZY</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFF(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFF(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qJLM" position="13">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qJLM</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 					</str:DimensionList>
@@ -234,7 +234,7 @@
 						<str:Measure id="qBXZ">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qBXZ</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qRP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QRP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Measure>
 						<str:Measure id="qEFF">
@@ -290,79 +290,79 @@
 						<str:Dimension id="qZZX" position="1">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qZZX</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qLJI" position="2">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qLJI</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAF(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAF(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qBFA" position="3">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qBFA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qIM(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QIM(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qAFF" position="4">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qAFF</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFI(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFI(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qCAA" position="5">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qCAA</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAI(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAI(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qADB" position="6">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qADB</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qAZP" position="7">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qAZP</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qCP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QCP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qLNJ" position="8">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qLNJ</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qAP(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QAP(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qCAD" position="9">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qCAD</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qJLJ" position="10">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qJLJ</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qEEF" position="11">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qEEF</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qPL(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QPL(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qZZY" position="12">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qZZY</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qFF(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QFF(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 						<str:Dimension id="qJLM" position="13">
 							<str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EBA:CS_EBA(1.0).qJLM</str:ConceptIdentity>
 							<str:LocalRepresentation>
-								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:qOR(1.0)</str:Enumeration>
+								<str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EBA:QOR(1.0)</str:Enumeration>
 							</str:LocalRepresentation>
 						</str:Dimension>
 					</str:DimensionList>

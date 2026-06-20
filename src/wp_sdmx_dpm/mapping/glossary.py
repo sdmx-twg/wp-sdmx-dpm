@@ -35,6 +35,8 @@ from ..ids import (
     ANN_DPM_PERIOD_TYPE,
     ANN_DPM_SIGNATURE,
     code_annotation,
+    codelist_code_annotation,
+    normalise_codelist_id,
     normalise_sdmx_id,
 )
 
@@ -166,13 +168,13 @@ def category_to_codelist(
             continue
         items.append(_item_to_code(it))
     return Codelist(
-        id=normalise_sdmx_id(code),
+        id=normalise_codelist_id(code),
         name=category.get("name"),
         description=category.get("description"),
         agency=conventions.agency_for(category.get("owner")),
         version="1.0",
         items=items,
-        annotations=tuple(_annotations(code_annotation(code))),
+        annotations=tuple(_annotations(codelist_code_annotation(code))),
     )
 
 
@@ -204,7 +206,7 @@ def subcategory_to_hierarchy(
     survives (e.g. every item dropped for lack of a current code).
     """
     category_code = subcategory["categoryCode"]
-    codelist_id = normalise_sdmx_id(category_code)
+    codelist_id = normalise_codelist_id(category_code)
     sub_code = subcategory["code"]
     artefact = f"SubCategory:{sub_code}"
 
@@ -268,7 +270,7 @@ def _codelist_ref(agency: str, category_code: str, version: str = "1.0") -> Code
     Used as the Concept's enumerated CoreRepresentation: the SDMX-ML writer reads
     only ``short_urn`` from it, so the full code set is not duplicated here.
     """
-    return Codelist(id=normalise_sdmx_id(category_code), agency=agency, version=version)
+    return Codelist(id=normalise_codelist_id(category_code), agency=agency, version=version)
 
 
 def _facets_for(prop: Dict[str, Any]) -> Optional[Facets]:
@@ -306,7 +308,7 @@ def property_to_concept(
     enumeration = prop.get("enumeration")
     if prop.get("isEnumerated") and enumeration and enumeration.get("categoryCode"):
         agency = conventions.agency_for(prop.get("owner"))
-        category_id = normalise_sdmx_id(enumeration["categoryCode"])
+        category_id = normalise_codelist_id(enumeration["categoryCode"])
         codes = _codelist_ref(agency, enumeration["categoryCode"])
         enum_ref = _codelist_urn(agency, category_id)
     else:

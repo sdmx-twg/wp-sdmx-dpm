@@ -31,6 +31,8 @@ Each enumerated Category becomes a Codelist; each Item becomes a Code. The `Item
 
 Only Items with `IsProperty = FALSE` become Codes. Items with `IsProperty = TRUE` are Properties and are handled next. DPM default-item flags (`IsDefaultItem`, e.g. `x0`) are XBRL-validation machinery and are **not** emitted as Codes.
 
+> **Codelist ids are emitted UPPER-CASE** (e.g. DPM category `qEC` → Codelist `QEC`), and every reference to a Codelist — the Concept `CoreRepresentation`, the DSD Dimension `Enumeration`, and Hierarchy `Code` URNs — uses the same upper-cased id. This is a workaround, *not* an SDMX requirement (lower-case ids are valid SDMX): the Fusion Metadata Registry uppercases every Codelist maintainable id on load but leaves references to it untouched, so a lower-case id loads yet fails strict reference resolution at query time. The original DPM code is preserved in a `DPM_CODE` annotation, so the upper-casing is reversible on the SDMX → DPM path. Code ids *inside* a Codelist, and all other artefact ids (Concept, ConceptScheme, DSD, Dimension), are left as-is — FMR does not alter those. **Revisit and remove this upper-casing once FMR resolves lower-case Codelist references** (see `out/fmr-codelist-id-casing.md`); the single point to change is `ids.normalise_codelist_id()`.
+
 ### Hierarchical SubCategory → Hierarchy
 
 For each translated Category, every **hierarchical SubCategory** over it (a `SubCategory` whose `SubCategoryItem`s carry `ParentItemID` links) becomes one SDMX **`Hierarchy`** over the Category's Codelist. Each item becomes a `HierarchicalCode` that *references* a Code in the Codelist by URN (codes are not duplicated), nested to reproduce the parent–child tree. Flat (non-hierarchical) SubCategories are not emitted here.

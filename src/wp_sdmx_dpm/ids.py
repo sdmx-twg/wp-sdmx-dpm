@@ -40,6 +40,22 @@ def normalise_sdmx_id(dpm_code: str) -> str:
     return normalised
 
 
+def normalise_codelist_id(dpm_code: str) -> str:
+    """Like :func:`normalise_sdmx_id`, but UPPER-CASED -- for Codelist ids only.
+
+    FMR stores every Codelist maintainable id in upper case (e.g. ``qEC`` ->
+    ``QEC``) while leaving references *to* it untouched. A lower-case id therefore
+    loads (the store matches case-insensitively) but fails strict reference
+    resolution at query time (``getConstrainedCodelist`` -> "Could not resolve
+    reference ... Codelist"). Emitting the id upper-case -- and routing every
+    reference (Concept CoreRepresentation, DSD Dimension Enumeration, Hierarchy
+    Code URN) through this same function -- keeps the artefact and all references
+    consistent with what FMR persists. Code ids *inside* the codelist are left
+    untouched; FMR preserves those.
+    """
+    return normalise_sdmx_id(dpm_code).upper()
+
+
 def is_valid_sdmx_id(value: str) -> bool:
     return bool(value) and _INVALID.search(value) is None and value[0].isalpha()
 
@@ -49,6 +65,20 @@ def code_annotation(original_code: str) -> Optional[dict]:
     if original_code is None:
         return None
     if normalise_sdmx_id(original_code) == original_code:
+        return None
+    return {"type": ANN_DPM_CODE, "text": original_code}
+
+
+def codelist_code_annotation(original_code: str) -> Optional[dict]:
+    """Return a DPM_CODE annotation payload iff the upper-cased codelist id differs.
+
+    Used in place of :func:`code_annotation` for Codelists so the original DPM
+    category code (e.g. ``qEC``) is recoverable even when the only change is the
+    upper-casing applied by :func:`normalise_codelist_id`.
+    """
+    if original_code is None:
+        return None
+    if normalise_codelist_id(original_code) == original_code:
         return None
     return {"type": ANN_DPM_CODE, "text": original_code}
 

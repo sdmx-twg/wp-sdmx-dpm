@@ -32,7 +32,7 @@ from pysdmx.model.dataflow import (
 )
 
 from ..config import Conventions, ReviewReport, ReviewSeverity
-from ..ids import normalise_sdmx_id
+from ..ids import normalise_codelist_id, normalise_sdmx_id
 from .glossary import map_datatype
 
 ANN_DPM_MODULE = "DPM_MODULE"
@@ -50,7 +50,8 @@ def _concept_ref(conceptscheme_id: str, agency: str, prop_code: str) -> ItemRefe
 
 def _codelist_ref(agency: str, category_code: str) -> _CodelistRef:
     # Lightweight reference: the writer only needs short_urn (agency:id(version)).
-    return _CodelistRef(id=normalise_sdmx_id(category_code), agency=agency, version="1.0")
+    # Codelist ids are upper-cased to match how FMR persists them (see ids.py).
+    return _CodelistRef(id=normalise_codelist_id(category_code), agency=agency, version="1.0")
 
 
 def _component_from_property(

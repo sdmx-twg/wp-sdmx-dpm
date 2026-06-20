@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
 	<mes:Header>
-		<mes:ID>f3e119d1-a3f3-4cb8-9fd2-4f2a68b4d9d3</mes:ID>
+		<mes:ID>10de5819-39a9-44ff-8fab-630b6bd5240b</mes:ID>
 		<mes:Test>false</mes:Test>
-		<mes:Prepared>2026-06-20T15:10:21Z</mes:Prepared>
+		<mes:Prepared>2026-06-20T15:56:49Z</mes:Prepared>
 		<mes:Sender id="ZZZ"/>
 	</mes:Header>
 	<mes:Structures>
@@ -100986,7 +100986,13 @@ It should be defined for each data point.</com:Description>
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Accounting items</com:Name>
 				<com:Description xml:lang="en">Concepts related with accounting statements</com:Description>
 				<str:Code id="qx2000">
@@ -103557,7 +103563,13 @@ It should be defined for each data point.</com:Description>
 					<com:Name xml:lang="en">Tier 2 capital subordinated liabilities recognised as own funds</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCA</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Currency conversion approach</com:Name>
 				<com:Description xml:lang="en">Indicates how monetary values should be reported i.e. if they should be converted to a single reporting currency, or reported as-is in the underlying currency</com:Description>
 				<str:Code id="qx2000">
@@ -103592,7 +103604,13 @@ It should be defined for each data point.</com:Description>
 					<com:Name xml:lang="en">Converted to EUR</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCG</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Collateralization and guarantees characteristics</com:Name>
 				<com:Description xml:lang="en">Defines the terms and conditions of the collateral and guarantees</com:Description>
 				<str:Code id="qx2000">
@@ -104147,7 +104165,13 @@ assets that the credit institution has received as collateral for credit risk mi
 					<com:Name xml:lang="en">Other funded or unfunded credit protection</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCM</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Calculations</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -105203,7 +105227,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Other choices for the stressed VaR calibration</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Codes</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -105349,7 +105379,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Type of identifier, other than LEI or MFI code</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCQ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCQ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCQ</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Credit quality</com:Name>
 				<com:Description xml:lang="en">Defines the credit quality of the exposures according to the Credit Quality Steps scale</com:Description>
 				<str:Code id="qx2000">
@@ -106016,7 +106052,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Direct issue credit assessment</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCS" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCS" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCS</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Contingent scenario</com:Name>
 				<com:Description xml:lang="en">Defines the contingent scenarios whose impact is reported</com:Description>
 				<str:Code id="qx2001">
@@ -106355,7 +106397,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Hypothetical value under specific assumptions</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Credit protection</com:Name>
 				<com:Description xml:lang="en">Concepts related with the application of Credit Risk Mitigation techniques.</com:Description>
 				<str:Code id="qx0">
@@ -106633,7 +106681,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Cash not compliant with Article 26e of Regulation (EU) 2017/2402</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFF</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Financial flows</com:Name>
 				<str:Code id="qx2001">
 					<com:Annotations>
@@ -106917,7 +106971,13 @@ third country or currency in question.</com:Description>
 					<com:Name xml:lang="en">Flows related to derivative exposures and other collateral requirements</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Financial Instruments</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -109917,7 +109977,13 @@ For the purposes of this point, the following shall apply:
 					<com:Name xml:lang="en">Other MREL eligible liabilities</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFN" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFN" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFN</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Financial instruments and Non-financial items</com:Name>
 				<com:Description xml:lang="en">Supercategory for concepts covering both categories</com:Description>
 				<str:Code id="qx2000">
@@ -110037,7 +110103,13 @@ For the purposes of this point, the following shall apply:
 					<com:Name xml:lang="en">Commercial real estate, financial instruments and other non-financial assets</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIG</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Geographical areas and International Organisations</com:Name>
 				<com:Description xml:lang="en">Supercategory for concepts covering both categories</com:Description>
 				<str:Code id="qx0">
@@ -110054,7 +110126,13 @@ For the purposes of this point, the following shall apply:
 					<com:Name xml:lang="en">Not applicable/ All geographical areas and International Organisations </com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIM</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Impairment</com:Name>
 				<com:Description xml:lang="en">Concepts related with monitoring credit quality of financial assets and off-balance sheet items (e.g. past due, impaired, defaulted)</com:Description>
 				<str:Code id="qx2000">
@@ -110551,7 +110629,13 @@ For the purposes of point (a), where an institution has on-balance-sheet exposur
 					<com:Name xml:lang="en">Under cure/probation period</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">International Organisations</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -111539,7 +111623,13 @@ For the purposes of point (a), where an institution has on-balance-sheet exposur
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qLR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QLR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qLR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Liquidity regulatory items</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -112521,7 +112611,13 @@ In particular, without prejudice to Article 67, competent authorities should con
 					<com:Name xml:lang="en">Preferential treatment of a funding factor</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qMA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QMA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qMA</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of market</com:Name>
 				<com:Description xml:lang="en">Defines the type of market on which reported instruments are traded. It includes the fair value hierarchy.</com:Description>
 				<str:Code id="qx2000">
@@ -112867,7 +112963,13 @@ it has a clearing mechanism whereby contracts listed in Annex II are subject to 
 					<com:Name xml:lang="en">Not applicable (non default)</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qNF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QNF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qNF</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Non-financial items</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -113192,7 +113294,13 @@ it has a clearing mechanism whereby contracts listed in Annex II are subject to 
 					<com:Description xml:lang="en">point (75) Article 4(1) CRR</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qOI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QOI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qOI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Ordering interval</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -113559,7 +113667,13 @@ it has a clearing mechanism whereby contracts listed in Annex II are subject to 
 					<com:Name xml:lang="en">&lt;5%</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qOR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QOR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qOR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Capital regulatory items</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -115469,7 +115583,13 @@ Article 314(2) of Regulation (EU) No 575/2013</com:Description>
 					<com:Name xml:lang="en">Sensitivities definition in accordance with Article 325t(5) and (6) CRR</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Percentages</com:Name>
 				<com:Description xml:lang="en">Percentages</com:Description>
 				<str:Code id="qx2038">
@@ -116611,7 +116731,13 @@ Article 314(2) of Regulation (EU) No 575/2013</com:Description>
 					<com:Name xml:lang="en">Quartile 4</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Positions in the instrument</com:Name>
 				<com:Description xml:lang="en">Defines the position (long/short) taken in the instrument, as well as the aggregation level related to the market risk capital requirement calculations (gross/net).</com:Description>
 				<str:Code id="qx2000">
@@ -116864,7 +116990,13 @@ Article 314(2) of Regulation (EU) No 575/2013</com:Description>
 					<com:Name xml:lang="en">Holdings and Actual or contingent obligations to purchase holdings</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Product characteristics</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -117805,7 +117937,13 @@ Article 314(2) of Regulation (EU) No 575/2013</com:Description>
 					<com:Name xml:lang="en">Proprietary and client acounts</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRF</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Reference period</com:Name>
 				<com:Description xml:lang="en">Defines a relative time point (reference date or period) to which the data refers.</com:Description>
 				<str:Code id="qx2000">
@@ -118904,7 +119042,13 @@ Article 314(2) of Regulation (EU) No 575/2013</com:Description>
 					<com:Name xml:lang="en">7 working days</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Related parties/Relationships</com:Name>
 				<com:Description xml:lang="en">Defines the relationship between the reporting institution with an entity or a person; in particular, it specifies the type of related party.</com:Description>
 				<str:Code id="qx2000">
@@ -119828,7 +119972,13 @@ Subsidiaries of subsidiaries shall also be considered to be subsidiaries of the 
 					<com:Name xml:lang="en">Headquarter</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qSR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QSR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qSR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -120509,7 +120659,13 @@ a financial conglomerate;</com:Description>
 					<com:Name xml:lang="en">Non-Financial Corporation (non SMEs)</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTA</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of Activity</com:Name>
 				<com:Description xml:lang="en">Defines the type of activity reported (e.g. asset management or custody)</com:Description>
 				<str:Code id="qx2000">
@@ -122691,7 +122847,13 @@ a financial conglomerate;</com:Description>
 					<com:Name xml:lang="en">Other business model</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Time interval</com:Name>
 				<com:Description xml:lang="en">Time bands (e.g. &gt; 60 days &lt;= 90 days).</com:Description>
 				<str:Code id="qx2000">
@@ -123686,7 +123848,13 @@ a financial conglomerate;</com:Description>
 					<com:Name xml:lang="en">&lt;= 5 days</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Accounting items &amp; Own funds</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -123886,7 +124054,13 @@ It can be used by the institutions to compute the FC of the BIC (operational ris
 					<com:Name xml:lang="en">Accounting approach or Prudential Boundary Approach</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPY</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Payments</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -124292,7 +124466,13 @@ It can be used by the institutions to compute the FC of the BIC (operational ris
 					<com:Name xml:lang="en">Card schemes used for retail payments</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Resolution</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -124750,7 +124930,13 @@ It can be used by the institutions to compute the FC of the BIC (operational ris
 					<com:Name xml:lang="en">Any other entity referred to in points (b), (c) or (d) of Article 1(1) of Directive 2014/59/EU</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Resolution &amp; Own funds</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -124820,7 +125006,13 @@ It can be used by the institutions to compute the FC of the BIC (operational ris
 					<com:Name xml:lang="en">Deduction of exposures between MPE resolution groups and Investments in other eligible liabilities instruments</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qEC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QEC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qEC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Exposure classes</com:Name>
 				<com:Description xml:lang="en">Defines the exposure class for capital requirement purposes</com:Description>
 				<str:Code id="qx1">
@@ -125651,7 +125843,13 @@ loans secured by commercial immovable property up to the lesser of the principal
 					<com:Description xml:lang="en">Exposures to corporates originally calculated under Advanced IRB approach</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qSE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QSE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qSE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors and Exposure classes</com:Name>
 				<str:Code id="qx2006">
 					<com:Annotations>
@@ -125721,7 +125919,13 @@ loans secured by commercial immovable property up to the lesser of the principal
 					<com:Name xml:lang="en">Central governments or central banks, Multilateral Development Banks and International organisation</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qES" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QES" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qES</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors and Types of Entity</com:Name>
 				<str:Code id="qx2015">
 					<com:Annotations>
@@ -125845,7 +126049,13 @@ loans secured by commercial immovable property up to the lesser of the principal
 					<com:Name xml:lang="en">Other financial corporations</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qSX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QSX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qSX</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors, Exposure classes and Types of Entity</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -125879,7 +126089,13 @@ loans secured by commercial immovable property up to the lesser of the principal
 					<com:Name xml:lang="en">Non-financial customers other than retail, non-financial corporations, central governments, Multilateral Development Banks, Public Sector Entities</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of Entity</com:Name>
 				<str:Code id="qx2064">
 					<com:Annotations>
@@ -126586,7 +126802,13 @@ Article 4(1)(aa) of that Directive;</com:Description>
 					<com:Name xml:lang="en">Entities subject to disclosure requirements</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Approach</com:Name>
 				<com:Description xml:lang="en">Approach used for the calculation of capital requirements (or exposure value in LR)</com:Description>
 				<str:Code id="qx0">
@@ -127841,7 +128063,13 @@ Article 4(1)(aa) of that Directive;</com:Description>
 					<com:Name xml:lang="en">Underlying or modelling feature not contemplated internally</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qET" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QET" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qET</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Event type</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -128499,7 +128727,13 @@ Article 4(1)(aa) of that Directive;</com:Description>
 					<com:Name xml:lang="en">Other than operational risk events</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPL" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPL" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPL</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Portfolio</com:Name>
 				<com:Description xml:lang="en">Defined the portfolios reported. It comprises both accounting portfolios (e.g. Available-for-sale) and prudential portfolios (e.g. trading book).</com:Description>
 				<str:Code id="qx0">
@@ -129258,7 +129492,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">Accounting portfolio for financial liabilities under IFRS</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Portfolio &amp; Own funds</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -129312,7 +129552,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Description xml:lang="en">It refers to items that are subject to deductions from own funds in accordance with Part Two CRR</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAF</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, FI</com:Name>
 				<com:Description xml:lang="en">Accounting items and Financial instruments</com:Description>
 				<str:Code id="qx2000">
@@ -129612,7 +129858,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">Equity issued</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAG" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAG</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, FI, Collateral and Guarantees</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -129637,7 +129889,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">Assets, collateral received, own debt securities other than securitisations and covered bonds</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, FI,TA</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -129671,7 +129929,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">Not applicable/ All financial instruments, accounting items and type of activity</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAS" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAS" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAS</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Accounting standard</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -129750,7 +130014,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">IAS 37</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAX</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, NF, TA, TR</com:Name>
 				<com:Description xml:lang="en">Accounting items, Non-financial items, Type of activity and Type of risk</com:Description>
 				<str:Code id="qx0">
@@ -129776,7 +130046,13 @@ Under national GAAP based on BAD, financial assets subject to impairment shall i
 					<com:Name xml:lang="en">Other expenses than IT expenses, Taxes and duties (other than income taxes), consulting and professional services,  advertising, marketing and communication, credit risk, litigation not covered by provisions, real estate , leasing</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCN" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCN" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCN</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Contracts</com:Name>
 				<str:Code id="qx2052">
 					<com:Annotations>
@@ -130350,7 +130626,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Intra-group</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of risk</com:Name>
 				<str:Code id="qx2001">
 					<com:Annotations>
@@ -131021,7 +131303,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Credit spread risk. Non-securitisations CSR</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Transitional provisions</com:Name>
 				<str:Code id="qx2022">
 					<com:Annotations>
@@ -131182,7 +131470,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Other than grandfathering provisions</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qST" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QST" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qST</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Securitisations</com:Name>
 				<str:Code id="qx2054">
 					<com:Annotations>
@@ -131677,7 +131971,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Description xml:lang="en">It refers to financial assets that are entirely derecognised for accounting purposes for which the institution retains servicing rights</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qSM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QSM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qSM</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Staff/Management structure</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -132242,7 +132542,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Discontinuation of higher ratio after last submission to the EBA</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qSC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QSC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qSC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Scope of consolidation</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -132436,7 +132742,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Other than Full consolidation, Proportional consolidation, Equity method</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPZ</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, FI, PL</com:Name>
 				<com:Description xml:lang="en">Accounting items, Financial instruments and Portfolio</com:Description>
 				<str:Code id="qx0">
@@ -132502,7 +132814,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Description xml:lang="en">It includes cash balances (now outside the accounting portfolios) and the accounting portfolios at cost or amortised  costs</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qOP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QOP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qOP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">OR, PR</com:Name>
 				<com:Description xml:lang="en">Capital regulatory items and Product characteristics</com:Description>
 				<str:Code id="qx0">
@@ -132528,7 +132846,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Instruments other than AT1, T2, Senior non-preferred and Senior unsecured (HoldCo)</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qNI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QNI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qNI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">NF, IM, AI</com:Name>
 				<com:Description xml:lang="en">Non-financial items, Impairment and Accounting Items
 </com:Description>
@@ -132555,7 +132879,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Physically traded commodities, trade date receivables, non-performing assets and other assets</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAZ</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, FI, PI</com:Name>
 				<com:Description xml:lang="en">Accounting items, Financial instruments and Positions in the instrument</com:Description>
 				<str:Code id="qx0">
@@ -132599,7 +132929,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Liabilities other than derivatives and short positions</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFA</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">FI, OR, AI</com:Name>
 				<com:Description xml:lang="en">Financial Instruments, Capital regulatory items and Accounting Items</com:Description>
 				<str:Code id="qx0">
@@ -132625,7 +132961,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Trade date payables, deferred tax, minority interests, derivatives and other liabilities</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFP" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFP</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">FI, PI</com:Name>
 				<com:Description xml:lang="en">Financial instruments and Positions in the instrument</com:Description>
 				<str:Code id="qx0">
@@ -132697,7 +133039,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Other than derivatives and short positions</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qFT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QFT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qFT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">FI, TA</com:Name>
 				<com:Description xml:lang="en">Financial instruments and Type of activity</com:Description>
 				<str:Code id="qx0">
@@ -132732,7 +133080,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Other liability types for impracticability of contractual recognition of bail-in</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCY</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Markets in crypto-assets regulatory items</com:Name>
 				<com:Description xml:lang="en">elements covering the scope of Regulation (EU) 2023/1114, known as MiCA (Markets in Crypto-assets).</com:Description>
 				<str:Code id="qx2000">
@@ -132962,7 +133316,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Description xml:lang="en">Disposals of qualifying holdings</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAV" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAV" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAV</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, ET</com:Name>
 				<com:Description xml:lang="en">Accounting items &amp; Type of events</com:Description>
 				<str:Code id="qx0">
@@ -132997,7 +133357,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Accounting items and type of events other than origination and acquisition, derecognition, change in credit risk, modification without derecognition, updated institution's methodology for estimation, write-off</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Time interval supercategory</com:Name>
 				<com:Description xml:lang="en">Provisional supercategory for enumerations that cover items from old glossary (not yet reviewed) and new glossary (already reviewed)</com:Description>
 				<str:Code id="qx0">
@@ -133014,7 +133380,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qQC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QQC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qQC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Credit quality supercategory</com:Name>
 				<com:Description xml:lang="en">Provisional supercategory for enumerations that cover items from old glossary (not yet reviewed) and new glossary (already reviewed)</com:Description>
 				<str:Code id="qx0">
@@ -133031,7 +133403,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qMI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QMI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qMI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Impairment supercategory</com:Name>
 				<com:Description xml:lang="en">Provisional supercategory for enumerations that cover items from old glossary (not yet reviewed) and new glossary (already reviewed)</com:Description>
 				<str:Code id="qx0">
@@ -133048,7 +133426,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qEE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QEE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qEE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">EC, TE</com:Name>
 				<com:Description xml:lang="en">Exposure classes and Types of Entity</com:Description>
 				<str:Code id="qx2000">
@@ -133075,7 +133459,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable/ All Exposure classes and Types of Entity</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAE" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAE</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Exposure classes and Approaches</com:Name>
 				<str:Code id="qx2007">
 					<com:Annotations>
@@ -133391,7 +133781,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Description xml:lang="en">Used to identify the whole class of Corporates-A-IRB including: General, Specialised lending and purchased receivables</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Risk parameters</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -134676,7 +135072,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">CM_D_0.00</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRM</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Risk measure</com:Name>
 				<str:Code id="qx2001">
 					<com:Annotations>
@@ -134747,7 +135149,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Description xml:lang="en">Includes all standard components of the own funds requirements (OFRs) for market risk determined on the basis of an internal model (VaR, SVaR, IRC, comprehensive risk measure) and other OFRs imposed by the supervisory under Pillar 1 related to the use of that model (e.g. add-ons imposed in accordance with Article 101 CRD)</com:Description>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAB" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAB" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAB</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">AI, CG</com:Name>
 				<com:Description xml:lang="en">Accounting items and Collateral and Guarantees</com:Description>
 				<str:Code id="x0">
@@ -134773,7 +135181,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Initial margin and contributions to CCP default fund</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Financial instruments and Resolution</com:Name>
 				<com:Description xml:lang="en">Supercategory for concepts covering instruments linked with resolution concepts</com:Description>
 				<str:Code id="qx2000">
@@ -134800,7 +135214,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qBT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QBT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qBT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Boolean total</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -134870,7 +135290,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable (non default)</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qER" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QER" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qER</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">External ratings</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -134904,7 +135330,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Rated exposure</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qIA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QIA" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qIA</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Interval of amounts</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -135919,7 +136351,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">&gt;= 5,000,000 and &lt; 6,000,000</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qQI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QQI" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qQI</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Quantity intervals</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -135980,7 +136418,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">24-100</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRY" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRY</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Related parties/Relationships, Scope of consolidat</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136005,7 +136449,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Entities of the group other than entities of the same resolution group</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qNO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QNO" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qNO</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Accounting items &amp; Non-financial items</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -136039,7 +136489,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Accounting items &amp; Non-financial items</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qJF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QJF" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qJF</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sources for risk calculation inputs</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136055,7 +136511,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not Applicable / All sources for risk calculation inputs</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRB" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRB" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRB</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Resolution, own funds and type of entities</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136080,7 +136542,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Other credit institution</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qVR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QVR" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qVR</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Event types and relationships</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -136096,7 +136564,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Event types and relationships</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Account items, Financial instruments &amp; Resolution</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
@@ -136112,7 +136586,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Account items, Financial instruments &amp; Resolution</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTM" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTM</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors, Market, Contracts &amp; Type of entity</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136173,7 +136653,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">All Sectors, Market, Contracts &amp; Type of entity</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qRC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QRC" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qRC</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Resolution &amp; Contracts</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136504,7 +136990,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Impracticability conditions (b) and (d)</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qPT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QPT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qPT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Payments &amp; Type of entity</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136520,7 +137012,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Payments &amp; Type of entity</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qEX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QEX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qEX</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Sectors, Types of Entity, Related parties/Relation</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136563,7 +137061,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Clients other than credit institutions/investment firms/groups of connected clients that include an investment firm or credit institution</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTZ" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTZ</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of activty, Markets and Financial instruments</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -136993,7 +137497,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Deposits from General Government</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qAW" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QAW" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qAW</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Account items, Financial instruments,Resolution&amp;OF</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -137009,7 +137519,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Account items, Financial instruments,Resolution&amp;OF</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qCX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QCX" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qCX</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Scope of consolidation and Calculations</com:Name>
 				<str:Code id="qx2001">
 					<com:Annotations>
@@ -137034,7 +137550,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All Scope of consolidation and Calculations</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTU" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTU" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTU</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">qAI, qFI, qSR &amp; qTA</com:Name>
 				<str:Code id="qx0">
 					<com:Annotations>
@@ -137050,7 +137572,13 @@ If a portion of the deposit referred to in the first subparagraph can be withdra
 					<com:Name xml:lang="en">Not applicable / All</com:Name>
 				</str:Code>
 			</str:Codelist>
-			<str:Codelist id="qTT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+			<str:Codelist id="QTT" version="1.0" isExternalReference="false" agencyID="EBA" isPartial="false">
+				<com:Annotations>
+					<com:Annotation>
+						<com:AnnotationType>DPM_CODE</com:AnnotationType>
+						<com:AnnotationText xml:lang="en">qTT</com:AnnotationText>
+					</com:Annotation>
+				</com:Annotations>
 				<com:Name xml:lang="en">Type of Entity and Type of Activity</com:Name>
 				<str:Code id="qx2000">
 					<com:Annotations>
