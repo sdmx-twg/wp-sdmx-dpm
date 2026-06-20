@@ -1450,6 +1450,8 @@ These are then consolidated into SDMX dimension codes (applying the codification
 
 > **Caveat**: The CubeRegion representation may be *less restrictive* than the original set of Variables. The CubeRegion allows the full Cartesian product of dimension values, but the non-flat table defines only 180 specific combinations. For example, not every counterparty sector appears with every impairment stage.
 
+> **Default Item made explicit.** A Variable's Context need not pin every dimension Property: when a Property is absent from the Context, the Variable takes that Property's Category **default Item** (`ItemCategory.IsDefaultItem`; see [§01_glossary §3.3.2.5](../01_glossary/03_detailed_mapping_rules.md#3325-isdefaultitem--xbrl-default-member)) — the value DPM implicitly assumes when a Property is used without an explicit Item. A Variable whose Context is empty therefore defaults *every* dimension, and still defines a data point. SDMX has no notion of an implicit default dimension value: every series fixes a value for every dimension. Therefore each Variable contributes a full key over all dimensions (its pinned Items, the default Item elsewhere), and that default Item must appear explicitly — among a dimension's CubeRegion Values (Option A), or as the dimension's value in each defaulting key of a DataKeySet (Option B). Otherwise the series that rest on the default would fall outside the constraint. The default Item is a regular member of the Category's value domain (it maps to an ordinary Code), so no synthetic value is introduced.
+
 **Option B — DataKeySet (exact key combinations)**
 
 To preserve the exact set of valid combinations, use a DataKeySet:
@@ -1484,11 +1486,11 @@ To preserve the exact set of valid combinations, use a DataKeySet:
 </ContentConstraint>
 ```
 
-**Which option to choose?**
+**Which option to choose?** The deciding factor is whether the table is **open** or **closed** — i.e. whether its set of data points is unbounded or finite (`Table.HasOpenRows`/`HasOpenColumns`/`HasOpenSheets`; see §3.2):
 
-- Use **CubeRegion** (Option A) when the set of Variables represents the full Cartesian product of constrained dimension values, or when per-dimension restrictions are sufficient.
-- Use **DataKeySet** (Option B) when the set of Variables represents a sparse subset of the Cartesian product and combination-level precision is required.
-- In practice, for non-flat tables like F_04.04.1, the DataKeySet is the more faithful representation since the 180 cells represent specific combinations, not the full cross-product. However, the CubeRegion is more compact and widely supported.
+- A **closed** non-flat table (no open axis) has a finite, enumerable set of data points. Its faithful representation is a **DataKeySet** (Option B): one Key per distinct series key. This preserves the exact valid combinations, which a CubeRegion's Cartesian product would over-generate.
+- An **open** non-flat table (some axis open) cannot enumerate its keys — open rows admit series not materialised in the grid — so it is described dimension-wise as a **CubeRegion** (Option A). A flat table likewise maps to a CubeRegion, read off its Headers' SubCategories (§3.3.2.1).
+- **Series identity is dimensions only.** Data points that share a dimension key but differ by *metric* (a distinct metric Property → a distinct SDMX Measure) collapse to one series key: an SDMX Measure is not part of a series key, and a non-enumerated Measure has no key value to enumerate. Which Measures are valid is already stated by the DSD's Measure list. So the metric distinction between such data points is **not** recoverable from the constraint alone — an inherent DPM→SDMX gap, of a kind with the Cartesian-product caveat above.
 
 ## 3.4 Reporting bundle: ReportingTaxonomy / ReportingCategory ↔ ModuleVersion
 

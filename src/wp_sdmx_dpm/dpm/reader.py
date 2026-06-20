@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from dpmcore import connect
 from dpmcore.server.params import ReleaseKeyword, StructureParams
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 
 
 def _sqlite_url(db_path: str) -> str:
@@ -289,3 +289,140 @@ class DpmReader:
         dim_set = set(dim)
         metric = [p for p in metric if p not in dim_set]
         return dim, metric
+
+    # -- constraint support (datapoint keys per dimension) ----------------
+    # A non-flat table's valid-series space is the set of its FactVariable
+    # Contexts: each data point (a fact Variable, with a metric ``PropertyID``)
+    # fixes a value for every table dimension. A dimension a data point's Context
+    # does not pin takes that Category's **default Item** -- DPM's implicit
+    # default, which SDMX has no notion of, so it is made explicit (spec 3.3.8).
+    # Both SDMX representations derive from the per-data-point dimension keys:
+    #   * open table   -> CubeRegion: distinct values per dimension across keys;
+    #   * closed table -> DataKeySet: the distinct full dimension keys themselves.
+    _DIM_CATEGORY_SQL = text(
+        """
+        SELECT pc.PropertyID AS prop_id, pc.CategoryID AS cat_id, cat.Code AS cat_code
+        FROM PropertyCategory pc
+        JOIN Category cat ON cat.CategoryID = pc.CategoryID
+        WHERE pc.EndReleaseID IS NULL AND pc.PropertyID IN :pids
+        """
+    ).bindparams(bindparam("pids", expanding=True))
+    # Every fact data point in the table (a Variable with a metric PropertyID),
+    # whether or not it carries a Context (a context-less data point defaults
+    # *every* dimension).
+    _DATAPOINT_VARS_SQL = text(
+        """
+        SELECT DISTINCT vv.VariableVID AS var_id
+        FROM TableVersionCell tvc
+        JOIN VariableVersion vv ON tvc.VariableVID = vv.VariableVID
+        WHERE tvc.TableVID = :tvid AND vv.PropertyID IS NOT NULL
+        """
+    )
+    # The (data point, dimension) -> Item code pairs actually pinned by Contexts.
+    _DATAPOINT_MEMBERS_SQL = text(
+        """
+        SELECT vv.VariableVID AS var_id,
+               cc.PropertyID  AS prop_id,
+               ic.Code        AS item_code
+        FROM TableVersionCell tvc
+        JOIN VariableVersion vv    ON tvc.VariableVID = vv.VariableVID
+        JOIN ContextComposition cc ON vv.ContextID = cc.ContextID
+        JOIN PropertyCategory pc   ON pc.PropertyID = cc.PropertyID
+                                  AND pc.EndReleaseID IS NULL
+        LEFT JOIN ItemCategory ic  ON ic.ItemID = cc.ItemID
+                                  AND ic.CategoryID = pc.CategoryID
+                                  AND ic.EndReleaseID IS NULL
+        WHERE tvc.TableVID = :tvid AND vv.PropertyID IS NOT NULL
+        """
+    )
+    _DEFAULT_ITEMS_SQL = text(
+        # DPM marks the default Item of a Category with ItemCategory.IsDefaultItem
+        # (-1 = true). One default per Category; EBA always codes it ``qx0``/``x0``.
+        """
+        SELECT CategoryID AS cat_id, Code AS item_code
+        FROM ItemCategory
+        WHERE IsDefaultItem <> 0 AND EndReleaseID IS NULL
+        """
+    )
+
+    def _default_items_by_category(self) -> Dict[int, str]:
+        """Map each Category id to its default Item code (cached for the session)."""
+        cache = getattr(self, "_default_item_cache", None)
+        if cache is None:
+            rows = self._db.session.execute(self._DEFAULT_ITEMS_SQL).fetchall()
+            cache = {r.cat_id: r.item_code for r in rows}
+            self._default_item_cache = cache
+        return cache
+
+    def read_table_constraint_values(
+        self, table_version_id: int, dimension_property_ids: List[int]
+    ) -> Dict[str, Any]:
+        """Return the data-point dimension keys for a Table's constraint.
+
+        ``dimension_property_ids`` are the DSD's dimension Properties (from
+        :meth:`read_table_components`). The result is::
+
+            {"dims": {prop_id: {"categoryCode", "defaultItemCode"}},
+             "keys": [ {prop_id: item_code, ...}, ... ],   # distinct, dims filled
+             "usesDefault": {prop_id: bool}}               # dim defaulted somewhere
+
+        Each data point (fact Variable) contributes one full dimension key: the
+        Item its Context pins for each dimension, or the Category default Item
+        where the Context omits the dimension. Keys are de-duplicated (several
+        data points differing only by metric collapse to one series key).
+        ``usesDefault[p]`` is True when at least one data point defaulted
+        dimension ``p`` (so its default Item is among the values). Spec 3.3.8.
+        """
+        session = self._db.session
+        dims = sorted(set(dimension_property_ids))
+        if not dims:
+            return {"dims": {}, "keys": [], "usesDefault": {}}
+        defaults = self._default_items_by_category()
+
+        dim_meta: Dict[int, Dict[str, Any]] = {}
+        for r in session.execute(self._DIM_CATEGORY_SQL, {"pids": dims}).fetchall():
+            dim_meta[r.prop_id] = {
+                "categoryCode": r.cat_code,
+                "defaultItemCode": defaults.get(r.cat_id),
+            }
+
+        datapoints = [
+            r.var_id
+            for r in session.execute(
+                self._DATAPOINT_VARS_SQL, {"tvid": table_version_id}
+            ).fetchall()
+        ]
+        pinned: Dict[int, Dict[int, str]] = {}  # var_id -> {prop_id: code}
+        for r in session.execute(
+            self._DATAPOINT_MEMBERS_SQL, {"tvid": table_version_id}
+        ).fetchall():
+            if r.prop_id in dim_meta and r.item_code:
+                pinned.setdefault(r.var_id, {})[r.prop_id] = r.item_code
+
+        keys: List[Dict[int, str]] = []
+        seen = set()
+        uses_default = {p: False for p in dims}
+        for var_id in datapoints:
+            members = pinned.get(var_id, {})
+            key: Dict[int, str] = {}
+            for p in dims:
+                code = members.get(p)
+                if code is None:
+                    code = dim_meta.get(p, {}).get("defaultItemCode")
+                    if code is not None:
+                        uses_default[p] = True
+                if code is not None:
+                    key[p] = code
+            signature = tuple(sorted(key.items()))
+            if signature not in seen:
+                seen.add(signature)
+                keys.append(key)
+        # ``datapointCount`` is the number of fact data points *before* de-dup;
+        # when it exceeds ``len(keys)`` some collapsed -- they share a dimension
+        # key and differ only by metric (SDMX gap, specific_gap_analysis §2.2.5).
+        return {
+            "dims": dim_meta,
+            "keys": keys,
+            "usesDefault": uses_default,
+            "datapointCount": len(datapoints),
+        }

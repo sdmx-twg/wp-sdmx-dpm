@@ -17,6 +17,7 @@ from pysdmx.model import Agency, AgencyScheme, ConceptScheme
 
 from ..config import Conventions, ReviewReport
 from ..ids import normalise_sdmx_id
+from ..mapping.constraints import table_to_content_constraint
 from ..mapping.data_definition import table_to_dsd_and_dataflow
 from ..mapping.glossary import (
     category_to_codelist,
@@ -151,4 +152,66 @@ class SdmxBuilder:
             )
             if built is not None:
                 objects += list(built)
+        return objects
+
+    # -- constraint layer --------------------------------------------------
+    @staticmethod
+    def _is_closed_table(table: Dict[str, Any]) -> bool:
+        """A table is closed when no axis is open (a finite set of data points).
+
+        Closed tables enumerate their series keys (DataKeySet); open ones (any
+        ``hasOpen*`` axis, or a flat SubCategory-driven table) are described
+        dimension-wise (CubeRegion). Spec section 3.3.2 / 3.3.8.
+        """
+        if table.get("isFlat"):
+            return False
+        return not (
+            table.get("hasOpenRows")
+            or table.get("hasOpenColumns")
+            or table.get("hasOpenSheets")
+        )
+
+    def build_constraints(
+        self,
+        table_specs: List[Tuple[Dict[str, Any], List[int], List[int]]],
+        prop_index: Dict[int, Dict[str, Any]],
+        constraint_values_by_table: Dict[int, Dict[str, Any]],
+        *,
+        agency: str,
+    ) -> List[Any]:
+        """Build one DataConstraint per table from its data-point dimension keys.
+
+        ``constraint_values_by_table`` maps a table's ``tableVersionId`` to the
+        per-data-point keys from :meth:`DpmReader.read_table_constraint_values`.
+        Each dimension Property's SDMX id is resolved from ``prop_index``; the
+        order follows the DSD's dimension order (``dim_pids``). Closed tables
+        become a DataKeySet, open tables a CubeRegion.
+        """
+        objects: List[Any] = []
+        for table, dim_pids, _metric_pids in table_specs:
+            cv = constraint_values_by_table.get(table.get("tableVersionId")) or {}
+            dim_meta = cv.get("dims", {})
+            id_by_pid = {
+                pid: normalise_sdmx_id(prop_index[pid]["code"])
+                for pid in dim_pids
+                if pid in prop_index and pid in dim_meta
+            }
+            ordered_dim_ids = [id_by_pid[pid] for pid in dim_pids if pid in id_by_pid]
+            keys = [
+                {id_by_pid[pid]: code for pid, code in key.items() if pid in id_by_pid}
+                for key in cv.get("keys", [])
+            ]
+            uses_default = {
+                id_by_pid[pid]: flag
+                for pid, flag in cv.get("usesDefault", {}).items()
+                if pid in id_by_pid
+            }
+            constraint = table_to_content_constraint(
+                table, ordered_dim_ids, keys, uses_default,
+                closed=self._is_closed_table(table), agency=agency,
+                conventions=self.conventions, report=self.report,
+                datapoint_count=cv.get("datapointCount"),
+            )
+            if constraint is not None:
+                objects.append(constraint)
         return objects

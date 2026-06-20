@@ -33,6 +33,7 @@ Gaps between SDMX and DPM fall into three categories:
 | Partial key groups | GroupDimensionDescriptor | No equivalent | DPM cannot directly model intermediate attachment levels |
 | Attribute attachment | AttributeRelationship (5 levels) | Implicit in AttributeVariable.subject | SDMX attachment levels are explicit; DPM attachment is implicit |
 | Key enumeration | DataKeySet (explicit series) | No equivalent | DPM constraints operate at value-domain level, not key-combination level |
+| Metric in series key | Measure (not a key component) | FactVariable (metric is part of data-point identity) | Data points differing only by metric collapse to one SDMX series key; the constraint cannot bind a metric to a key — see [§2.2.5](02_specific_gap_analysis.md#225-metric-not-in-the-series-key--constraints-cannot-enumerate-metric-per-data-point) |
 | Rendering / presentation | Not modelled | Table / Header / Cell | SDMX excludes presentation; DPM has a complete rendering layer |
 | Filing indicator | No equivalent | FilingIndicatorVariable | DPM-specific artefact for table-level reporting control |
 | Open/closed table patterns | Not modelled | Headers with fixed Context vs Key Headers on open axes | DPM distinguishes open and closed axes; SDMX has no equivalent |

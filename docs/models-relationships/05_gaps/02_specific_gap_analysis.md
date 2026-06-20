@@ -79,6 +79,28 @@ The MEASURE dimension is "absorbed" into the Variable identity. The relationship
 3. **Naming convention**: Use consistent prefixes or suffixes to indicate related FactVariables (e.g. `TRADE_IMPORTS`, `TRADE_EXPORTS`, `TRADE_BALANCE`).
 4. **Round-trip metadata**: Store original SDMX measure pattern in descriptions for bidirectional conversion.
 
+### 2.2.5 Metric not in the series key — constraints cannot enumerate metric per data point
+
+This is the inverse of §2.2.1, surfacing in the **DPM ⇒ SDMX constraint** mapping ([§02_data_definition §3.3](../02_data_definition/03_detailed_mapping_rules.md#33-series-constraints--variables)). In DPM a data point is identified by its **Context *and* its metric Property** (the FactVariable). In SDMX a **series key is composed of dimension values only** — a Measure is never part of the key. So when the valid-series space of a closed table is expressed as a `DataKeySet`, data points that share a dimension key but differ only by metric **collapse to a single series key**.
+
+**Example (C_26.00).** Four data points: `(qEBF=qx0, metric=qAIH)`, `(qEBF=qx0, metric=qAIC)`, `(qEBF=qx2011, metric=qAJB)`, `(qEBF=qx0, metric=qBFH)`. As series keys these are just two — `qEBF=qx0` and `qEBF=qx2011` — because the metric cannot enter the key. The constraint therefore states "these dimension keys are valid" and "these Measures exist" (the DSD Measure list) **independently**; it cannot state that `qAJB` occurs *only* at `qEBF=qx2011`.
+
+#### 2.2.5.1 Gap analysis
+
+| Aspect | SDMX | DPM | Gap |
+|--------|------|-----|-----|
+| Data-point identity | Dimension key + (separately) a Measure | Context + metric Property, as one FactVariable | The metric is identity-bearing in DPM but not key-bearing in SDMX |
+| Metric in a key | A Measure is not a key component; a non-enumerated Measure has no discrete value to enumerate | Each metric is an explicit FactVariable | Cannot place the metric inside a `DataKey` |
+| Metric ⇄ key binding | A `CubeRegion` may carry a value-less measure `<Component>`, but this only asserts the Measure is *present*, not that it pairs with a particular key | Implicit in each FactVariable's Context | The "which metric at which key" relationship is lost |
+
+This is of a kind with the Cartesian-product caveat in [§3.3.8](../02_data_definition/03_detailed_mapping_rules.md#338-example-mapping-dpm--sdmx): the SDMX constraint over-generalises the DPM data space. Here the loss is along the metric axis rather than across dimensions.
+
+#### 2.2.5.2 Recommendations
+
+1. **Record the metric–key pairing** out of band (e.g. a `DataKeySet` keyed on a metric-bearing dimension, or model documentation) when the precise per-data-point validity matters.
+2. **Consider a `MEASURE`-dimension DSD** (single `OBS_VALUE` + a metric dimension; §2.2.1) when round-trip fidelity of the metric–key relationship is required: with the metric as a *dimension* it becomes part of the series key and can be enumerated in the constraint. This trades the explicit-multi-measure shape for key-level precision.
+3. **Flag the collapse** in the conversion output so downstream consumers know the constraint is metric-agnostic.
+
 ## 2.3 Stock vs flow and temporal semantics
 
 ### 2.3.1 The problem

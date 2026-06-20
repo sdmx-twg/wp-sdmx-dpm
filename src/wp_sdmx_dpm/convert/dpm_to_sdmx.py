@@ -50,7 +50,7 @@ def convert_module(
     """
     conventions = conventions or Conventions()
     report = ReviewReport()
-    layers = layers or ["glossary", "data-def"]
+    layers = layers or ["glossary", "data-def", "constraints"]
     builder = SdmxBuilder(conventions, report)
     objects: List[Any] = []
 
@@ -66,10 +66,18 @@ def convert_module(
         # Per-table components (dimensions from contexts, measures from metrics).
         table_specs: List[Tuple[Dict[str, Any], List[int], List[int]]] = []
         used_property_ids: Set[int] = set()
+        constraint_values_by_table: Dict[int, Dict[str, Any]] = {}
+        need_constraints = "constraints" in layers and "data-def" in layers
         for table in module.get("tables") or []:
             dim_pids, metric_pids = reader.read_table_components(table["tableVersionId"])
             table_specs.append((table, dim_pids, metric_pids))
             used_property_ids.update(dim_pids, metric_pids)
+            if need_constraints:
+                constraint_values_by_table[table["tableVersionId"]] = (
+                    reader.read_table_constraint_values(
+                        table["tableVersionId"], dim_pids
+                    )
+                )
 
         # Also include properties referenced directly by variables/headers.
         _cat_from_vars, prop_ids_from_vars = builder.gather_references(module)
@@ -109,13 +117,22 @@ def convert_module(
                 severity=ReviewSeverity.INFO,
             )
 
-    if "constraints" in layers:
-        report.add(
-            "layer.constraints.pending",
-            "Constraints layer (SubCategory -> ContentConstraint) is Phase 4.",
-            artefact=module_code,
-            severity=ReviewSeverity.INFO,
-        )
+        if "constraints" in layers:
+            if "data-def" not in layers:
+                report.add(
+                    "layer.constraints.needs_data_def",
+                    "Constraints attach to a Dataflow; the 'data-def' layer must "
+                    "also be selected to emit them. Skipped.",
+                    artefact=module_code,
+                    severity=ReviewSeverity.REVIEW,
+                )
+            else:
+                objects += builder.build_constraints(
+                    table_specs,
+                    prop_index,
+                    constraint_values_by_table,
+                    agency=agency,
+                )
 
     return DpmToSdmxResult(objects=objects, report=report)
 

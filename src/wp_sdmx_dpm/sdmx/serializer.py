@@ -20,6 +20,7 @@ from pysdmx.model import (
     Hierarchy,
     HierarchyAssociation,
 )
+from pysdmx.model.constraint import DataConstraint
 
 # FMR cannot reliably resolve a reference to an artefact that arrives in the
 # *same* submission (intermittent code-100 "Could not resolve reference" — see
@@ -29,12 +30,13 @@ from pysdmx.model import (
 #   2. hierarchies — Hierarchies (their HierarchicalCodes reference Codelist Codes);
 #   3. concepts    — concept schemes (Concepts reference Codelists via their
 #                    enumerated core representation);
-#   4. structures  — everything else (DSDs, Dataflows, Constraints, CategorySchemes)
-#                    which reference both codelists and concepts.
+#   4. structures  — DSDs, Dataflows, CategorySchemes (reference codelists+concepts);
+#   5. constraints — DataConstraints, which attach to a Dataflow (tier 4) and list
+#                    Codelist Codes as allowed values (tier 1), so they load last.
 # Agencies lead tier 1 because every artefact's agencyID resolves against them.
 # Each tier's references are persisted by the previous POST, so validation is
 # deterministic regardless of intra-message ordering.
-_STAGE_TYPES: Tuple[Tuple[str, Tuple[type, ...]], ...] = (
+_PRE_STRUCTURE_TYPES: Tuple[Tuple[str, Tuple[type, ...]], ...] = (
     ("codelists", (AgencyScheme, Codelist)),
     ("hierarchies", (Hierarchy, HierarchyAssociation)),
     ("concepts", (ConceptScheme,)),
@@ -46,20 +48,27 @@ def partition_stages(objects: Any) -> List[Tuple[str, List[Any]]]:
 
     Returns the tiers in dependency order: ``codelists`` (agencies + codelists),
     ``hierarchies`` (Hierarchies over those codelists), ``concepts`` (concept
-    schemes), then ``structures`` (everything else). Order within each tier is
-    preserved. Empty tiers are still returned; callers skip them.
+    schemes), ``structures`` (DSDs/Dataflows/etc.), then ``constraints``
+    (DataConstraints, which reference a Dataflow from ``structures``). Order
+    within each tier is preserved. Empty tiers are still returned; callers skip
+    them.
     """
-    stages: Dict[str, List[Any]] = {label: [] for label, _ in _STAGE_TYPES}
+    stages: Dict[str, List[Any]] = {label: [] for label, _ in _PRE_STRUCTURE_TYPES}
     structures: List[Any] = []
+    constraints: List[Any] = []
     for obj in objects:
-        for label, types in _STAGE_TYPES:
+        if isinstance(obj, DataConstraint):
+            constraints.append(obj)
+            continue
+        for label, types in _PRE_STRUCTURE_TYPES:
             if isinstance(obj, types):
                 stages[label].append(obj)
                 break
         else:
             structures.append(obj)
-    ordered = [(label, stages[label]) for label, _ in _STAGE_TYPES]
+    ordered = [(label, stages[label]) for label, _ in _PRE_STRUCTURE_TYPES]
     ordered.append(("structures", structures))
+    ordered.append(("constraints", constraints))
     return ordered
 
 # SDMX-ML structure format per requested version. 3.0 is the default because it
